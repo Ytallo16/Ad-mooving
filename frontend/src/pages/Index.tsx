@@ -11,11 +11,23 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden h-[500px]">
+      <section className="relative overflow-hidden h-[550px]">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in hover:scale-105 transition-transform duration-700 ease-out"
           style={{ backgroundImage: `url("/CAPA SITE AD MOVING 2ED.png")`, backgroundSize: 'cover' }}
         >
+        </div>
+        
+        {/* Button at bottom of hero */}
+        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-10">
+          <Link to="/inscricoes">
+            <Button 
+              size="lg" 
+              className="bg-race-primary hover:bg-race-primary-dark text-white text-lg px-8 py-4 shadow-lg animate-bounce"
+            >
+              Inscreva-se
+            </Button>
+          </Link>
         </div>
       </section>
 
