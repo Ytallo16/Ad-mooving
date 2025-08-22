@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 252 45% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 252 45% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 252 45% 15%;
+
+    --primary: 280 46% 42%; /* #6930a7 */
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 285 42% 48%; /* #6341af */
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 278 20% 96%;
+    --muted-foreground: 278 8% 45%;
+
+    --accent: 285 35% 88%;
+    --accent-foreground: 280 50% 25%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 278 20% 92%;
+    --input: 278 20% 92%;
+    --ring: 280 46% 42%;
+
+    --radius: 0.5rem;
+
+    /* Race theme colors - Purple/Violet palette */
+    --race-primary: 280 46% 42%; /* #6930a7 */
+    --race-primary-dark: 280 50% 35%;
+    --race-primary-light: 280 40% 65%;
+    --race-secondary: 285 42% 48%; /* #6341af */
+    --race-secondary-dark: 285 50% 38%;
+    --race-secondary-light: 285 35% 70%;
+    --race-accent: 260 50% 55%;
+    --race-accent-light: 260 40% 75%;
+    --race-neutral: 278 15% 50%;
+    --race-neutral-light: 278 10% 85%;
+    --race-gradient: linear-gradient(135deg, hsl(280 46% 42%) 0%, hsl(285 42% 48%) 100%);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 252 45% 8%;
+    --foreground: 0 0% 98%;
+
+    --card: 252 40% 10%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 252 40% 10%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 280 46% 52%;
+    --primary-foreground: 0 0% 98%;
+
+    --secondary: 252 40% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 252 40% 15%;
+    --muted-foreground: 278 8% 65%;
+
+    --accent: 252 40% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 252 40% 15%;
+    --input: 252 40% 15%;
+    --ring: 280 46% 52%;
+
+    /* Race theme colors for dark mode */
+    --race-primary: 280 46% 52%;
+    --race-primary-dark: 280 50% 35%;
+    --race-primary-light: 280 40% 75%;
+    --race-secondary: 285 42% 58%;
+    --race-secondary-dark: 285 50% 38%;
+    --race-secondary-light: 285 35% 80%;
+    --race-accent: 260 50% 65%;
+    --race-accent-light: 260 40% 85%;
+    --race-neutral: 278 15% 60%;
+    --race-neutral-light: 278 10% 25%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 280 46% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 280 46% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
