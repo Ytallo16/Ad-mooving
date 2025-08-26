@@ -331,16 +331,17 @@ class RaceRegistrationViewSet(ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """
-        Cria uma inscrição e envia email de confirmação
+        Usa o comportamento padrão de criação; o envio do email ocorre em perform_create.
         """
-        response = super().create(request, *args, **kwargs)
-        
-        # Envia email de confirmação
-        if response.status_code == 201:
-            registration = RaceRegistration.objects.get(id=response.data['id'])
-            send_registration_confirmation_email(registration)
-        
-        return response
+        return super().create(request, *args, **kwargs)
+    
+    def perform_create(self, serializer):
+        instance = serializer.save()
+        try:
+            send_registration_confirmation_email(instance)
+        except Exception:
+            # Não interromper a criação se o email falhar
+            pass
     
     @extend_schema(
         tags=['corrida'],

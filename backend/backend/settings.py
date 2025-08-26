@@ -225,3 +225,7 @@ EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@ad-mooving.com')
+
+# Email encoding settings
+EMAIL_CHARSET = 'utf-8'
+DEFAULT_CHARSET = 'utf-8'
