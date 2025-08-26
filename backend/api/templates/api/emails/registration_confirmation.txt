@@ -1,46 +1,46 @@
 CORRIDA AD-MOOVING 2024
 ========================
 
-INSCRICAO CONFIRMADA COM SUCESSO!
+INSCRIÇÃO CONFIRMADA COM SUCESSO! 🎉
 
-Sua inscricao foi realizada com sucesso em {{ confirmation_date }}.
-Numero de inscricao: #{{ registration.id }}
+Sua inscrição foi realizada com sucesso em {{ confirmation_date }}.
+Número de inscrição: #{{ registration.id }}
 
-DADOS DA INSCRICAO
+DADOS DA INSCRIÇÃO
 ---------------------
 Nome: {{ registration.full_name }}
 CPF: {{ registration.cpf }}
 Modalidade: {{ registration.get_modality_display }}
-Tamanho da Camisa: 
+Tamanho da Camisa:
 {% if registration.modality == 'INFANTIL' %}
-    {{ registration.get_shirt_size_display }} anos
+    {{ registration.shirt_size }} anos
 {% elif registration.gender == 'F' %}
-    {{ registration.get_shirt_size_display }} (Babylook)
+    {{ registration.shirt_size }} (Babylook)
 {% else %}
-    {{ registration.get_shirt_size_display }}
+    {{ registration.shirt_size }}
 {% endif %}
 
-INFORMACOES DA CORRIDA
+INFORMAÇÕES DA CORRIDA
 --------------------------
 Data: {{ race_info.date }}
-Horario: {{ race_info.start_time }}
+Horário: {{ race_info.start_time }}
 Local: {{ race_info.location }}
 
 RETIRADA DO KIT
 ------------------
-IMPORTANTE: Nao esqueca de retirar seu kit antes da corrida!
+IMPORTANTE: Não esqueça de retirar seu kit antes da corrida! ⏰
 
 Data: {{ race_info.kit_pickup.date }}
-Horario: {{ race_info.kit_pickup.time }}
+Horário: {{ race_info.kit_pickup.time }}
 Local: {{ race_info.kit_pickup.location }}
-Documentos necessarios: {{ race_info.kit_pickup.required_docs }}
+Documentos necessários: {{ race_info.kit_pickup.required_docs }}
 
 CONTATO
 ----------
-Em caso de duvidas, entre em contato conosco:
+Em caso de dúvidas, entre em contato conosco:
 Email: {{ contact_email }}
 WhatsApp: {{ contact_whatsapp }}
 
 ========================
-Obrigado por participar da Corrida Ad-mooving 2024!
-Boa sorte e bons treinos! 
+Obrigado por participar da Corrida Ad-mooving 2024! 🏁
+Boa sorte e bons treinos! 💪 
