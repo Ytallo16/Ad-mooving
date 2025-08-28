@@ -25,21 +25,32 @@
             overflow: hidden;
         }
         .header {
-            background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 60%, #7c3aed 100%);
+            background: linear-gradient(135deg, #6930a7 0%, #6341af 60%, #7c3aed 100%);
             color: #fff;
             padding: 28px 24px;
             text-align: center;
+            position: relative;
+            border-radius: 12px 12px 0 0;
+        }
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
         .brand {
             display: inline-block;
-            font-size: 22px;
+            font-size: 28px;
             font-weight: 700;
             letter-spacing: 0.4px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            margin-bottom: 8px;
         }
         .subtitle {
             margin-top: 8px;
-            font-size: 14px;
+            font-size: 16px;
             opacity: 0.95;
+            color: #ffffff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
         }
         .content {
             padding: 24px;
@@ -127,8 +138,10 @@
     <div class="wrapper">
         <div class="card">
             <div class="header">
-                <div class="brand">Corrida Ad-mooving 2024 🏁</div>
-                <div class="subtitle">Inscrição Confirmada com Sucesso! 🎉</div>
+                <div class="header-content">
+                    <div class="brand">Corrida Ad-mooving 2024 🏁</div>
+                    <div class="subtitle">Inscrição Confirmada com Sucesso! 🎉</div>
+                </div>
             </div>
 
             <div class="content">

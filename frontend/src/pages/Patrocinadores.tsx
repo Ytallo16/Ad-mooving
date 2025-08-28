@@ -209,10 +209,10 @@ const Patrocinadores = () => {
       >
         <div className="text-center">
           <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 text-white border-0 rounded-lg p-12">
-            <h2 className="text-3xl font-bold mb-4">
+            <h2 className="text-3xl font-bold mb-4 font-teko">
               Quer ser um patrocinador?
             </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto font-29lt">
               Junte-se às empresas visionárias que estão moldando o futuro da mobilidade urbana. 
               Entre em contato conosco para conhecer as oportunidades de patrocínio.
             </p>

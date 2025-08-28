@@ -13,13 +13,13 @@ const Navbar = () => {
             alt="Logo AD Dirceu" 
             className="h-20 w-auto"
           />
-          <h1 className="text-2xl font-bold bg-gradient-to-r from-race-primary to-race-secondary bg-clip-text text-transparent">ADMOOVING</h1>
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-race-primary to-race-secondary bg-clip-text text-transparent font-teko">ADMOOVING</h1>
         </Link>
         
         <div className="flex items-center space-x-4">
           <Link 
             to="/" 
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 ${
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
               location.pathname === "/" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
             }`}
           >
@@ -27,7 +27,7 @@ const Navbar = () => {
           </Link>
           <Link 
             to="/sobre" 
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 ${
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
               location.pathname === "/sobre" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
             }`}
           >
@@ -35,7 +35,7 @@ const Navbar = () => {
           </Link>
           <Link 
             to="/localizacao" 
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 ${
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
               location.pathname === "/localizacao" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
             }`}
           >
@@ -43,7 +43,7 @@ const Navbar = () => {
           </Link>
           <Link 
             to="/patrocinadores" 
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 ${
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
               location.pathname === "/patrocinadores" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
             }`}
           >
@@ -51,7 +51,7 @@ const Navbar = () => {
           </Link>
           <Link 
             to="/contatos" 
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 ${
+            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
               location.pathname === "/contatos" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
             }`}
           >
@@ -60,7 +60,7 @@ const Navbar = () => {
           <Link to="/inscricoes">
             <Button 
               variant={location.pathname === "/inscricoes" ? "default" : "outline"}
-              className="bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white border-race-primary"
+              className="bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white border-race-primary font-29lt"
             >
               Inscrições
             </Button>

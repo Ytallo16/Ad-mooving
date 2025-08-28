@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +7,35 @@ import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 
 const Index = () => {
+  const [timeLeft, setTimeLeft] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  useEffect(() => {
+    const targetDate = new Date('2025-12-14T00:00:00').getTime();
+
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const difference = targetDate - now;
+
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+        setTimeLeft({ days, hours, minutes, seconds });
+      } else {
+        setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -14,12 +44,12 @@ const Index = () => {
       <section className="relative overflow-hidden h-[550px]">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in hover:scale-105 transition-transform duration-700 ease-out"
-          style={{ backgroundImage: `url("/CAPA SITE AD MOVING 2ED.png")`, backgroundSize: 'cover' }}
+          style={{ backgroundImage: `url("/Fundo (4).png")`, backgroundSize: 'cover' }}
         >
         </div>
         
         {/* Button at bottom of hero */}
-        <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
           <Link to="/inscricoes">
             <Button 
               size="lg" 
@@ -28,6 +58,37 @@ const Index = () => {
               Inscreva-se
             </Button>
           </Link>
+        </div>
+        
+        {/* Cronômetro acima do botão */}
+        <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-10 text-center">
+          <div className="inline-block" key={`${timeLeft.days}-${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}>
+            <div className="text-white text-4xl font-bold mb-2 drop-shadow-lg font-teko">
+              AD MOVING
+            </div>
+            <div className="text-white text-2xl font-bold mb-4 drop-shadow-lg font-29lt">
+              LOCAL: TERESINA SHOPPING
+            </div>
+            <div className="flex gap-8 text-white">
+              <div className="text-center">
+                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.days.toString().padStart(2, '0')}</div>
+                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Dias</div>
+              </div>
+              <div className="text-center">
+                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.hours.toString().padStart(2, '0')}</div>
+                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Horas</div>
+              </div>
+              <div className="text-center">
+                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.minutes.toString().padStart(2, '0')}</div>
+                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Min</div>
+              </div>
+              <div className="text-center">
+                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.seconds.toString().padStart(2, '0')}</div>
+                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Seg</div>
+              </div>
+            </div>
+            <div className="text-white/80 text-base mt-4 font-medium font-29lt">14 de Dezembro de 2025</div>
+          </div>
         </div>
       </section>
 

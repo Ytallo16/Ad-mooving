@@ -250,26 +250,26 @@ const Inscricoes = () => {
                       <ul className="text-sm text-muted-foreground space-y-2">
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Taxa de inscrição: R$ 25,00</span>
+                          <span className="font-29lt">Taxa de inscrição: R$ 25,00</span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Inclui kit do corredor com camiseta</span>
+                          <span className="font-29lt">Inclui kit do corredor com camiseta</span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Hidratação durante o percurso</span>
+                          <span className="font-29lt">Hidratação durante o percurso</span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Medalha para todos os participantes</span>
+                          <span className="font-29lt">Medalha para todos os participantes</span>
                         </li>
                       </ul>
                     </div>
 
                     <Button 
                       type="submit" 
-                      className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 font-29lt"
                       size="lg"
                     >
                       Finalizar Inscrição
