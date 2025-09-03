@@ -1,46 +1,13 @@
-CORRIDA AD-MOOVING 2024
-========================
+INSCRIÇÃO RECEBIDA 🎉
 
-INSCRIÇÃO CONFIRMADA COM SUCESSO! 🎉
+Olá, {{ registration.full_name }}!
 
-Sua inscrição foi realizada com sucesso em {{ confirmation_date }}.
-Número de inscrição: #{{ registration.id }}
+Recebemos sua inscrição em {{ confirmation_date }} para a {{ race_info.name }}.
 
-DADOS DA INSCRIÇÃO
----------------------
-Nome: {{ registration.full_name }}
-CPF: {{ registration.cpf }}
-Modalidade: {{ registration.get_modality_display }}
-Tamanho da Camisa:
-{% if registration.modality == 'INFANTIL' %}
-    {{ registration.shirt_size }} anos
-{% elif registration.gender == 'F' %}
-    {{ registration.shirt_size }} (Babylook)
-{% else %}
-    {{ registration.shirt_size }}
-{% endif %}
+Importante: sua inscrição está registrada, mas ainda não está confirmada. A confirmação acontecerá após a aprovação do pagamento. Assim que o pagamento for confirmado, você receberá um novo e-mail com todas as informações do evento e retirada do kit.
 
-INFORMAÇÕES DA CORRIDA
---------------------------
-Data: {{ race_info.date }}
-Horário: {{ race_info.start_time }}
-Local: {{ race_info.location }}
+Dúvidas? Fale com a gente:
+- E-mail: {{ contact_email }}
+- WhatsApp: {{ contact_whatsapp }}
 
-RETIRADA DO KIT
-------------------
-IMPORTANTE: Não esqueça de retirar seu kit antes da corrida! ⏰
-
-Data: {{ race_info.kit_pickup.date }}
-Horário: {{ race_info.kit_pickup.time }}
-Local: {{ race_info.kit_pickup.location }}
-Documentos necessários: {{ race_info.kit_pickup.required_docs }}
-
-CONTATO
-----------
-Em caso de dúvidas, entre em contato conosco:
-Email: {{ contact_email }}
-WhatsApp: {{ contact_whatsapp }}
-
-========================
-Obrigado por participar da Corrida Ad-mooving 2024! 🏁
-Boa sorte e bons treinos! 💪 
+Obrigado por participar da {{ race_info.name }}! 🏁 
