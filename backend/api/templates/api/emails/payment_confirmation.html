@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pagamento Confirmado - {{ race_info.name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .header {
+            text-align: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .success-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+        .info-box {
+            background-color: #e8f5e8;
+            border: 2px solid #4caf50;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        .info-box h3 {
+            color: #2e7d32;
+            margin-top: 0;
+        }
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .detail-item {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+            font-size: 12px;
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .detail-value {
+            font-size: 16px;
+            color: #333;
+        }
+        .next-steps {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .next-steps h3 {
+            color: #856404;
+            margin-top: 0;
+        }
+        .kit-info {
+            background-color: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 25px 0;
+        }
+        .kit-info h3 {
+            color: #1565c0;
+            margin-top: 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+            color: #666;
+            font-size: 14px;
+        }
+        .contact-info {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="success-icon">🎉</div>
+            <h1>Pagamento Confirmado!</h1>
+            <p>Sua inscrição está confirmada para a corrida</p>
+        </div>
+
+        <div class="info-box">
+            <h3>✅ Parabéns, {{ registration.full_name }}!</h3>
+            <p>Seu pagamento foi processado com sucesso em <strong>{{ payment_date }}</strong>. 
+            Sua vaga na {{ race_info.name }} está garantida!</p>
+        </div>
+
+        <h2>📋 Detalhes da sua Inscrição</h2>
+        <div class="details-grid">
+            <div class="detail-item">
+                <div class="detail-label">Nome Completo</div>
+                <div class="detail-value">{{ registration.full_name }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">CPF</div>
+                <div class="detail-value">{{ registration.cpf }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Email</div>
+                <div class="detail-value">{{ registration.email }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Telefone</div>
+                <div class="detail-value">{{ registration.phone }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Modalidade</div>
+                <div class="detail-value">{{ registration.get_modality_display }}</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Tamanho da Camisa</div>
+                <div class="detail-value">
+                    {% if registration.modality == 'INFANTIL' %}
+                        {{ registration.get_shirt_size_display }}
+                    {% elif registration.gender == 'F' %}
+                        {{ registration.get_shirt_size_display }} (Babylook)
+                    {% else %}
+                        {{ registration.get_shirt_size_display }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="next-steps">
+            <h3>📅 Próximos Passos</h3>
+            <ul>
+                <li><strong>Guarde este email</strong> como comprovante de inscrição</li>
+                <li><strong>Retirada do Kit:</strong> {{ race_info.kit_pickup.date }} das {{ race_info.kit_pickup.time }}</li>
+                <li><strong>Local da Retirada:</strong> {{ race_info.kit_pickup.location }}</li>
+                <li><strong>Documentos necessários:</strong> {{ race_info.kit_pickup.required_docs }}</li>
+            </ul>
+        </div>
+
+        <div class="kit-info">
+            <h3>📦 Informações do Kit</h3>
+            <p>Seu kit incluirá:</p>
+            <ul>
+                <li>🏃‍♂️ Camiseta oficial da corrida</li>
+                <li>🏅 Número de peito personalizado</li>
+                <li>📋 Informações importantes sobre a corrida</li>
+                <li>🎁 Brindes especiais</li>
+            </ul>
+        </div>
+
+        <div class="info-box">
+            <h3>🏃‍♂️ Detalhes da Corrida</h3>
+            <p><strong>Data:</strong> {{ race_info.date }}</p>
+            <p><strong>Horário:</strong> {{ race_info.start_time }}</p>
+            <p><strong>Local:</strong> {{ race_info.location }}</p>
+        </div>
+
+        <div class="contact-info">
+            <h4>📞 Precisa de Ajuda?</h4>
+            <p>Entre em contato conosco:</p>
+            <p><strong>Email:</strong> {{ contact_email }}</p>
+            <p><strong>WhatsApp:</strong> {{ contact_whatsapp }}</p>
+        </div>
+
+        <div class="footer">
+            <p>Obrigado por participar da {{ race_info.name }}! 🏃‍♀️🏃‍♂️</p>
+            <p>Nos vemos na largada! 🏁</p>
+            <br>
+            <p><em>Equipe Ad-mooving</em></p>
+        </div>
+    </div>
+</body>
+</html> 

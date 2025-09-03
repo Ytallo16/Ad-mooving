@@ -1,29 +1,6 @@
 from django.db import models
 from django.utils import timezone
 
-class ExampleModel(models.Model):
-    """
-    Modelo de exemplo para demonstrar o funcionamento do Swagger
-    """
-    name = models.CharField(max_length=100, verbose_name="Nome")
-    description = models.TextField(blank=True, verbose_name="Descrição")
-    is_active = models.BooleanField(default=True, verbose_name="Ativo")
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name="Criado em")
-    updated_at = models.DateTimeField(auto_now=True, verbose_name="Atualizado em")
-    
-    class Meta:
-        verbose_name = "Modelo de Exemplo"
-        verbose_name_plural = "Modelos de Exemplo"
-        ordering = ['-created_at']
-    
-    def __str__(self):
-        return self.name
-    
-    @property
-    def status(self):
-        """Retorna o status baseado no campo is_active"""
-        return "Ativo" if self.is_active else "Inativo"
-
 
 class RaceRegistration(models.Model):
     """
@@ -60,15 +37,20 @@ class RaceRegistration(models.Model):
         ('16', '16 anos'),
     ]
     
+    PAYMENT_STATUS_CHOICES = [
+        ('PENDING', 'Pendente'),
+        ('PAID', 'Pago'),
+    ]
+    
     # Campos obrigatórios
     full_name = models.CharField(max_length=200, verbose_name="Nome Completo")
     cpf = models.CharField(max_length=14, unique=True, verbose_name="CPF")
-    email = models.EmailField(verbose_name="E-mail")
+    email = models.EmailField(verbose_name="E-mail")  # Removida restrição unique
     phone = models.CharField(max_length=20, verbose_name="Telefone (WhatsApp)")
     birth_date = models.DateField(verbose_name="Data de nascimento")
     gender = models.CharField(max_length=1, choices=GENDER_CHOICES, verbose_name="Sexo")
     
-    # Novos campos
+    # Campos da corrida
     modality = models.CharField(
         max_length=10, 
         choices=MODALITY_CHOICES, 
@@ -83,17 +65,30 @@ class RaceRegistration(models.Model):
         default='M'
     )
     
-    # Campo para controle de email enviado
-    confirmation_email_sent = models.BooleanField(
-        default=False, 
-        verbose_name="Email de confirmação enviado"
-    )
-    
     # Campo de declaração obrigatória
     athlete_declaration = models.BooleanField(
         default=False, 
         verbose_name="Ciente",
         help_text="O atleta assume e expressamente declara que é conhecedor do seu estado de saúde e capacidade atlética e que treinou adequadamente para o evento"
+    )
+    
+    # Status de pagamento
+    payment_status = models.CharField(
+        max_length=10,
+        choices=PAYMENT_STATUS_CHOICES,
+        default='PENDING',
+        verbose_name="Status do Pagamento",
+        help_text="Status atual do pagamento da inscrição"
+    )
+    
+    # Campos para controle de emails enviados
+    registration_email_sent = models.BooleanField(
+        default=False, 
+        verbose_name="Email de confirmação de inscrição enviado"
+    )
+    payment_email_sent = models.BooleanField(
+        default=False, 
+        verbose_name="Email de confirmação de pagamento enviado"
     )
     
     # Campos de auditoria
@@ -106,7 +101,7 @@ class RaceRegistration(models.Model):
         ordering = ['-created_at']
     
     def __str__(self):
-        return f"{self.full_name} - {self.cpf}"
+        return f"{self.full_name} - {self.cpf} - {self.get_payment_status_display()}"
     
     def clean(self):
         """Validação customizada do modelo"""
@@ -115,10 +110,6 @@ class RaceRegistration(models.Model):
         # Verificar se a data de nascimento é válida
         if self.birth_date and self.birth_date > timezone.now().date():
             raise ValidationError("A data de nascimento não pode ser no futuro.")
-        
-        # Verificar se a data da corrida é válida
-        if self.race_date and self.race_date < timezone.now().date():
-            raise ValidationError("A data da corrida não pode ser no passado.")
     
     @property
     def age(self):

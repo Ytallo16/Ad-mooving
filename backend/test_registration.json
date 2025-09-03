@@ -1,0 +1,11 @@
+{
+  "full_name": "Teste Frontend CORS",
+  "cpf": "98765432100",
+  "email": "teste.cors@frontend.com",
+  "phone": "11888888888",
+  "birth_date": "1995-05-15",
+  "gender": "F",
+  "modality": "ADULTO",
+  "shirt_size": "M",
+  "athlete_declaration": true
+} 

@@ -1,17 +1,15 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from drf_spectacular.utils import extend_schema, OpenApiParameter, OpenApiExample
-from drf_spectacular.types import OpenApiTypes
-from django.db import models
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
+from drf_spectacular.utils import extend_schema, OpenApiExample
+from django.shortcuts import get_object_or_404
 
-from .models import ExampleModel, RaceRegistration
-from .serializers import ExampleModelSerializer, RaceRegistrationSerializer
-from .services import send_registration_confirmation_email
+from .models import RaceRegistration
+from .serializers import RaceRegistrationSerializer
+from .services import send_registration_confirmation_email, send_payment_confirmation_email
 
 # Create your views here.
 
@@ -55,9 +53,9 @@ def api_root(request):
             'docs': reverse('swagger-ui', request=request),
             'schema': reverse('schema', request=request),
             'redoc': reverse('redoc', request=request),
-            'examples': reverse('api:example-list', request=request),
             'race_registrations': reverse('api:race-registration-list', request=request),
             'race_statistics': reverse('api:race_statistics', request=request),
+            'payment_webhook': reverse('api:payment_webhook', request=request),
         }
     })
 
@@ -110,135 +108,6 @@ def health_check(request):
     }, status=status.HTTP_200_OK)
 
 
-@extend_schema(
-    tags=['examples'],
-    summary='Modelos de Exemplo',
-    description='CRUD completo para modelos de exemplo da aplicação'
-)
-class ExampleModelViewSet(ModelViewSet):
-    """
-    ViewSet para gerenciar modelos de exemplo
-    
-    Permite criar, listar, atualizar e deletar modelos de exemplo.
-    """
-    queryset = ExampleModel.objects.all()
-    serializer_class = ExampleModelSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
-    
-    @extend_schema(
-        summary='Listar modelos de exemplo',
-        description='Retorna uma lista paginada de todos os modelos de exemplo',
-        parameters=[
-            OpenApiParameter(
-                name='is_active',
-                type=OpenApiTypes.BOOL,
-                location=OpenApiParameter.QUERY,
-                description='Filtrar por status ativo',
-                required=False
-            ),
-            OpenApiParameter(
-                name='search',
-                type=OpenApiTypes.STR,
-                location=OpenApiParameter.QUERY,
-                description='Buscar por nome ou descrição',
-                required=False
-            )
-        ],
-        responses={
-            200: ExampleModelSerializer(many=True),
-            400: {'description': 'Parâmetros inválidos'},
-        }
-    )
-    def list(self, request, *args, **kwargs):
-        """
-        Lista modelos de exemplo com filtros opcionais
-        """
-        queryset = self.get_queryset()
-        
-        # Filtro por status ativo
-        is_active = request.query_params.get('is_active')
-        if is_active is not None:
-            if is_active.lower() == 'true':
-                queryset = queryset.filter(is_active=True)
-            elif is_active.lower() == 'false':
-                queryset = queryset.filter(is_active=False)
-        
-        # Busca por nome ou descrição
-        search = request.query_params.get('search')
-        if search:
-            queryset = queryset.filter(
-                models.Q(name__icontains=search) | 
-                models.Q(description__icontains=search)
-            )
-        
-        page = self.paginate_queryset(queryset)
-        if page is not None:
-            serializer = self.get_serializer(page, many=True)
-            return self.get_paginated_response(serializer.data)
-        
-        serializer = self.get_serializer(queryset, many=True)
-        return Response(serializer.data)
-    
-    @extend_schema(
-        summary='Criar modelo de exemplo',
-        description='Cria um novo modelo de exemplo',
-        request=ExampleModelSerializer,
-        responses={
-            201: ExampleModelSerializer,
-            400: {'description': 'Dados inválidos'},
-        }
-    )
-    def create(self, request, *args, **kwargs):
-        """
-        Cria um novo modelo de exemplo
-        """
-        return super().create(request, *args, **kwargs)
-    
-    @extend_schema(
-        summary='Recuperar modelo de exemplo',
-        description='Retorna detalhes de um modelo de exemplo específico',
-        responses={
-            200: ExampleModelSerializer,
-            404: {'description': 'Modelo não encontrado'},
-        }
-    )
-    def retrieve(self, request, *args, **kwargs):
-        """
-        Recupera um modelo de exemplo específico
-        """
-        return super().retrieve(request, *args, **kwargs)
-    
-    @extend_schema(
-        summary='Atualizar modelo de exemplo',
-        description='Atualiza um modelo de exemplo existente',
-        request=ExampleModelSerializer,
-        responses={
-            200: ExampleModelSerializer,
-            400: {'description': 'Dados inválidos'},
-            404: {'description': 'Modelo não encontrado'},
-        }
-    )
-    def update(self, request, *args, **kwargs):
-        """
-        Atualiza um modelo de exemplo
-        """
-        return super().update(request, *args, **kwargs)
-    
-    @extend_schema(
-        summary='Deletar modelo de exemplo',
-        description='Remove um modelo de exemplo da base de dados',
-        responses={
-            204: {'description': 'Modelo deletado com sucesso'},
-            404: {'description': 'Modelo não encontrado'},
-        }
-    )
-    def destroy(self, request, *args, **kwargs):
-        """
-        Deleta um modelo de exemplo
-        """
-        return super().destroy(request, *args, **kwargs)
-
-
 class RaceRegistrationViewSet(ModelViewSet):
     """
     ViewSet para gerenciar inscrições de corrida
@@ -271,7 +140,7 @@ class RaceRegistrationViewSet(ModelViewSet):
     @extend_schema(
         tags=['corrida'],
         summary='Criar inscrição de corrida',
-        description='Cria uma nova inscrição de corrida e envia email de confirmação',
+        description='Cria uma nova inscrição de corrida com status PENDING e envia email de confirmação',
         request=RaceRegistrationSerializer,
         responses={
             201: RaceRegistrationSerializer,
@@ -331,15 +200,19 @@ class RaceRegistrationViewSet(ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """
-        Usa o comportamento padrão de criação; o envio do email ocorre em perform_create.
+        Cria uma nova inscrição com status PENDING e envia email de confirmação de inscrição.
         """
         return super().create(request, *args, **kwargs)
     
     def perform_create(self, serializer):
+        # Salva a inscrição com status PENDING (padrão)
         instance = serializer.save()
+        
+        # Envia email de confirmação de inscrição (não de pagamento)
         try:
             send_registration_confirmation_email(instance)
-        except Exception:
+        except Exception as e:
+            print(f"Erro ao enviar email de confirmação de inscrição: {e}")
             # Não interromper a criação se o email falhar
             pass
     
@@ -383,9 +256,94 @@ class RaceRegistrationViewSet(ModelViewSet):
 
 
 @extend_schema(
+    tags=['pagamento'],
+    summary='Webhook de confirmação de pagamento',
+    description='Endpoint para receber confirmações de pagamento e atualizar status',
+    request={
+        'type': 'object',
+        'properties': {
+            'registration_id': {'type': 'integer', 'description': 'ID da inscrição'},
+            'payment_status': {'type': 'string', 'enum': ['PAID', 'PENDING'], 'description': 'Status do pagamento'},
+            'payment_id': {'type': 'string', 'description': 'ID do pagamento no gateway'},
+            'amount': {'type': 'number', 'description': 'Valor pago'},
+        },
+        'required': ['registration_id', 'payment_status']
+    },
+    responses={
+        200: {
+            'description': 'Pagamento processado com sucesso',
+            'examples': [
+                {
+                    'application/json': {
+                        'status': 'success',
+                        'message': 'Pagamento confirmado com sucesso',
+                        'registration_id': 123,
+                        'payment_status': 'PAID'
+                    }
+                }
+            ]
+        },
+        400: {'description': 'Dados inválidos'},
+        404: {'description': 'Inscrição não encontrada'},
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def payment_webhook(request):
+    """
+    Webhook para processar confirmações de pagamento
+    
+    Recebe dados do gateway de pagamento e atualiza o status da inscrição.
+    Se o pagamento for confirmado, envia email de confirmação de pagamento.
+    """
+    try:
+        data = request.data
+        registration_id = data.get('registration_id')
+        payment_status = data.get('payment_status')
+        payment_id = data.get('payment_id')
+        amount = data.get('amount')
+        
+        if not registration_id or not payment_status:
+            return Response({
+                'status': 'error',
+                'message': 'registration_id e payment_status são obrigatórios'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Busca a inscrição
+        registration = get_object_or_404(RaceRegistration, id=registration_id)
+        
+        # Atualiza o status de pagamento
+        old_status = registration.payment_status
+        registration.payment_status = payment_status
+        registration.save(update_fields=['payment_status', 'updated_at'])
+        
+        # Se o pagamento foi confirmado e ainda não enviou email de pagamento
+        if payment_status == 'PAID' and not registration.payment_email_sent:
+            try:
+                send_payment_confirmation_email(registration)
+            except Exception as e:
+                print(f"Erro ao enviar email de confirmação de pagamento: {e}")
+        
+        return Response({
+            'status': 'success',
+            'message': f'Pagamento {payment_status.lower()} processado com sucesso',
+            'registration_id': registration_id,
+            'payment_status': payment_status,
+            'old_status': old_status,
+            'email_sent': registration.payment_email_sent if payment_status == 'PAID' else False
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'status': 'error',
+            'message': f'Erro ao processar webhook: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
     tags=['corrida'],
     summary='Estatísticas das inscrições',
-    description='Retorna estatísticas gerais das inscrições de corrida',
+    description='Retorna estatísticas gerais das inscrições de corrida incluindo status de pagamento',
     responses={
         200: {
             'description': 'Estatísticas das inscrições',
@@ -396,6 +354,10 @@ class RaceRegistrationViewSet(ModelViewSet):
                         'male_count': 85,
                         'female_count': 65,
                         'inscriptions_today': 5,
+                        'payment_stats': {
+                            'pending': 30,
+                            'paid': 120
+                        },
                         'modality_stats': {
                             'infantil': 45,
                             'adulto': 105
@@ -434,6 +396,12 @@ def race_statistics(request):
         created_at__date=today
     ).count()
     
+    # Estatísticas de pagamento
+    payment_stats = {
+        'pending': RaceRegistration.objects.filter(payment_status='PENDING').count(),
+        'paid': RaceRegistration.objects.filter(payment_status='PAID').count(),
+    }
+    
     # Estatísticas por modalidade
     modality_stats = {
         'infantil': RaceRegistration.objects.filter(modality='INFANTIL').count(),
@@ -450,6 +418,7 @@ def race_statistics(request):
         'male_count': male_count,
         'female_count': female_count,
         'inscriptions_today': inscriptions_today,
+        'payment_stats': payment_stats,
         'modality_stats': modality_stats,
         'shirt_size_stats': shirt_size_stats,
         'timestamp': timezone.now()

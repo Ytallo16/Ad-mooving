@@ -186,12 +186,20 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CORS settings
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React default port
-    "http://127.0.0.1:3000",
-    "http://localhost:5173",  # Vite default port
-    "http://127.0.0.1:5173",
-]
+# Durante desenvolvimento, permitir todas as origens
+CORS_ALLOW_ALL_ORIGINS = True
+
+# Origens específicas para produção (descomente quando necessário)
+# CORS_ALLOWED_ORIGINS = [
+#     "http://localhost:3000",  # React default port
+#     "http://127.0.0.1:3000",
+#     "http://localhost:5173",  # Vite default port
+#     "http://127.0.0.1:5173",
+#     "http://localhost:4173",  # Vite preview
+#     "http://127.0.0.1:4173",
+#     "http://localhost:8080",  # Outras portas comuns
+#     "http://127.0.0.1:8080",
+# ]
 
 CORS_ALLOW_CREDENTIALS = True
 
@@ -214,6 +222,7 @@ CORS_ALLOW_HEADERS = [
     'user-agent',
     'x-csrftoken',
     'x-requested-with',
+    'access-control-allow-origin',
 ]
 
 # Email settings

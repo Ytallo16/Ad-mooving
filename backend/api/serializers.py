@@ -1,32 +1,5 @@
 from rest_framework import serializers
-from .models import ExampleModel, RaceRegistration
-
-class ExampleModelSerializer(serializers.ModelSerializer):
-    """
-    Serializer para o modelo ExampleModel
-    """
-    status = serializers.ReadOnlyField(help_text="Status do modelo (Ativo/Inativo)")
-    
-    class Meta:
-        model = ExampleModel
-        fields = ['id', 'name', 'description', 'is_active', 'status', 'created_at', 'updated_at']
-        read_only_fields = ['id', 'created_at', 'updated_at']
-    
-    def validate_name(self, value):
-        """
-        Validação customizada para o campo name
-        """
-        if len(value.strip()) < 3:
-            raise serializers.ValidationError("O nome deve ter pelo menos 3 caracteres.")
-        return value.strip()
-    
-    def validate_description(self, value):
-        """
-        Validação customizada para o campo description
-        """
-        if value and len(value.strip()) < 10:
-            raise serializers.ValidationError("A descrição deve ter pelo menos 10 caracteres.")
-        return value.strip() if value else value
+from .models import RaceRegistration
 
 
 class RaceRegistrationSerializer(serializers.ModelSerializer):
@@ -37,6 +10,7 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
     gender_display = serializers.CharField(source='get_gender_display', read_only=True, help_text="Descrição do sexo")
     modality_display = serializers.CharField(source='get_modality_display', read_only=True, help_text="Descrição da modalidade")
     shirt_size_display = serializers.CharField(source='get_shirt_size_display', read_only=True, help_text="Descrição do tamanho da camisa")
+    payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True, help_text="Descrição do status do pagamento")
     
     # Campos para seleção dinâmica
     available_shirt_sizes = serializers.SerializerMethodField(help_text="Tamanhos disponíveis baseados na modalidade e sexo")
@@ -47,10 +21,11 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
             'id', 'full_name', 'cpf', 'email', 'phone', 'birth_date', 
             'gender', 'gender_display', 'modality', 'modality_display',
             'shirt_size', 'shirt_size_display', 'available_shirt_sizes',
-            'athlete_declaration', 'confirmation_email_sent', 'age', 
+            'athlete_declaration', 'payment_status', 'payment_status_display',
+            'registration_email_sent', 'payment_email_sent', 'age', 
             'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'age', 'confirmation_email_sent', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'age', 'registration_email_sent', 'payment_email_sent', 'created_at', 'updated_at']
     
     def get_available_shirt_sizes(self, obj):
         """
@@ -128,8 +103,6 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("O atleta deve ter pelo menos 12 anos para se inscrever.")
         
         return value
-    
-
     
     def validate(self, data):
         """

@@ -4,32 +4,198 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 
 const Inscricoes = () => {
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
-    nome: "",
+    full_name: "",
+    cpf: "",
     email: "",
-    telefone: "",
-    categoria: "",
-    tamanho_camisa: "",
-    contato_emergencia: "",
-    observacoes: ""
+    phone: "",
+    birth_date: "",
+    gender: "",
+    modality: "ADULTO",
+    shirt_size: "",
+    athlete_declaration: false
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+
+  const calculateAge = (birthDate: string) => {
+    if (!birthDate) return 0;
+    const today = new Date();
+    const birth = new Date(birthDate);
+    let age = today.getFullYear() - birth.getFullYear();
+    const monthDiff = today.getMonth() - birth.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+
+
+  const getShirtSizes = () => {
+    if (formData.modality === 'INFANTIL') {
+      return [
+        { value: '2', label: '2 anos' },
+        { value: '4', label: '4 anos' },
+        { value: '6', label: '6 anos' },
+        { value: '8', label: '8 anos' },
+        { value: '10', label: '10 anos' },
+        { value: '12', label: '12 anos' },
+        { value: '14', label: '14 anos' },
+        { value: '16', label: '16 anos' },
+      ];
+    } else if (formData.gender === 'F') {
+      return [
+        { value: 'PP', label: 'PP (Babylook)' },
+        { value: 'P', label: 'P (Babylook)' },
+        { value: 'M', label: 'M (Babylook)' },
+        { value: 'G', label: 'G (Babylook)' },
+        { value: 'GG', label: 'GG (Babylook)' },
+        { value: 'XG', label: 'XG (Babylook)' },
+        { value: 'XXG', label: 'XXG (Babylook)' },
+      ];
+    } else {
+      return [
+        { value: 'PP', label: 'PP' },
+        { value: 'P', label: 'P' },
+        { value: 'M', label: 'M' },
+        { value: 'G', label: 'G' },
+        { value: 'GG', label: 'GG' },
+        { value: 'XG', label: 'XG' },
+        { value: 'XXG', label: 'XXG' },
+      ];
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast({
-      title: "Inscrição realizada com sucesso!",
-      description: "Você receberá mais informações em breve por email.",
+    
+    if (!formData.athlete_declaration) {
+      toast({
+        title: "Erro na inscrição",
+        description: "Você deve marcar a declaração de responsabilidade para prosseguir.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const age = calculateAge(formData.birth_date);
+    if (age < 12) {
+      toast({
+        title: "Erro na inscrição",
+        description: "O atleta deve ter pelo menos 12 anos para se inscrever.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/race-registrations/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        toast({
+          title: "Inscrição realizada com sucesso! 🎉",
+          description: "Você receberá um email de confirmação em breve com todos os detalhes.",
+        });
+        
+        // Resetar o formulário
+        setFormData({
+          full_name: "",
+          cpf: "",
+          email: "",
+          phone: "",
+          birth_date: "",
+          gender: "",
+          modality: "ADULTO",
+          shirt_size: "",
+          athlete_declaration: false
+        });
+      } else {
+        const errorData = await response.json();
+        let errorMessage = "Erro ao processar inscrição. Tente novamente.";
+        
+        if (errorData.cpf && errorData.cpf[0]) {
+          errorMessage = "CPF já cadastrado ou inválido.";
+        } else if (errorData.non_field_errors) {
+          errorMessage = errorData.non_field_errors[0];
+        }
+        
+        toast({
+          title: "Erro na inscrição",
+          description: errorMessage,
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Erro de conexão",
+        description: "Não foi possível conectar com o servidor. Tente novamente.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleInputChange = (field: string, value: string | boolean) => {
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Auto-detectar modalidade baseada na idade
+      if (field === 'birth_date' && typeof value === 'string') {
+        const age = calculateAge(value);
+        if (age > 0 && age < 18) {
+          newData.modality = 'INFANTIL';
+        } else if (age >= 18) {
+          newData.modality = 'ADULTO';
+        }
+        // Resetar tamanho da camisa quando mudar modalidade
+        newData.shirt_size = '';
+      }
+      
+      // Resetar tamanho da camisa quando mudar gênero ou modalidade
+      if (field === 'gender' || field === 'modality') {
+        newData.shirt_size = '';
+      }
+      
+      return newData;
     });
   };
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+  const formatCPF = (value: string) => {
+    // Remove tudo que não é dígito
+    const cleanValue = value.replace(/\D/g, '');
+    
+    // Aplica a máscara
+    if (cleanValue.length <= 11) {
+      return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    }
+    return cleanValue.substring(0, 11).replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  };
+
+  const formatPhone = (value: string) => {
+    const cleanValue = value.replace(/\D/g, '');
+    if (cleanValue.length <= 11) {
+      return cleanValue.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    }
+    return cleanValue.substring(0, 11).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   };
 
   return (
@@ -116,19 +282,19 @@ const Inscricoes = () => {
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Data:</span>
-                    <span className="text-sm text-muted-foreground">15 de Março, 2025</span>
+                    <span className="text-sm text-muted-foreground">15 de Dezembro, 2024</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Horário:</span>
-                    <span className="text-sm text-muted-foreground">6:00 às 11:00</span>
+                    <span className="text-sm text-muted-foreground">07:00h</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Local:</span>
-                    <span className="text-sm text-muted-foreground">Parque da Igreja</span>
+                    <span className="text-sm text-muted-foreground">Parque Potycabana</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium">Taxa:</span>
-                    <span className="text-sm text-muted-foreground">R$ 25,00</span>
+                    <span className="text-sm font-medium">Modalidades:</span>
+                    <span className="text-sm text-muted-foreground">Infantil e Adulto</span>
                   </div>
                 </CardContent>
               </Card>
@@ -148,11 +314,11 @@ const Inscricoes = () => {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="nome">Nome Completo</Label>
+                        <Label htmlFor="full_name">Nome Completo *</Label>
                         <Input
-                          id="nome"
-                          value={formData.nome}
-                          onChange={(e) => handleInputChange("nome", e.target.value)}
+                          id="full_name"
+                          value={formData.full_name}
+                          onChange={(e) => handleInputChange("full_name", e.target.value)}
                           placeholder="Seu nome completo"
                           required
                           className="border-race-primary-light/30 focus:border-race-primary"
@@ -160,7 +326,22 @@ const Inscricoes = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="cpf">CPF *</Label>
+                        <Input
+                          id="cpf"
+                          value={formatCPF(formData.cpf)}
+                          onChange={(e) => handleInputChange("cpf", e.target.value.replace(/\D/g, ''))}
+                          placeholder="000.000.000-00"
+                          required
+                          maxLength={14}
+                          className="border-race-primary-light/30 focus:border-race-primary"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email">Email *</Label>
                         <Input
                           id="email"
                           type="email"
@@ -171,32 +352,48 @@ const Inscricoes = () => {
                           className="border-race-primary-light/30 focus:border-race-primary"
                         />
                       </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Telefone (WhatsApp) *</Label>
+                        <Input
+                          id="phone"
+                          value={formatPhone(formData.phone)}
+                          onChange={(e) => handleInputChange("phone", e.target.value.replace(/\D/g, ''))}
+                          placeholder="(11) 99999-9999"
+                          required
+                          maxLength={15}
+                          className="border-race-primary-light/30 focus:border-race-primary"
+                        />
+                      </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="telefone">Telefone</Label>
-                        <Input
-                          id="telefone"
-                          value={formData.telefone}
-                          onChange={(e) => handleInputChange("telefone", e.target.value)}
-                          placeholder="(11) 99999-9999"
-                          required
+                        <Label>Data de Nascimento *</Label>
+                        <DatePicker
+                          value={formData.birth_date}
+                          onChange={(date) => handleInputChange("birth_date", date)}
+                          placeholder="Selecione sua data de nascimento"
                           className="border-race-primary-light/30 focus:border-race-primary"
+                          maxDate={new Date().toISOString().split('T')[0]}
+                          minDate="1920-01-01"
                         />
+                        {formData.birth_date && (
+                          <p className="text-xs text-muted-foreground">
+                            Idade: {calculateAge(formData.birth_date)} anos
+                          </p>
+                        )}
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="categoria">Categoria</Label>
-                        <Select value={formData.categoria} onValueChange={(value) => handleInputChange("categoria", value)}>
+                        <Label htmlFor="gender">Sexo *</Label>
+                        <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
                           <SelectTrigger className="border-race-primary-light/30 focus:border-race-primary">
-                            <SelectValue placeholder="Selecione a categoria" />
+                            <SelectValue placeholder="Selecione o sexo" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="5km">5km - Corrida</SelectItem>
-                            <SelectItem value="10km">10km - Corrida</SelectItem>
-                            <SelectItem value="3km-caminhada">3km - Caminhada</SelectItem>
-                            <SelectItem value="kids">Kids - Infantil</SelectItem>
+                            <SelectItem value="M">Masculino</SelectItem>
+                            <SelectItem value="F">Feminino</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -204,45 +401,43 @@ const Inscricoes = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="tamanho_camisa">Tamanho da Camisa</Label>
-                        <Select value={formData.tamanho_camisa} onValueChange={(value) => handleInputChange("tamanho_camisa", value)}>
+                        <Label htmlFor="modality">Modalidade *</Label>
+                        <Select value={formData.modality} onValueChange={(value) => handleInputChange("modality", value)}>
+                          <SelectTrigger className="border-race-primary-light/30 focus:border-race-primary">
+                            <SelectValue placeholder="Selecione a modalidade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="ADULTO">Adulto</SelectItem>
+                            <SelectItem value="INFANTIL">Infantil</SelectItem>
+                          </SelectContent>
+                        </Select>
+                        {formData.birth_date && calculateAge(formData.birth_date) < 18 && formData.modality === 'ADULTO' && (
+                          <p className="text-xs text-amber-600">
+                            Sugestão: Modalidade infantil para menores de 18 anos
+                          </p>
+                        )}
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="shirt_size">Tamanho da Camisa *</Label>
+                        <Select value={formData.shirt_size} onValueChange={(value) => handleInputChange("shirt_size", value)}>
                           <SelectTrigger className="border-race-primary-light/30 focus:border-race-primary">
                             <SelectValue placeholder="Selecione o tamanho" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="PP">PP</SelectItem>
-                            <SelectItem value="P">P</SelectItem>
-                            <SelectItem value="M">M</SelectItem>
-                            <SelectItem value="G">G</SelectItem>
-                            <SelectItem value="GG">GG</SelectItem>
-                            <SelectItem value="XGG">XGG</SelectItem>
+                            {getShirtSizes().map((size) => (
+                              <SelectItem key={size.value} value={size.value}>
+                                {size.label}
+                              </SelectItem>
+                            ))}
                           </SelectContent>
                         </Select>
+                        {formData.gender === 'F' && formData.modality === 'ADULTO' && (
+                          <p className="text-xs text-muted-foreground">
+                            Camisetas femininas são do tipo babylook
+                          </p>
+                        )}
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="contato_emergencia">Contato de Emergência</Label>
-                        <Input
-                          id="contato_emergencia"
-                          value={formData.contato_emergencia}
-                          onChange={(e) => handleInputChange("contato_emergencia", e.target.value)}
-                          placeholder="Nome e telefone"
-                          required
-                          className="border-race-primary-light/30 focus:border-race-primary"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-2">
-                      <Label htmlFor="observacoes">Observações (opcional)</Label>
-                      <Textarea
-                        id="observacoes"
-                        value={formData.observacoes}
-                        onChange={(e) => handleInputChange("observacoes", e.target.value)}
-                        placeholder="Alguma informação adicional..."
-                        rows={3}
-                        className="border-race-primary-light/30 focus:border-race-primary resize-none"
-                      />
                     </div>
 
                     <div className="bg-gradient-to-r from-race-primary-light/15 to-race-secondary-light/5 p-6 rounded-lg border border-race-primary-light/20">
@@ -250,29 +445,49 @@ const Inscricoes = () => {
                       <ul className="text-sm text-muted-foreground space-y-2">
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span className="font-29lt">Taxa de inscrição: R$ 25,00</span>
+                          <span>Inclui kit do corredor com camiseta</span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span className="font-29lt">Inclui kit do corredor com camiseta</span>
+                          <span>Hidratação durante o percurso</span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span className="font-29lt">Hidratação durante o percurso</span>
+                          <span>Medalha para todos os participantes</span>
                         </li>
                         <li className="flex items-center space-x-2">
                           <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span className="font-29lt">Medalha para todos os participantes</span>
+                          <span>Idade mínima: 12 anos</span>
                         </li>
                       </ul>
                     </div>
 
+                    <div className="flex items-start space-x-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">
+                      <Checkbox
+                        id="athlete_declaration"
+                        checked={formData.athlete_declaration}
+                        onCheckedChange={(checked) => handleInputChange("athlete_declaration", checked as boolean)}
+                        className="mt-1"
+                      />
+                      <div className="space-y-1">
+                        <Label htmlFor="athlete_declaration" className="text-sm font-medium cursor-pointer">
+                          Declaração de Responsabilidade *
+                        </Label>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
+                          Eu, atleta inscrito, assumo e expressamente declaro que sou conhecedor do meu estado de saúde e 
+                          capacidade atlética e que treinei adequadamente para o evento. Declaro ainda que estou ciente dos 
+                          riscos inerentes à prática esportiva e isento os organizadores de qualquer responsabilidade.
+                        </p>
+                      </div>
+                    </div>
+
                     <Button 
                       type="submit" 
-                      className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 font-29lt"
+                      disabled={isLoading}
+                      className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                       size="lg"
                     >
-                      Finalizar Inscrição
+                      {isLoading ? "Processando..." : "Finalizar Inscrição"}
                     </Button>
                   </form>
                 </CardContent>
