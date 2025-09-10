@@ -9,8 +9,13 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 
+import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 const Inscricoes = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
@@ -114,7 +119,7 @@ const Inscricoes = () => {
           title: "Inscrição realizada com sucesso! 🎉",
           description: "Você receberá um email de confirmação em breve com todos os detalhes.",
         });
-        
+        navigate("/pagamento");
         // Resetar o formulário
         setFormData({
           full_name: "",
@@ -127,6 +132,7 @@ const Inscricoes = () => {
           shirt_size: "",
           athlete_declaration: false
         });
+        navigate('/obrigado');
       } else {
         const errorData = await response.json();
         let errorMessage = "Erro ao processar inscrição. Tente novamente.";
