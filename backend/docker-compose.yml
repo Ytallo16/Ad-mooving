@@ -47,5 +47,5 @@ volumes:
 
 networks:
   default:
-    name: admooving_network
+    admooving_network:
     external: true
