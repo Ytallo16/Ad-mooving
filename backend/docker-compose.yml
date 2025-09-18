@@ -12,8 +12,7 @@ services:
     environment:
       - DEBUG=False
       - ALLOWED_HOSTS=*
-      - CORS_ALLOW_ALL_ORIGINS=False
-      - CORS_ALLOWED_ORIGINS=http://localhost,http://127.0.0.1
+      - CORS_ALLOW_ALL_ORIGINS=True
       - DB_ENGINE=${DB_ENGINE:-postgres}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
