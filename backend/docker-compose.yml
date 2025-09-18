@@ -34,8 +34,8 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
-
-  # Frontend React (servir arquivos estáticos)
+    networks:
+      - admooving_network
   web:
     build:
       context: ../frontend
@@ -47,7 +47,8 @@ services:
       api:
         condition: service_healthy
     restart: unless-stopped
-
+    networks:
+      - admooving_network
 volumes:
   # Volume para arquivos estáticos coletados
   api_static:
@@ -56,3 +57,4 @@ volumes:
 networks:
   default:
     name: admooving_network
+    external: true
