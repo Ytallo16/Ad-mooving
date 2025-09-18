@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-zh)a4twjnb4(j!r!h(95g7!p#j1p)am&u#-20-b3o&q^dd_40p
 DEBUG = config('DEBUG', default=True, cast=bool)
 
 # Permitir hosts configuráveis por variável de ambiente. Padrão: todos.
-ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='*').split(',')]
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
