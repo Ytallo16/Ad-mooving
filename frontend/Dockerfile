@@ -7,8 +7,8 @@ WORKDIR /app
 COPY package*.json ./
 COPY bun.lockb ./
 
-# Instalar dependências
-RUN npm ci --only=production
+# Instalar dependências (inclui devDependencies para rodar o build com Vite)
+RUN npm ci
 
 # Copiar código fonte
 COPY . .
