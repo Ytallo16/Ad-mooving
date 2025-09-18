@@ -21,11 +21,8 @@ services:
       - DB_HOST=${DB_HOST:-host.docker.internal}
       - DB_PORT=${DB_PORT:-5432}
     volumes:
-      # Persistir banco SQLite e arquivos estáticos
-      - api_data:/app/db_data
+      # Arquivos estáticos coletados
       - api_static:/app/staticfiles
-      # Manter banco SQLite no volume (ajuste se migrar para PostgreSQL)
-      - api_db:/app/db.sqlite3
     expose:
       - "8000"
     healthcheck:
@@ -52,16 +49,8 @@ services:
     restart: unless-stopped
 
 volumes:
-  # Volume para dados da API (banco SQLite)
-  api_data:
-    driver: local
-  
   # Volume para arquivos estáticos coletados
   api_static:
-    driver: local
-    
-  # Volume específico para o arquivo do banco SQLite
-  api_db:
     driver: local
 
 networks:
