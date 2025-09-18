@@ -10,9 +10,9 @@ services:
     env_file:
       - ./.env
     environment:
-      - DEBUG=False
-      - ALLOWED_HOSTS=*
-      - CORS_ALLOW_ALL_ORIGINS=True
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-True}
       - DB_ENGINE=${DB_ENGINE:-postgres}
       - DB_NAME=${DB_NAME}
       - DB_USER=${DB_USER}
@@ -46,4 +46,4 @@ volumes:
 
 networks:
   admooving_network:
-    external: true
+    driver: bridge
