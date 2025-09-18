@@ -1,0 +1,69 @@
+version: "3.9"
+
+services:
+  # Backend Django API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: admooving_api
+    env_file:
+      - ./.env
+    environment:
+      - DEBUG=False
+      - ALLOWED_HOSTS=*
+      - CORS_ALLOW_ALL_ORIGINS=False
+      - CORS_ALLOWED_ORIGINS=http://localhost,http://127.0.0.1
+      - DB_ENGINE=${DB_ENGINE:-postgres}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST:-host.docker.internal}
+      - DB_PORT=${DB_PORT:-5432}
+    volumes:
+      # Persistir banco SQLite e arquivos estáticos
+      - api_data:/app/db_data
+      - api_static:/app/staticfiles
+      # Manter banco SQLite no volume (ajuste se migrar para PostgreSQL)
+      - api_db:/app/db.sqlite3
+    expose:
+      - "8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+  # Frontend React (servir arquivos estáticos)
+  web:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: admooving_web
+    ports:
+      - "3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  # Volume para dados da API (banco SQLite)
+  api_data:
+    driver: local
+  
+  # Volume para arquivos estáticos coletados
+  api_static:
+    driver: local
+    
+  # Volume específico para o arquivo do banco SQLite
+  api_db:
+    driver: local
+
+networks:
+  default:
+    name: admooving_network
