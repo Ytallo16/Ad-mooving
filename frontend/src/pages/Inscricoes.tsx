@@ -100,9 +100,19 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const envBase = (import.meta as any).env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
-      let apiBaseUrl = envBase as string;
-      if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+      const rawEnvBase = ((import.meta as any).env?.VITE_API_BASE_URL ?? '').toString().trim();
+      const isBrowser = typeof window !== 'undefined';
+      const isLocalhost = isBrowser && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+
+      let apiBaseUrl: string | undefined = rawEnvBase || undefined;
+      if (!apiBaseUrl && isLocalhost) {
+        apiBaseUrl = 'http://127.0.0.1:8000';
+      }
+      if (!apiBaseUrl) {
+        throw new Error('VITE_API_BASE_URL não configurado. Defina a URL da API no ambiente de build.');
+      }
+
+      if (isBrowser && window.location.protocol === 'https:') {
         apiBaseUrl = apiBaseUrl.replace(/^http:\/\//, 'https://');
       }
       apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
