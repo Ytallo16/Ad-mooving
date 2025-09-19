@@ -100,7 +100,7 @@ const Index = () => {
         </div>
         
         {/* Cronômetro acima do botão */}
-        <div className="absolute bottom-16 md:bottom-32 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
+        <div className="absolute bottom-24 md:bottom-40 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
           <div className="inline-block" key={`${timeLeft.days}-${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}>
             <div className="flex gap-2 md:gap-8 text-white justify-center">
               <div className="text-center">
@@ -136,9 +136,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <motion.div className="text-center mb-12 md:mb-16" variants={fadeInUp}>
             <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-6 font-teko">Informações do Evento</h2>
-            <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Junte-se a nós nesta jornada de fé, saúde e comunidade
-            </p>
+            
           </motion.div>
           
           {/* Cards de Informações - Grid Responsivo */}
@@ -245,22 +243,7 @@ const Index = () => {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl pointer-events-none"></div>
               </div>
-            </motion.div>
-            
-            {/* Estatísticas motivacionais */}
-            <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12" variants={staggerContainer}>
-              <motion.div className="text-center" variants={fadeInUp}>
-                <div className="text-4xl md:text-5xl font-bold text-race-primary mb-2 font-teko">500+</div>
-                <div className="text-gray-600 font-medium">Vidas Transformadas</div>
-              </motion.div>
-              <motion.div className="text-center" variants={fadeInUp}>
-                <div className="text-4xl md:text-5xl font-bold text-race-secondary mb-2 font-teko">100%</div>
-                <div className="text-gray-600 font-medium">Comunidade Unida</div>
-              </motion.div>
-              <motion.div className="text-center" variants={fadeInUp}>
-                <div className="text-4xl md:text-5xl font-bold text-race-primary mb-2 font-teko">∞</div>
-                <div className="text-gray-600 font-medium">Fé e Determinação</div>
-              </motion.div>
+                          
             </motion.div>
           </motion.div>
         </div>
@@ -338,8 +321,8 @@ const Index = () => {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <div className="absolute bottom-4 left-4 text-white">
-                  <p className="text-sm font-medium">Edição Anterior</p>
-                  <p className="text-xs opacity-90">Participantes em ação</p>
+                  <p className="text-sm font-medium">Pódio de Premiação</p>
+                  <p className="text-xs opacity-90">Campeões da edição anterior</p>
                 </div>
               </div>
             </motion.div>
@@ -384,7 +367,7 @@ const Index = () => {
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <div className="absolute bottom-4 left-4 text-white">
                   <p className="text-sm font-medium">Pódio de Premiação</p>
-                  <p className="text-xs opacity-90">Celebração dos vencedores</p>
+                  <p className="text-xs opacity-90">Corrida Kids</p>
                 </div>
               </div>
             </motion.div>
@@ -428,8 +411,8 @@ const Index = () => {
               </div>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 <div className="absolute bottom-4 left-4 text-white">
-                  <p className="text-sm font-medium">Categoria Kids</p>
-                  <p className="text-xs opacity-90">Jovens campeões</p>
+                  <p className="text-sm font-medium">Equipe de voluntários</p>
+                  <p className="text-xs opacity-90">Organização da corrida</p>
                 </div>
               </div>
             </motion.div>
