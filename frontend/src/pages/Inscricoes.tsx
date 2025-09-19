@@ -117,6 +117,9 @@ const Inscricoes = () => {
       }
       apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
 
+      console.log('VITE_API_BASE_URL:', (import.meta as any).env?.VITE_API_BASE_URL);
+      console.log('API base usada:', apiBaseUrl);
+
       const response = await fetch(`${apiBaseUrl}/api/race-registrations/`, {
         method: 'POST',
         headers: {
