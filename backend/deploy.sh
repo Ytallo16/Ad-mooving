@@ -60,7 +60,7 @@ start_containers() {
     
     # Aguardar os containers ficarem saudáveis
     log "Aguardando containers ficarem saudáveis..."
-    sleep 30
+    sleep 20
     
     # Verificar status dos containers
     if docker ps | grep -q "admooving"; then
