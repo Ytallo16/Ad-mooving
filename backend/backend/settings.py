@@ -60,11 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-# Permite requisições de frontend e API
-CSRF_TRUSTED_ORIGINS = [
-    'https://admoving.demo.addirceu.com.br',
-    'https://api.admoving.demo.addirceu.com.br',
-]
+
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [

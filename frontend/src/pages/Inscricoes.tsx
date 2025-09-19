@@ -100,24 +100,8 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const rawEnvBase = ((import.meta as any).env?.VITE_API_BASE_URL ?? '').toString().trim();
-      const isBrowser = typeof window !== 'undefined';
-      const isLocalhost = isBrowser && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1');
+      const apiBaseUrl = 'https://api.admoving.demo.addirceu.com.br';
 
-      let apiBaseUrl: string | undefined = rawEnvBase || undefined;
-      if (!apiBaseUrl && isLocalhost) {
-        apiBaseUrl = 'http://127.0.0.1:8000';
-      }
-      if (!apiBaseUrl) {
-        throw new Error('VITE_API_BASE_URL não configurado. Defina a URL da API no ambiente de build.');
-      }
-
-      if (isBrowser && window.location.protocol === 'https:') {
-        apiBaseUrl = apiBaseUrl.replace(/^http:\/\//, 'https://');
-      }
-      apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
-
-      console.log('VITE_API_BASE_URL:', (import.meta as any).env?.VITE_API_BASE_URL);
       console.log('API base usada:', apiBaseUrl);
 
       const response = await fetch(`${apiBaseUrl}/api/race-registrations/`, {
