@@ -22,6 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'django-insecure-zh)a4twjnb4(j!r!h(95g7!p#j1p)am&u#-20-b3o&q^dd_40p'
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
@@ -59,7 +60,11 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
+# Permite requisições de frontend e API
+CSRF_TRUSTED_ORIGINS = [
+    'https://admoving.demo.addirceu.com.br',
+    'https://api.admoving.demo.addirceu.com.br',
+]
 ROOT_URLCONF = 'backend.urls'
 
 TEMPLATES = [
