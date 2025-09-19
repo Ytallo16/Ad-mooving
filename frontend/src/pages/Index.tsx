@@ -63,12 +63,8 @@ const Index = () => {
         {/* Cronômetro acima do botão */}
         <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-10 text-center">
           <div className="inline-block" key={`${timeLeft.days}-${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}>
-            <div className="text-white text-4xl font-bold mb-2 drop-shadow-lg font-teko">
-              AD MOVING
-            </div>
-            <div className="text-white text-2xl font-bold mb-4 drop-shadow-lg font-29lt">
-              LOCAL: TERESINA SHOPPING
-            </div>
+            
+            
             <div className="flex gap-8 text-white">
               <div className="text-center">
                 <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.days.toString().padStart(2, '0')}</div>
