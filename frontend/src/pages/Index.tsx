@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Calendar, MapPin, Users, Trophy, Clock, Heart } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import { motion } from "framer-motion";
 
 const Index = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -36,12 +37,50 @@ const Index = () => {
     return () => clearInterval(timer);
   }, []);
 
+  // Variantes de animação
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 60 },
+    visible: { 
+      opacity: 1, 
+      y: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const fadeInLeft = {
+    hidden: { opacity: 0, x: -60 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const fadeInRight = {
+    hidden: { opacity: 0, x: 60 },
+    visible: { 
+      opacity: 1, 
+      x: 0,
+      transition: { duration: 0.6, ease: "easeOut" }
+    }
+  };
+
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden h-[550px]">
+      <section className="relative overflow-hidden h-[400px] md:h-[550px]">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in hover:scale-105 transition-transform duration-700 ease-out"
           style={{ backgroundImage: `url("/Fundo (4).png")`, backgroundSize: 'cover' }}
@@ -49,11 +88,11 @@ const Index = () => {
         </div>
         
         {/* Button at bottom of hero */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-10">
           <Link to="/inscricoes">
             <Button 
               size="lg" 
-              className="bg-race-primary hover:bg-race-primary-dark text-white text-lg px-8 py-4 shadow-lg animate-bounce"
+              className="bg-race-primary hover:bg-race-primary-dark text-white text-sm md:text-lg px-4 md:px-8 py-2 md:py-4 shadow-lg animate-bounce"
             >
               Inscreva-se
             </Button>
@@ -61,47 +100,55 @@ const Index = () => {
         </div>
         
         {/* Cronômetro acima do botão */}
-        <div className="absolute bottom-32 left-1/2 transform -translate-x-1/2 z-10 text-center">
+        <div className="absolute bottom-16 md:bottom-32 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
           <div className="inline-block" key={`${timeLeft.days}-${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}>
-            
-            
-            <div className="flex gap-8 text-white">
+            <div className="flex gap-2 md:gap-8 text-white justify-center">
               <div className="text-center">
-                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.days.toString().padStart(2, '0')}</div>
-                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Dias</div>
+                <div className="text-3xl md:text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.days.toString().padStart(2, '0')}</div>
+                <div className="text-xs md:text-lg font-semibold text-white/90 mt-1 md:mt-2 font-29lt">Dias</div>
               </div>
               <div className="text-center">
-                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.hours.toString().padStart(2, '0')}</div>
-                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Horas</div>
+                <div className="text-3xl md:text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.hours.toString().padStart(2, '0')}</div>
+                <div className="text-xs md:text-lg font-semibold text-white/90 mt-1 md:mt-2 font-29lt">Horas</div>
               </div>
               <div className="text-center">
-                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.minutes.toString().padStart(2, '0')}</div>
-                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Min</div>
+                <div className="text-3xl md:text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.minutes.toString().padStart(2, '0')}</div>
+                <div className="text-xs md:text-lg font-semibold text-white/90 mt-1 md:mt-2 font-29lt">Min</div>
               </div>
               <div className="text-center">
-                <div className="text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.seconds.toString().padStart(2, '0')}</div>
-                <div className="text-lg font-semibold text-white/90 mt-2 font-29lt">Seg</div>
+                <div className="text-3xl md:text-6xl font-bold text-white drop-shadow-lg font-teko">{timeLeft.seconds.toString().padStart(2, '0')}</div>
+                <div className="text-xs md:text-lg font-semibold text-white/90 mt-1 md:mt-2 font-29lt">Seg</div>
               </div>
             </div>
-            <div className="text-white/80 text-base mt-4 font-medium font-29lt">14 de Dezembro de 2025</div>
+            <div className="text-white/80 text-sm md:text-base mt-2 md:mt-4 font-medium font-29lt">14 de Dezembro de 2025</div>
           </div>
         </div>
       </section>
 
       {/* Event Info - Novo Layout */}
-      <section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
+      <motion.section 
+        className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={staggerContainer}
+      >
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12 md:mb-16">
+          <motion.div className="text-center mb-12 md:mb-16" variants={fadeInUp}>
             <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-6 font-teko">Informações do Evento</h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
               Junte-se a nós nesta jornada de fé, saúde e comunidade
             </p>
-          </div>
+          </motion.div>
           
           {/* Cards de Informações - Grid Responsivo */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-16">
+          <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-16" variants={staggerContainer}>
             {/* Card Data */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group">
+            <motion.div 
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
+              variants={fadeInUp}
+              whileHover={{ scale: 1.05 }}
+            >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -112,10 +159,14 @@ const Index = () => {
                 <p className="text-2xl font-bold text-gray-800 mb-1">14 de Dezembro, 2025</p>
                 <p className="text-gray-600 font-medium">Sábado</p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Card Horário */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group">
+            <motion.div 
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
+              variants={fadeInUp}
+              whileHover={{ scale: 1.05 }}
+            >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -126,10 +177,14 @@ const Index = () => {
                 <p className="text-2xl font-bold text-gray-800 mb-1">6:00 às 8:00</p>
                 <p className="text-gray-600 font-medium">Manhã</p>
               </div>
-            </div>
+            </motion.div>
 
             {/* Card Local */}
-            <div className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group">
+            <motion.div 
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
+              variants={fadeInUp}
+              whileHover={{ scale: 1.05 }}
+            >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -141,13 +196,19 @@ const Index = () => {
                 <p className="text-2xl font-bold text-gray-800 mb-1">Teresina Shopping</p>
                 <p className="text-gray-600 font-medium">Ponto de encontro principal</p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Seção Motivacional */}
-      <section className="py-16 md:py-24 bg-gradient-to-r from-race-primary/10 via-race-secondary/5 to-race-primary/10 relative overflow-hidden">
+      <motion.section 
+        className="py-16 md:py-24 bg-gradient-to-r from-race-primary/10 via-race-secondary/5 to-race-primary/10 relative overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.3 }}
+        variants={staggerContainer}
+      >
         {/* Elementos decorativos de fundo */}
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-32 h-32 bg-race-primary rounded-full blur-3xl animate-pulse"></div>
@@ -156,7 +217,7 @@ const Index = () => {
         </div>
         
         <div className="container mx-auto px-4 relative z-10">
-          <div className="text-center max-w-4xl mx-auto">
+          <motion.div className="text-center max-w-4xl mx-auto" variants={fadeInUp}>
             <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-8 font-teko leading-tight">
               "Pois nele vivemos, nos movemos e existimos"
             </h2>
@@ -168,7 +229,7 @@ const Index = () => {
             </p>
             
             {/* Vídeo do YouTube */}
-            <div className="my-12">
+            <motion.div className="my-12" variants={fadeInUp}>
               <div className="relative w-full max-w-2xl mx-auto">
                 <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
                   <iframe
@@ -184,52 +245,197 @@ const Index = () => {
                 </div>
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl pointer-events-none"></div>
               </div>
-            </div>
+            </motion.div>
             
-           
-          </div>
+            {/* Estatísticas motivacionais */}
+            <motion.div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12" variants={staggerContainer}>
+              <motion.div className="text-center" variants={fadeInUp}>
+                <div className="text-4xl md:text-5xl font-bold text-race-primary mb-2 font-teko">500+</div>
+                <div className="text-gray-600 font-medium">Vidas Transformadas</div>
+              </motion.div>
+              <motion.div className="text-center" variants={fadeInUp}>
+                <div className="text-4xl md:text-5xl font-bold text-race-secondary mb-2 font-teko">100%</div>
+                <div className="text-gray-600 font-medium">Comunidade Unida</div>
+              </motion.div>
+              <motion.div className="text-center" variants={fadeInUp}>
+                <div className="text-4xl md:text-5xl font-bold text-race-primary mb-2 font-teko">∞</div>
+                <div className="text-gray-600 font-medium">Fé e Determinação</div>
+              </motion.div>
+            </motion.div>
+          </motion.div>
         </div>
-      </section>
+      </motion.section>
 
-      {/* Galeria de Imagens - Placeholder */}
-      <section className="py-16 md:py-20 bg-white">
+      {/* Galeria de Imagens - Momentos Especiais */}
+      <motion.section 
+        className="py-16 md:py-20 bg-white"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, amount: 0.1 }}
+        variants={{
+          hidden: { opacity: 0 },
+          visible: {
+            opacity: 1,
+            transition: {
+              duration: 0.4,
+              staggerChildren: 0.15
+            }
+          }
+        }}
+      >
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <motion.div 
+            className="text-center mb-12" 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.3 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+          >
             <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-6 font-teko">Momentos Especiais</h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
               Reviva os melhores momentos das edições anteriores
             </p>
-          </div>
+          </motion.div>
           
-          {/* Grid de imagens - placeholder */}
+          {/* Grid de imagens */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-gradient-to-br from-race-primary/10 to-race-secondary/10 rounded-2xl h-64 flex items-center justify-center border-2 border-dashed border-race-primary/30">
-              <div className="text-center">
-                <svg className="w-16 h-16 text-race-primary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-race-primary/70 font-medium">Imagem 1</p>
+            {/* Imagem 1 */}
+            <motion.div 
+              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ 
+                opacity: 1, 
+                y: 0,
+                transition: { 
+                  duration: 0.4, 
+                  ease: "easeOut",
+                  delay: 0.1
+                }
+              }}
+              viewport={{ once: true, amount: 0.2 }}
+              whileHover={{ 
+                scale: 1.02,
+                transition: { duration: 0.2 }
+              }}
+            >
+              <img 
+                src="/ADDIRCEU-259.jpg" 
+                alt="ADMOOVING - Momento Especial 1" 
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                }}
+              />
+              <div className="hidden absolute inset-0 bg-gradient-to-br from-race-primary/10 to-race-secondary/10 items-center justify-center border-2 border-dashed border-race-primary/30">
+                <div className="text-center">
+                  <svg className="w-16 h-16 text-race-primary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-race-primary/70 font-medium">ADDIRCEU-259.jpg</p>
+                </div>
               </div>
-            </div>
-            <div className="bg-gradient-to-br from-race-secondary/10 to-race-primary/10 rounded-2xl h-64 flex items-center justify-center border-2 border-dashed border-race-secondary/30">
-              <div className="text-center">
-                <svg className="w-16 h-16 text-race-secondary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-race-secondary/70 font-medium">Imagem 2</p>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute bottom-4 left-4 text-white">
+                  <p className="text-sm font-medium">Edição Anterior</p>
+                  <p className="text-xs opacity-90">Participantes em ação</p>
+                </div>
               </div>
-            </div>
-            <div className="bg-gradient-to-br from-race-primary/10 to-race-secondary/10 rounded-2xl h-64 flex items-center justify-center border-2 border-dashed border-race-primary/30">
-              <div className="text-center">
-                <svg className="w-16 h-16 text-race-primary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                </svg>
-                <p className="text-race-primary/70 font-medium">Imagem 3</p>
+            </motion.div>
+
+            {/* Imagem 2 */}
+            <motion.div 
+              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ 
+                opacity: 1, 
+                y: 0,
+                transition: { 
+                  duration: 0.4, 
+                  ease: "easeOut",
+                  delay: 0.2
+                }
+              }}
+              viewport={{ once: true, amount: 0.2 }}
+              whileHover={{ 
+                scale: 1.02,
+                transition: { duration: 0.2 }
+              }}
+            >
+              <img 
+                src="/ADDIRCEU-196.jpg" 
+                alt="ADMOOVING - Momento Especial 2" 
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                }}
+              />
+              <div className="hidden absolute inset-0 bg-gradient-to-br from-race-secondary/10 to-race-primary/10 items-center justify-center border-2 border-dashed border-race-secondary/30">
+                <div className="text-center">
+                  <svg className="w-16 h-16 text-race-secondary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-race-secondary/70 font-medium">ADDIRCEU-196.jpg</p>
+                </div>
               </div>
-            </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute bottom-4 left-4 text-white">
+                  <p className="text-sm font-medium">Pódio de Premiação</p>
+                  <p className="text-xs opacity-90">Celebração dos vencedores</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Imagem 3 */}
+            <motion.div 
+              className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300"
+              initial={{ opacity: 0, y: 40 }}
+              whileInView={{ 
+                opacity: 1, 
+                y: 0,
+                transition: { 
+                  duration: 0.4, 
+                  ease: "easeOut",
+                  delay: 0.3
+                }
+              }}
+              viewport={{ once: true, amount: 0.2 }}
+              whileHover={{ 
+                scale: 1.02,
+                transition: { duration: 0.2 }
+              }}
+            >
+              <img 
+                src="/ADDIRCEU-319.jpg" 
+                alt="ADMOOVING - Momento Especial 3" 
+                className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                }}
+              />
+              <div className="hidden absolute inset-0 bg-gradient-to-br from-race-primary/10 to-race-secondary/10 items-center justify-center border-2 border-dashed border-race-primary/30">
+                <div className="text-center">
+                  <svg className="w-16 h-16 text-race-primary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <p className="text-race-primary/70 font-medium">ADDIRCEU-319.jpg</p>
+                </div>
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute bottom-4 left-4 text-white">
+                  <p className="text-sm font-medium">Categoria Kids</p>
+                  <p className="text-xs opacity-90">Jovens campeões</p>
+                </div>
+              </div>
+            </motion.div>
           </div>
         </div>
-      </section>
+      </motion.section>
 
       {/* Categorias - Apenas 2 Corridas */}
       <section className="py-12 md:py-20 bg-gradient-to-br from-gray-50 to-white">
@@ -332,63 +538,99 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Seção de Depoimentos - Placeholder */}
+      {/* Kit do Corredor - Preview */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-6 font-teko">O que dizem os participantes</h2>
+            <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-6 font-teko">Kit do Corredor</h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Histórias reais de transformação e superação
+              Confira o que você receberá ao se inscrever no evento
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {/* Depoimento 1 */}
-            <div className="bg-gradient-to-br from-race-primary/5 to-race-secondary/5 rounded-2xl p-6 border border-race-primary/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center text-white font-bold">
-                  M
+          <div className="max-w-4xl mx-auto">
+            {/* Imagem principal do kit */}
+            <div className="mb-12">
+              <div className="relative bg-gradient-to-br from-race-primary/5 to-race-secondary/5 rounded-3xl p-8 md:p-12 shadow-2xl">
+                <div className="text-center mb-8">
+                  <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-2 font-teko">Camiseta Oficial</h3>
                 </div>
-                <div className="ml-4">
-                  <h4 className="font-bold text-gray-800">Maria Silva</h4>
-                  <p className="text-sm text-gray-600">Participante 2024</p>
+                
+                <div className="relative max-w-md mx-auto">
+                  <img 
+                    src="/kit.jpeg" 
+                    alt="Kit do Corredor ADMOOVING - Camiseta Oficial" 
+                    className="w-full h-auto rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.style.display = 'none';
+                      e.currentTarget.nextElementSibling.style.display = 'block';
+                    }}
+                  />
+                  <div className="hidden bg-gradient-to-br from-race-primary/10 to-race-secondary/10 rounded-2xl h-64 flex items-center justify-center border-2 border-dashed border-race-primary/30">
+                    <div className="text-center">
+                      <svg className="w-16 h-16 text-race-primary/50 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                      </svg>
+                      
+                    </div>
+                  </div>
+                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-race-primary to-race-secondary text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
+                    OFICIAL
+                  </div>
+                </div>
+                
+                <div className="mt-8 text-center">
+                
                 </div>
               </div>
-              <p className="text-gray-700 italic">
-                "Uma experiência incrível! Mais que uma corrida, foi um momento de conexão com Deus e comigo mesma."
-              </p>
             </div>
-            
-            {/* Depoimento 2 */}
-            <div className="bg-gradient-to-br from-race-secondary/5 to-race-primary/5 rounded-2xl p-6 border border-race-secondary/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-race-secondary to-race-primary rounded-full flex items-center justify-center text-white font-bold">
-                  J
+
+            {/* Itens do kit */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Camiseta */}
+              <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-6 text-center border border-race-primary/20 hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                  </svg>
                 </div>
-                <div className="ml-4">
-                  <h4 className="font-bold text-gray-800">João Santos</h4>
-                  <p className="text-sm text-gray-600">Participante 2024</p>
-                </div>
+                <h4 className="text-xl font-bold text-race-primary mb-2 font-teko">Camiseta Oficial</h4>
+                <p className="text-gray-600 text-sm">Design exclusivo 2ª Edição</p>
               </div>
-              <p className="text-gray-700 italic">
-                "Levei minha família toda! As crianças adoraram e nós nos sentimos parte de uma comunidade especial."
-              </p>
+
+              {/* Medalha */}
+              <div className="bg-gradient-to-br from-race-secondary/5 to-race-secondary/10 rounded-2xl p-6 text-center border border-race-secondary/20 hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-race-secondary to-race-primary rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-race-secondary mb-2 font-teko">Medalha</h4>
+                <p className="text-gray-600 text-sm">Conquista para todos</p>
+              </div>
+
+              {/* Número */}
+              <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center border border-green-200 hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-green-600 mb-2 font-teko">Número</h4>
+                <p className="text-gray-600 text-sm">Identificação oficial</p>
+              </div>
             </div>
-            
-            {/* Depoimento 3 */}
-            <div className="bg-gradient-to-br from-race-primary/5 to-race-secondary/5 rounded-2xl p-6 border border-race-primary/20">
-              <div className="flex items-center mb-4">
-                <div className="w-12 h-12 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center text-white font-bold">
-                  A
-                </div>
-                <div className="ml-4">
-                  <h4 className="font-bold text-gray-800">Ana Costa</h4>
-                  <p className="text-sm text-gray-600">Participante 2024</p>
-                </div>
-              </div>
-              <p className="text-gray-700 italic">
-                "Superei meus limites físicos e espirituais. Uma manhã que mudou minha perspectiva de vida!"
+
+            {/* Call to action */}
+            <div className="text-center mt-12">
+              <p className="text-lg text-gray-700 mb-6">
+                Garante já o seu kit exclusivo da 2ª Edição do ADMOOVING!
               </p>
+              <Link to="/inscricoes">
+                <Button className="bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white font-bold py-4 px-8 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
+                  Quero Meu Kit
+                </Button>
+              </Link>
             </div>
           </div>
         </div>
