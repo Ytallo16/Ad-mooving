@@ -100,7 +100,13 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+      const envBase = (import.meta as any).env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+      let apiBaseUrl = envBase as string;
+      if (typeof window !== 'undefined' && window.location.protocol === 'https:') {
+        apiBaseUrl = apiBaseUrl.replace(/^http:\/\//, 'https://');
+      }
+      apiBaseUrl = apiBaseUrl.replace(/\/$/, '');
+
       const response = await fetch(`${apiBaseUrl}/api/race-registrations/`, {
         method: 'POST',
         headers: {
