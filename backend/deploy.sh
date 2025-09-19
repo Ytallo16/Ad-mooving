@@ -65,7 +65,7 @@ pull_images() {
 # Função para iniciar os containers
 start_containers() {
     log "Iniciando containers..."
-    ${COMPOSE_CMD} up -d
+    ${COMPOSE_CMD} up -d --build
     log "✅ Containers iniciados!"
 }
 
