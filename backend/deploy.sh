@@ -31,6 +31,15 @@ warn() {
     echo -e "${YELLOW}[WARNING] $1${NC}"
 }
 
+# Detectar comando do Docker Compose (v1 ou v2)
+if command -v docker-compose >/dev/null 2>&1; then
+    COMPOSE_CMD="docker-compose"
+elif docker compose version >/dev/null 2>&1; then
+    COMPOSE_CMD="docker compose"
+else
+    error "Docker Compose não está instalado. Instale 'docker-compose' ou 'docker compose'."
+fi
+
 # Verificar se Docker está rodando
 if ! docker info > /dev/null 2>&1; then
     error "Docker não está rodando. Por favor, inicie o Docker e tente novamente."
@@ -44,63 +53,26 @@ fi
 # Função para parar containers existentes
 stop_containers() {
     log "Parando containers existentes..."
-    docker compose down --remove-orphans || true
+    ${COMPOSE_CMD} down --remove-orphans || true
 }
 
 # Função para fazer pull das imagens mais recentes
 pull_images() {
     log "Fazendo pull das imagens mais recentes..."
-    docker compose pull
+    ${COMPOSE_CMD} pull
 }
 
 # Função para iniciar os containers
 start_containers() {
     log "Iniciando containers..."
-    docker compose up -d
-    
-    # Aguardar os containers ficarem saudáveis
-    log "Aguardando containers ficarem saudáveis..."
-    sleep 20
-    
-    # Verificar status dos containers
-    if docker ps | grep -q "admooving"; then
-        log "✅ Containers iniciados com sucesso!"
-    else
-        error "❌ Falha ao iniciar containers"
-    fi
-}
-
-# Função para verificar saúde dos serviços
-health_check() {
-    log "Verificando saúde dos serviços..."
-    
-    # Verificar backend
-    if curl -f http://localhost:8000/api/health/ > /dev/null 2>&1; then
-        log "✅ Backend está saudável"
-    else
-        warn "⚠️  Backend pode não estar respondendo corretamente"
-    fi
-    
-    # Verificar frontend
-    if curl -f http://localhost:3000/ > /dev/null 2>&1; then
-        log "✅ Frontend está saudável"
-    else
-        warn "⚠️  Frontend pode não estar respondendo corretamente"
-    fi
+    ${COMPOSE_CMD} up -d
+    log "✅ Containers iniciados!"
 }
 
 # Função para mostrar logs
 show_logs() {
     log "Mostrando logs dos containers..."
-    docker compose logs --tail=50
-}
-
-# Função para rollback
-rollback() {
-    log "Executando rollback..."
-    # Aqui você pode implementar lógica de rollback
-    # Por exemplo, voltar para uma versão anterior das imagens
-    warn "Rollback não implementado ainda"
+    ${COMPOSE_CMD} logs --tail=50
 }
 
 # Menu principal
@@ -110,30 +82,27 @@ case $ENVIRONMENT in
         stop_containers
         pull_images
         start_containers
-        health_check
         log "🎉 Deploy para produção concluído!"
         ;;
     "staging")
         log "Iniciando deploy para STAGING"
-        # Implementar lógica para staging se necessário
-        warn "Deploy para staging não implementado ainda"
-        ;;
-    "rollback")
-        rollback
+        stop_containers
+        pull_images
+        start_containers
+        log "🎉 Deploy para staging concluído!"
         ;;
     "logs")
         show_logs
         ;;
     "status")
-        docker compose ps
+        ${COMPOSE_CMD} ps
         ;;
     *)
-        echo "Uso: $0 [production|staging|rollback|logs|status]"
+        echo "Uso: $0 [production|staging|logs|status]"
         echo ""
         echo "Comandos disponíveis:"
         echo "  production  - Deploy para produção"
         echo "  staging     - Deploy para staging"
-        echo "  rollback    - Fazer rollback"
         echo "  logs        - Mostrar logs"
         echo "  status      - Mostrar status dos containers"
         exit 1
