@@ -37,31 +37,31 @@ const Index = () => {
     return () => clearInterval(timer);
   }, []);
 
-  // Variantes de animação
+  // Variantes de animação otimizadas
   const fadeInUp = {
-    hidden: { opacity: 0, y: 60 },
+    hidden: { opacity: 0, y: 30 },
     visible: { 
       opacity: 1, 
       y: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.4 }
     }
   };
 
   const fadeInLeft = {
-    hidden: { opacity: 0, x: -60 },
+    hidden: { opacity: 0, x: -30 },
     visible: { 
       opacity: 1, 
       x: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.4 }
     }
   };
 
   const fadeInRight = {
-    hidden: { opacity: 0, x: 60 },
+    hidden: { opacity: 0, x: 30 },
     visible: { 
       opacity: 1, 
       x: 0,
-      transition: { duration: 0.6, ease: "easeOut" }
+      transition: { duration: 0.4 }
     }
   };
 
@@ -70,7 +70,7 @@ const Index = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.2
+        staggerChildren: 0.1
       }
     }
   };
@@ -82,7 +82,7 @@ const Index = () => {
       {/* Hero Section */}
       <section className="relative overflow-hidden h-[400px] md:h-[550px]">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in hover:scale-105 transition-transform duration-700 ease-out"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in"
           style={{ backgroundImage: `url("/Fundo (4).png")`, backgroundSize: 'cover' }}
         >
         </div>
@@ -92,7 +92,7 @@ const Index = () => {
           <Link to="/inscricoes">
             <Button 
               size="lg" 
-              className="bg-race-primary hover:bg-race-primary-dark text-white text-sm md:text-lg px-4 md:px-8 py-2 md:py-4 shadow-lg animate-bounce"
+              className="bg-race-primary hover:bg-race-primary-dark text-white text-sm md:text-lg px-4 md:px-8 py-2 md:py-4 shadow-lg"
             >
               Inscreva-se
             </Button>
@@ -307,8 +307,8 @@ const Index = () => {
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  ((e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement).style.display = 'flex';
                 }}
               />
               <div className="hidden absolute inset-0 bg-gradient-to-br from-race-primary/10 to-race-secondary/10 items-center justify-center border-2 border-dashed border-race-primary/30">
@@ -352,8 +352,8 @@ const Index = () => {
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  ((e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement).style.display = 'flex';
                 }}
               />
               <div className="hidden absolute inset-0 bg-gradient-to-br from-race-secondary/10 to-race-primary/10 items-center justify-center border-2 border-dashed border-race-secondary/30">
@@ -397,8 +397,8 @@ const Index = () => {
                 className="w-full h-64 object-cover transition-transform duration-300 group-hover:scale-105"
                 loading="lazy"
                 onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling.style.display = 'flex';
+                  (e.currentTarget as HTMLImageElement).style.display = 'none';
+                  ((e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement).style.display = 'flex';
                 }}
               />
               <div className="hidden absolute inset-0 bg-gradient-to-br from-race-primary/10 to-race-secondary/10 items-center justify-center border-2 border-dashed border-race-primary/30">
@@ -442,7 +442,7 @@ const Index = () => {
                 <h3 className="text-3xl font-bold text-race-primary mb-4 font-teko">5km Corrida</h3>
                 <p className="text-gray-600 mb-6 text-lg">Para corredores de todas as idades</p>
                 <div className="mb-8">
-                  <span className="text-5xl font-bold text-race-primary">R$ 25</span>
+                  <span className="text-5xl font-bold text-race-primary">R$ 80,00</span>
                 </div>
                 <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
                   <div className="flex items-center justify-center space-x-2">
@@ -488,7 +488,7 @@ const Index = () => {
                 <h3 className="text-3xl font-bold text-orange-600 mb-4 font-teko">Kids</h3>
                 <p className="text-gray-600 mb-6 text-lg">Para crianças até 12 anos</p>
                 <div className="mb-8">
-                  <span className="text-5xl font-bold text-orange-600">R$ 15</span>
+                  <span className="text-5xl font-bold text-orange-600">R$ 50,00</span>
                 </div>
                 <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
                   <div className="flex items-center justify-center space-x-2">
@@ -545,8 +545,8 @@ const Index = () => {
                     alt="Kit do Corredor ADMOOVING - Camiseta Oficial" 
                     className="w-full h-auto rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
-                      e.currentTarget.nextElementSibling.style.display = 'block';
+                      (e.currentTarget as HTMLImageElement).style.display = 'none';
+                      ((e.currentTarget as HTMLImageElement).nextElementSibling as HTMLElement).style.display = 'block';
                     }}
                   />
                   <div className="hidden bg-gradient-to-br from-race-primary/10 to-race-secondary/10 rounded-2xl h-64 flex items-center justify-center border-2 border-dashed border-race-primary/30">
@@ -577,8 +577,8 @@ const Index = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-race-primary mb-2 font-teko">Camiseta Oficial</h4>
-                <p className="text-gray-600 text-sm">Design exclusivo 2ª Edição</p>
+                <h4 className="text-xl font-bold text-race-primary mb-2 font-teko">Cronometragem oficial</h4>
+                <p className="text-gray-600 text-sm">Cronometragem profissional</p>
               </div>
 
               {/* Medalha */}
