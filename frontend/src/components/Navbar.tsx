@@ -38,12 +38,12 @@ const Navbar = () => {
             Sobre o Evento
           </Link>
           <Link 
-            to="/localizacao" 
+            to="/percurso" 
             className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
-              location.pathname === "/localizacao" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
+              location.pathname === "/percurso" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
             }`}
           >
-            Localização
+            Percurso
           </Link>
           <Link 
             to="/patrocinadores" 
@@ -114,13 +114,13 @@ const Navbar = () => {
               Sobre o Evento
             </Link>
             <Link 
-              to="/localizacao" 
+              to="/percurso" 
               onClick={() => setIsMenuOpen(false)}
               className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
-                location.pathname === "/localizacao" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
+                location.pathname === "/percurso" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
               }`}
             >
-              Localização
+              Percurso
             </Link>
             <Link 
               to="/patrocinadores" 
