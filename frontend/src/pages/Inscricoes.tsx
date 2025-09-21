@@ -9,8 +9,13 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 
+import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 const Inscricoes = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     full_name: "",
@@ -157,7 +162,6 @@ const Inscricoes = () => {
           shirt_size: "",
           athlete_declaration: false
         });
-        
       } else {
         const errorData = await response.json();
         console.error('Erro da API:', errorData);
