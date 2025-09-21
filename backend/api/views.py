@@ -6,10 +6,18 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 
 from .models import RaceRegistration
 from .serializers import RaceRegistrationSerializer
-from .services import send_registration_confirmation_email, send_payment_confirmation_email
+from .services import (
+    send_registration_confirmation_email, 
+    send_payment_confirmation_email,
+    create_stripe_checkout_session,
+    verify_stripe_checkout_session,
+    process_stripe_webhook_event,
+    get_race_prices
+)
 
 # Create your views here.
 
@@ -200,21 +208,77 @@ class RaceRegistrationViewSet(ModelViewSet):
     )
     def create(self, request, *args, **kwargs):
         """
-        Cria uma nova inscrição com status PENDING e envia email de confirmação de inscrição.
+        Cria uma nova inscrição com status PENDING, envia email de confirmação
+        e automaticamente cria uma sessão de pagamento Stripe.
         """
-        return super().create(request, *args, **kwargs)
-    
-    def perform_create(self, serializer):
-        # Salva a inscrição com status PENDING (padrão)
-        instance = serializer.save()
-        
-        # Envia email de confirmação de inscrição (não de pagamento)
         try:
-            send_registration_confirmation_email(instance)
+            print(f"DEBUG: Dados recebidos: {request.data}")
+            
+            serializer = self.get_serializer(data=request.data)
+            if not serializer.is_valid():
+                print(f"DEBUG: Erros de validação: {serializer.errors}")
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            
+            # Salva a inscrição
+            instance = serializer.save()
+            print(f"DEBUG: Inscrição criada: ID {instance.id}")
+            
+            # Envia email de confirmação de inscrição (não de pagamento)
+            try:
+                send_registration_confirmation_email(instance)
+                print("DEBUG: Email de confirmação enviado")
+            except Exception as e:
+                print(f"DEBUG: Erro ao enviar email: {e}")
+                # Não interromper a criação se o email falhar
+            
+            # Criar automaticamente sessão de pagamento Stripe
+            try:
+                print("DEBUG: Criando sessão de pagamento Stripe...")
+                payment_result = create_stripe_checkout_session(instance)
+                print(f"DEBUG: Resultado do pagamento: {payment_result}")
+                
+                if payment_result['success']:
+                    # Retorna os dados da inscrição + dados do pagamento
+                    response_data = serializer.data
+                    response_data['payment'] = {
+                        'checkout_url': payment_result['checkout_url'],
+                        'session_id': payment_result['session_id'],
+                        'amount': payment_result['amount']
+                    }
+                    
+                    print(f"DEBUG: Resposta final: {response_data}")
+                    headers = self.get_success_headers(serializer.data)
+                    return Response(response_data, status=status.HTTP_201_CREATED, headers=headers)
+                else:
+                    # Se falhou ao criar sessão, retorna erro mas mantém inscrição
+                    error_response = {
+                        'registration': serializer.data,
+                        'error': 'Inscrição criada mas falha ao criar pagamento',
+                        'payment_error': payment_result['error']
+                    }
+                    print(f"DEBUG: Erro no pagamento: {error_response}")
+                    return Response(error_response, status=status.HTTP_201_CREATED)
+                    
+            except Exception as e:
+                # Se falhou completamente, retorna só a inscrição
+                print(f"DEBUG: Erro crítico no pagamento: {e}")
+                import traceback
+                traceback.print_exc()
+                headers = self.get_success_headers(serializer.data)
+                return Response({
+                    'registration': serializer.data,
+                    'error': 'Inscrição criada mas erro no sistema de pagamento',
+                    'detailed_error': str(e)
+                }, status=status.HTTP_201_CREATED, headers=headers)
+                
         except Exception as e:
-            print(f"Erro ao enviar email de confirmação de inscrição: {e}")
-            # Não interromper a criação se o email falhar
-            pass
+            print(f"DEBUG: Erro geral na view: {e}")
+            import traceback
+            traceback.print_exc()
+            return Response({
+                'error': 'Erro interno do servidor',
+                'detail': str(e)
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
     @extend_schema(
         tags=['corrida'],
@@ -423,3 +487,271 @@ def race_statistics(request):
         'shirt_size_stats': shirt_size_stats,
         'timestamp': timezone.now()
     })
+
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Criar sessão de checkout do Stripe',
+    description='Cria uma sessão de checkout do Stripe para pagamento da inscrição',
+    request={
+        'type': 'object',
+        'properties': {
+            'registration_id': {'type': 'integer', 'description': 'ID da inscrição'},
+        },
+        'required': ['registration_id']
+    },
+    responses={
+        200: {
+            'description': 'Sessão de checkout criada com sucesso',
+            'examples': [
+                {
+                    'application/json': {
+                        'success': True,
+                        'checkout_url': 'https://checkout.stripe.com/pay/cs_test_...',
+                        'session_id': 'cs_test_...',
+                        'amount': 50.00
+                    }
+                }
+            ]
+        },
+        400: {'description': 'Dados inválidos'},
+        404: {'description': 'Inscrição não encontrada'},
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_payment_session(request):
+    """
+    Cria uma sessão de checkout do Stripe para pagamento da inscrição
+    """
+    try:
+        registration_id = request.data.get('registration_id')
+        
+        if not registration_id:
+            return Response({
+                'success': False,
+                'error': 'registration_id é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Buscar a inscrição
+        try:
+            registration = RaceRegistration.objects.get(id=registration_id)
+        except RaceRegistration.DoesNotExist:
+            return Response({
+                'success': False,
+                'error': 'Inscrição não encontrada'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Verificar se já não está pago
+        if registration.payment_status == 'PAID':
+            return Response({
+                'success': False,
+                'error': 'Esta inscrição já foi paga'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Criar sessão de checkout
+        result = create_stripe_checkout_session(registration)
+        
+        if result['success']:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Verificar status de pagamento',
+    description='Verifica o status de uma sessão de checkout do Stripe',
+    parameters=[
+        {
+            'name': 'session_id',
+            'in': 'query',
+            'description': 'ID da sessão de checkout do Stripe',
+            'required': True,
+            'type': 'string'
+        }
+    ],
+    responses={
+        200: {
+            'description': 'Status do pagamento verificado',
+            'examples': [
+                {
+                    'application/json': {
+                        'success': True,
+                        'payment_status': 'paid',
+                        'amount_total': 5000,
+                        'customer_email': 'usuario@email.com',
+                        'registration_updated': True
+                    }
+                }
+            ]
+        },
+        400: {'description': 'Parâmetros inválidos'},
+        404: {'description': 'Sessão não encontrada'},
+    }
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def verify_payment_status(request):
+    """
+    Verifica o status de uma sessão de checkout do Stripe
+    """
+    try:
+        session_id = request.query_params.get('session_id')
+        
+        if not session_id:
+            return Response({
+                'success': False,
+                'error': 'session_id é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar sessão no Stripe
+        result = verify_stripe_checkout_session(session_id)
+        
+        if not result['success']:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        
+        session = result['session']
+        registration_updated = False
+        
+        # Se o pagamento foi concluído, atualizar a inscrição
+        if session.payment_status == 'paid':
+            registration_id = session.metadata.get('registration_id')
+            
+            if registration_id:
+                try:
+                    registration = RaceRegistration.objects.get(id=registration_id)
+                    
+                    if registration.payment_status != 'PAID':
+                        registration.payment_status = 'PAID'
+                        registration.payment_date = timezone.now()
+                        if session.payment_intent:
+                            registration.stripe_payment_intent_id = session.payment_intent
+                        registration.save(update_fields=[
+                            'payment_status', 
+                            'payment_date', 
+                            'stripe_payment_intent_id'
+                        ])
+                        
+                        # Enviar email de confirmação se ainda não enviado
+                        if not registration.payment_email_sent:
+                            send_payment_confirmation_email(registration)
+                        
+                        registration_updated = True
+                        
+                except RaceRegistration.DoesNotExist:
+                    pass
+        
+        return Response({
+            'success': True,
+            'payment_status': session.payment_status,
+            'amount_total': session.amount_total,
+            'customer_email': session.customer_email,
+            'registration_updated': registration_updated
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Webhook do Stripe',
+    description='Endpoint para receber eventos de webhook do Stripe',
+    request={
+        'type': 'object',
+        'description': 'Evento do webhook do Stripe'
+    },
+    responses={
+        200: {'description': 'Webhook processado com sucesso'},
+        400: {'description': 'Dados inválidos ou assinatura inválida'},
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def stripe_webhook(request):
+    """
+    Endpoint para processar webhooks do Stripe
+    """
+    import stripe
+    from django.conf import settings
+    from django.http import HttpResponse
+    
+    payload = request.body
+    sig_header = request.META.get('HTTP_STRIPE_SIGNATURE')
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+    
+    try:
+        if endpoint_secret:
+            # Verificar a assinatura do webhook
+            event = stripe.Webhook.construct_event(
+                payload, sig_header, endpoint_secret
+            )
+        else:
+            # Se não há secret configurado, aceitar qualquer evento (apenas para desenvolvimento)
+            event = stripe.Event.construct_from(
+                stripe.util.json.loads_object(payload), stripe.api_key
+            )
+        
+        # Processar o evento
+        result = process_stripe_webhook_event(event)
+        
+        if result['success']:
+            return HttpResponse(status=200)
+        else:
+            print(f"Erro ao processar webhook: {result['error']}")
+            return HttpResponse(status=400)
+            
+    except ValueError as e:
+        print(f"Payload inválido: {e}")
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        print(f"Assinatura inválida: {e}")
+        return HttpResponse(status=400)
+    except Exception as e:
+        print(f"Erro geral no webhook: {e}")
+        return HttpResponse(status=500)
+
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Obter preços das modalidades',
+    description='Retorna os preços das modalidades infantil e adulto',
+    responses={
+        200: {
+            'description': 'Preços das modalidades',
+            'examples': [
+                {
+                    'application/json': {
+                        'INFANTIL': {
+                            'amount': 3000,
+                            'amount_brl': 30.00,
+                            'description': 'Inscrição modalidade infantil'
+                        },
+                        'ADULTO': {
+                            'amount': 5000,
+                            'amount_brl': 50.00,
+                            'description': 'Inscrição modalidade adulto'
+                        }
+                    }
+                }
+            ]
+        }
+    }
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def race_prices(request):
+    """
+    Retorna os preços das modalidades da corrida
+    """
+    return Response(get_race_prices())
