@@ -6,6 +6,10 @@ from django.utils.encoding import force_str, force_bytes
 from decouple import config
 from email.header import Header
 from email.utils import formataddr
+import stripe
+
+# Configurar Stripe com a chave secreta
+stripe.api_key = settings.STRIPE_SECRET_KEY
 
 def send_registration_confirmation_email(registration):
     """
@@ -155,4 +159,259 @@ def send_payment_confirmation_email(registration):
         print(f"Erro ao enviar email de confirmação de pagamento: {e}")
         import traceback
         traceback.print_exc()
-        return False 
+        return False
+
+
+def create_stripe_checkout_session(registration):
+    """
+    Cria uma sessão de checkout do Stripe para o pagamento da inscrição
+    """
+    try:
+        # Determinar o valor baseado na modalidade
+        if registration.modality == 'INFANTIL':
+            amount = 3000  # R$ 30,00 em centavos
+            description = f"Inscrição Infantil - Corrida Ad-mooving - {registration.full_name}"
+        else:
+            amount = 5000  # R$ 50,00 em centavos  
+            description = f"Inscrição Adulto - Corrida Ad-mooving - {registration.full_name}"
+        
+        # URLs de sucesso e cancelamento (ajustado para 8080 por padrão)
+        success_url = config('STRIPE_SUCCESS_URL', default='http://localhost:8080/pagamento/sucesso')
+        cancel_url = config('STRIPE_CANCEL_URL', default='http://localhost:8080/pagamento/cancelado')
+
+        # Métodos de pagamento: cartão sempre, Pix opcional
+        enable_pix = getattr(settings, 'STRIPE_ENABLE_PIX', True)
+        payment_method_types = ['card']
+        if enable_pix:
+            payment_method_types.append('pix')
+
+        # Opções específicas do Pix (expiração do QR Code, opcional)
+        pix_expires = config('STRIPE_PIX_EXPIRES_AFTER_SECONDS', default=None)
+        if pix_expires:
+            pix_expires = int(pix_expires)
+        payment_method_options = {}
+        if enable_pix and pix_expires:
+            payment_method_options['pix'] = {
+                'expires_after_seconds': pix_expires
+            }
+        
+        # Configurar parcelamento para cartão de crédito (Brasil)
+        payment_method_options['card'] = {
+            'installments': {
+                'enabled': True
+            },
+            'request_three_d_secure': 'automatic'
+        }
+        
+        # Monta dados do PaymentIntent (metadados sempre + Connect opcional)
+        payment_intent_data = {
+            'metadata': {
+                'registration_id': registration.id,
+                'registration_cpf': registration.cpf,
+            }
+        }
+
+        # Suporte opcional a Stripe Connect (destino dos fundos)
+        connect_account = getattr(settings, 'STRIPE_CONNECT_ACCOUNT_ID', '')
+        application_fee_amount = getattr(settings, 'STRIPE_APPLICATION_FEE_AMOUNT', 0)
+        if connect_account:
+            transfer_data = { 'destination': connect_account }
+            payment_intent_data['transfer_data'] = transfer_data
+            if application_fee_amount and application_fee_amount > 0:
+                payment_intent_data['application_fee_amount'] = application_fee_amount
+
+        # Criar a sessão de checkout
+        checkout_kwargs = dict(
+            payment_method_types=payment_method_types,
+            line_items=[
+                {
+                    'price_data': {
+                        'currency': 'brl',
+                        'product_data': {
+                            'name': f'Corrida Ad-mooving - {registration.get_modality_display()}',
+                            'description': description,
+                            'images': [config('RACE_LOGO_URL', default='https://via.placeholder.com/300x200?text=Corrida+Ad-mooving')],
+                        },
+                        'unit_amount': amount,
+                    },
+                    'quantity': 1,
+                },
+            ],
+            mode='payment',
+            success_url=f"{success_url}?session_id={{CHECKOUT_SESSION_ID}}",
+            cancel_url=f"{cancel_url}?registration_id={registration.id}",
+            metadata={
+                'registration_id': registration.id,
+                'registration_cpf': registration.cpf,
+                'registration_email': registration.email,
+                'modality': registration.modality,
+            },
+            customer_email=registration.email,
+            locale='pt-BR',
+            payment_intent_data=payment_intent_data
+        )
+        if payment_method_options:
+            checkout_kwargs['payment_method_options'] = payment_method_options
+        checkout_session = stripe.checkout.Session.create(**checkout_kwargs)
+        
+        # Salvar o ID da sessão na inscrição
+        registration.stripe_checkout_session_id = checkout_session.id
+        registration.payment_amount = amount / 100  # Converter centavos para reais
+        registration.save(update_fields=['stripe_checkout_session_id', 'payment_amount'])
+        
+        return {
+            'success': True,
+            'checkout_url': checkout_session.url,
+            'session_id': checkout_session.id,
+            'amount': amount / 100
+        }
+        
+    except stripe.error.StripeError as e:
+        print(f"Erro do Stripe: {e}")
+        return {
+            'success': False,
+            'error': f'Erro no Stripe: {str(e)}'
+        }
+    except Exception as e:
+        print(f"Erro geral ao criar sessão de checkout: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }
+
+
+def verify_stripe_checkout_session(session_id):
+    """
+    Verifica o status de uma sessão de checkout do Stripe
+    """
+    try:
+        session = stripe.checkout.Session.retrieve(session_id)
+        
+        return {
+            'success': True,
+            'session': session,
+            'payment_status': session.payment_status,
+            'amount_total': session.amount_total,
+            'customer_email': session.customer_email,
+            'metadata': session.metadata
+        }
+        
+    except stripe.error.StripeError as e:
+        print(f"Erro do Stripe ao verificar sessão: {e}")
+        return {
+            'success': False,
+            'error': f'Erro no Stripe: {str(e)}'
+        }
+    except Exception as e:
+        print(f"Erro geral ao verificar sessão: {e}")
+        return {
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }
+
+
+def process_stripe_webhook_event(event):
+    """
+    Processa eventos de webhook do Stripe
+    """
+    try:
+        # Importar o modelo aqui para evitar importação circular
+        from .models import RaceRegistration
+        
+        if event['type'] == 'checkout.session.completed':
+            session = event['data']['object']
+            
+            # Obter o ID da inscrição dos metadados
+            registration_id = session['metadata'].get('registration_id')
+            
+            if registration_id:
+                try:
+                    registration = RaceRegistration.objects.get(id=registration_id)
+                    
+                    # Atualizar o status do pagamento
+                    registration.payment_status = 'PAID'
+                    registration.payment_date = timezone.now()
+                    
+                    # Salvar o Payment Intent ID se disponível
+                    if session.get('payment_intent'):
+                        registration.stripe_payment_intent_id = session['payment_intent']
+                    
+                    registration.save(update_fields=[
+                        'payment_status', 
+                        'payment_date', 
+                        'stripe_payment_intent_id'
+                    ])
+                    
+                    # Enviar email de confirmação de pagamento
+                    send_payment_confirmation_email(registration)
+                    
+                    return {
+                        'success': True,
+                        'message': f'Pagamento processado para inscrição {registration_id}'
+                    }
+                    
+                except RaceRegistration.DoesNotExist:
+                    return {
+                        'success': False,
+                        'error': f'Inscrição {registration_id} não encontrada'
+                    }
+            else:
+                return {
+                    'success': False,
+                    'error': 'ID da inscrição não encontrado nos metadados'
+                }
+                
+        elif event['type'] == 'payment_intent.payment_failed':
+            # Tratar pagamento falhou
+            payment_intent = event['data']['object']
+            registration_id = payment_intent['metadata'].get('registration_id')
+            
+            if registration_id:
+                try:
+                    registration = RaceRegistration.objects.get(id=registration_id)
+                    # Manter status PENDING ou criar um status FAILED se necessário
+                    print(f"Pagamento falhou para inscrição {registration_id}")
+                    
+                    return {
+                        'success': True,
+                        'message': f'Pagamento falhou processado para inscrição {registration_id}'
+                    }
+                except RaceRegistration.DoesNotExist:
+                    return {
+                        'success': False,
+                        'error': f'Inscrição {registration_id} não encontrada'
+                    }
+        
+        return {
+            'success': True,
+            'message': f'Evento {event["type"]} recebido mas não processado'
+        }
+        
+    except Exception as e:
+        print(f"Erro ao processar evento webhook: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }
+
+
+def get_race_prices():
+    """
+    Retorna os preços das modalidades da corrida
+    """
+    return {
+        'INFANTIL': {
+            'amount': 3000,  # em centavos
+            'amount_brl': 30.00,  # em reais
+            'description': 'Inscrição modalidade infantil'
+        },
+        'ADULTO': {
+            'amount': 5000,  # em centavos
+            'amount_brl': 50.00,  # em reais
+            'description': 'Inscrição modalidade adulto'
+        }
+    }

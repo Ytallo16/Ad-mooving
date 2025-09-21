@@ -13,5 +13,12 @@ urlpatterns = [
     path('health/', views.health_check, name='health_check'),
     path('race-statistics/', views.race_statistics, name='race_statistics'),
     path('payment-webhook/', views.payment_webhook, name='payment_webhook'),
+    
+    # Novos endpoints para pagamento com Stripe
+    path('payment/create-session/', views.create_payment_session, name='create_payment_session'),
+    path('payment/verify-status/', views.verify_payment_status, name='verify_payment_status'),
+    path('payment/stripe-webhook/', views.stripe_webhook, name='stripe_webhook'),
+    path('payment/prices/', views.race_prices, name='race_prices'),
+    
     path('', include(router.urls)),  # Inclui as URLs do router
 ] 

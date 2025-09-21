@@ -81,6 +81,32 @@ class RaceRegistration(models.Model):
         help_text="Status atual do pagamento da inscrição"
     )
     
+    # Campos para integração com Stripe
+    stripe_payment_intent_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="ID do Payment Intent do Stripe"
+    )
+    stripe_checkout_session_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="ID da Sessão de Checkout do Stripe"
+    )
+    payment_amount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Valor do Pagamento"
+    )
+    payment_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Data do Pagamento"
+    )
+    
     # Campos para controle de emails enviados
     registration_email_sent = models.BooleanField(
         default=False, 

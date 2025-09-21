@@ -7,3 +7,4 @@ sqlparse==0.5.3
 requests==2.32.5
 drf-spectacular==0.28.0 
 psycopg2-binary==2.9.9
+stripe==10.12.0

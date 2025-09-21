@@ -16,7 +16,7 @@ source venv/bin/activate
 
 # Instalar dependências
 echo "📥 Instalando dependências..."
-pip install -r requirements.txt
+pip install -r requirements.txt --break-system-packages
 
 # Perguntar se quer limpar o banco de dados
 echo ""
@@ -37,25 +37,25 @@ case $db_option in
         fi
         
         echo "🔄 Recriando banco de dados..."
-        python manage.py migrate
+        python3 manage.py migrate
         
         echo ""
         read -p "🔐 Deseja criar um superusuário? (y/n): " create_super
         if [[ $create_super == "y" || $create_super == "Y" ]]; then
             echo "👤 Criando superusuário..."
-            python manage.py createsuperuser
+            python3 manage.py createsuperuser
         fi
         ;;
     1|*)
         echo "🗄️ Executando migrações..."
-        python manage.py migrate
+        python3 manage.py migrate
         ;;
 esac
 
 # Verificar se tudo está funcionando
 echo ""
 echo "🔍 Verificando sistema..."
-python manage.py check
+python3 manage.py check
 
 if [ $? -eq 0 ]; then
     echo "✅ Sistema verificado com sucesso!"
@@ -68,7 +68,7 @@ fi
 if [ -f "db.sqlite3" ]; then
     echo ""
     echo "📊 Estatísticas do banco:"
-    python manage.py shell -c "
+    python3 manage.py shell -c "
 from api.models import RaceRegistration
 total = RaceRegistration.objects.count()
 pending = RaceRegistration.objects.filter(payment_status='PENDING').count()
@@ -98,4 +98,4 @@ echo ""
 echo "⏹️ Pressione Ctrl+C para parar o servidor"
 echo ""
 
-python manage.py runserver 0.0.0.0:8000
+python3 manage.py runserver 0.0.0.0:8000
