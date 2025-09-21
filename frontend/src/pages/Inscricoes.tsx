@@ -100,9 +100,10 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const apiBaseUrl = 'https://api.admoving.demo.addirceu.com.br';
-
+      const apiBaseUrl = 'http://127.0.0.1:8000'; // URL local para desenvolvimento
+      
       console.log('API base usada:', apiBaseUrl);
+      console.log('Dados enviados:', formData);
 
       const response = await fetch(`${apiBaseUrl}/api/race-registrations/`, {
         method: 'POST',
@@ -114,10 +115,35 @@ const Inscricoes = () => {
 
       if (response.ok) {
         const result = await response.json();
-        toast({
-          title: "Inscrição realizada com sucesso! 🎉",
-          description: "Você receberá um email de confirmação em breve com todos os detalhes.",
-        });
+        console.log('Resultado da API:', result);
+        
+        // Verificar se há dados de pagamento na resposta
+        if (result.payment && result.payment.checkout_url) {
+          toast({
+            title: "Inscrição realizada com sucesso! 🎉",
+            description: "Redirecionando para o pagamento...",
+          });
+          
+          // Aguardar um momento para o usuário ver a mensagem
+          setTimeout(() => {
+            // Redirecionar para o Stripe Checkout
+            window.location.href = result.payment.checkout_url;
+          }, 1500);
+          
+        } else if (result.registration) {
+          // Caso a inscrição foi criada mas sem pagamento
+          toast({
+            title: "Inscrição realizada! ⚠️",
+            description: "Inscrição criada mas houve um problema com o pagamento. Entre em contato conosco.",
+            variant: "destructive"
+          });
+        } else {
+          // Resposta padrão (compatibilidade com versão antiga)
+          toast({
+            title: "Inscrição realizada com sucesso! 🎉",
+            description: "Você receberá um email de confirmação em breve com todos os detalhes.",
+          });
+        }
         
         // Resetar o formulário
         setFormData({
@@ -131,14 +157,19 @@ const Inscricoes = () => {
           shirt_size: "",
           athlete_declaration: false
         });
+        
       } else {
         const errorData = await response.json();
+        console.error('Erro da API:', errorData);
+        
         let errorMessage = "Erro ao processar inscrição. Tente novamente.";
         
         if (errorData.cpf && errorData.cpf[0]) {
           errorMessage = "CPF já cadastrado ou inválido.";
         } else if (errorData.non_field_errors) {
           errorMessage = errorData.non_field_errors[0];
+        } else if (errorData.detail) {
+          errorMessage = errorData.detail;
         }
         
         toast({
@@ -148,9 +179,10 @@ const Inscricoes = () => {
         });
       }
     } catch (error) {
+      console.error('Erro de conexão:', error);
       toast({
         title: "Erro de conexão",
-        description: "Não foi possível conectar com o servidor. Tente novamente.",
+        description: "Não foi possível conectar com o servidor. Verifique se o backend está rodando.",
         variant: "destructive"
       });
     } finally {

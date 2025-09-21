@@ -84,16 +84,25 @@ WSGI_APPLICATION = 'backend.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Para desenvolvimento com SQLite (temporário para testar Stripe)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('DB_NAME'),
-        'USER': config('DB_USER'),
-        'PASSWORD': config('DB_PASSWORD'),
-        'HOST': config('DB_HOST', default='db'),
-        'PORT': config('DB_PORT', default='5432'),
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+
+# Para produção com PostgreSQL (descomente quando necessário)
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST', default='db'),
+#         'PORT': config('DB_PORT', default='5432'),
+#     }
+# }
 
 
 # Password validation
@@ -244,3 +253,11 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='noreply@ad-mooving.co
 # Email encoding settings
 EMAIL_CHARSET = 'utf-8'
 DEFAULT_CHARSET = 'utf-8'
+
+# Stripe settings
+STRIPE_PUBLIC_KEY = config('STRIPE_PUBLIC_KEY', default='')
+STRIPE_SECRET_KEY = config('STRIPE_SECRET_KEY', default='')
+STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
+STRIPE_ENABLE_PIX = config('STRIPE_ENABLE_PIX', default=True, cast=bool)
+STRIPE_CONNECT_ACCOUNT_ID = config('STRIPE_CONNECT_ACCOUNT_ID', default='')  # Se usar Stripe Connect
+STRIPE_APPLICATION_FEE_AMOUNT = config('STRIPE_APPLICATION_FEE_AMOUNT', default=0, cast=int)  # em centavos
