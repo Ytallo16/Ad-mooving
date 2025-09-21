@@ -16,6 +16,8 @@ const IndexPage = () => {
     if (data.id) {
       const result = await stripe?.redirectToCheckout({
         sessionId: data.id,
+        successUrl: `${window.location.origin}/pagamento/sucesso?session_id={CHECKOUT_SESSION_ID}`,
+        cancelUrl: `${window.location.origin}/pagamento/cancelado`,
       })
 
       if (result?.error) {

@@ -10,11 +10,9 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 
 import { useNavigate } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 
 const Inscricoes = () => {
   const { toast } = useToast();
-  const navigate = useNavigate();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -162,7 +160,6 @@ const Inscricoes = () => {
           shirt_size: "",
           athlete_declaration: false
         });
-        navigate('/obrigado');
       } else {
         const errorData = await response.json();
         console.error('Erro da API:', errorData);
@@ -520,7 +517,6 @@ const Inscricoes = () => {
                       type="submit" 
                       disabled={isLoading}
                       className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
-                      size="lg"
                     >
                       {isLoading ? "Processando..." : "Finalizar Inscrição"}
                     </Button>
