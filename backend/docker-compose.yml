@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  # Backend Django API
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: admooving_api
+    env_file:
+      - ./.env
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - CORS_ALLOW_ALL_ORIGINS=${CORS_ALLOW_ALL_ORIGINS:-True}
+      - DB_ENGINE=${DB_ENGINE:-postgres}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST:-host.docker.internal}
+      - DB_PORT=${DB_PORT:-5432}
+    volumes:
+      # Arquivos estáticos coletados
+      - api_static:/app/staticfiles
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    networks:
+      - admooving_network
+  web:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: admooving_web
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - admooving_network
+volumes:
+  # Volume para arquivos estáticos coletados
+  api_static:
+    driver: local
+
+networks:
+  admooving_network:
+    driver: bridge

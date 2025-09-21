@@ -105,7 +105,11 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const response = await fetch('http://127.0.0.1:8000/api/race-registrations/', {
+      const apiBaseUrl = 'https://api.admoving.demo.addirceu.com.br';
+
+      console.log('API base usada:', apiBaseUrl);
+
+      const response = await fetch(`${apiBaseUrl}/api/race-registrations/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -219,22 +223,16 @@ const Inscricoes = () => {
       <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-race-primary/20 to-transparent"></div>
       <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-race-primary/20 to-transparent"></div>
       
-      {/* Padrão de círculos flutuantes */}
-      <div className="absolute left-4 top-1/4 w-3 h-3 bg-race-primary/30 rounded-full animate-pulse"></div>
-      <div className="absolute left-8 top-1/3 w-2 h-2 bg-race-secondary/40 rounded-full animate-pulse delay-500"></div>
-      <div className="absolute left-2 top-1/2 w-4 h-4 bg-race-primary/20 rounded-full animate-pulse delay-1000"></div>
-      <div className="absolute left-6 top-2/3 w-2 h-2 bg-race-secondary/35 rounded-full animate-pulse delay-700"></div>
+      {/* Padrão de círculos flutuantes - reduzido para melhor performance */}
+      <div className="absolute left-4 top-1/4 w-3 h-3 bg-race-primary/30 rounded-full animate-pulse-slow"></div>
+      <div className="absolute left-8 top-1/2 w-2 h-2 bg-race-secondary/40 rounded-full animate-pulse-slow delay-500"></div>
       
-      <div className="absolute right-4 top-1/4 w-3 h-3 bg-race-primary/30 rounded-full animate-pulse delay-300"></div>
-      <div className="absolute right-8 top-1/3 w-2 h-2 bg-race-secondary/40 rounded-full animate-pulse delay-800"></div>
-      <div className="absolute right-2 top-1/2 w-4 h-4 bg-race-primary/20 rounded-full animate-pulse delay-200"></div>
-      <div className="absolute right-6 top-2/3 w-2 h-2 bg-race-secondary/35 rounded-full animate-pulse delay-1200"></div>
+      <div className="absolute right-4 top-1/3 w-3 h-3 bg-race-primary/30 rounded-full animate-pulse-slow delay-300"></div>
+      <div className="absolute right-8 top-2/3 w-2 h-2 bg-race-secondary/40 rounded-full animate-pulse-slow delay-800"></div>
       
-      {/* Elementos geométricos */}
-      <div className="absolute top-32 left-16 w-8 h-8 border-2 border-race-primary/20 rotate-45 animate-pulse"></div>
-      <div className="absolute top-96 right-16 w-6 h-6 border-2 border-race-secondary/25 rotate-12 animate-pulse delay-500"></div>
-      <div className="absolute bottom-32 left-24 w-10 h-10 border border-race-primary/15 rounded-full animate-pulse delay-1000"></div>
-      <div className="absolute bottom-96 right-24 w-5 h-5 bg-race-primary/10 rotate-45 animate-pulse delay-700"></div>
+      {/* Elementos geométricos - reduzidos */}
+      <div className="absolute top-32 left-16 w-8 h-8 border-2 border-race-primary/20 rotate-45 animate-pulse-slow"></div>
+      <div className="absolute bottom-32 right-24 w-6 h-6 border border-race-primary/15 rounded-full animate-pulse-slow delay-1000"></div>
       
       <Navbar />
       

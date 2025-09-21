@@ -91,18 +91,18 @@ const Patrocinadores = () => {
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.05
       }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 10, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        duration: 0.5
+        duration: 0.3
       }
     }
   };
@@ -115,9 +115,9 @@ const Patrocinadores = () => {
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative px-4 py-20 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.4 }}
             className="text-center"
           >
             <div className="flex items-center justify-center mb-4">
@@ -137,9 +137,9 @@ const Patrocinadores = () => {
 
       {/* Estatísticas */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
         className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8"
       >
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -151,9 +151,9 @@ const Patrocinadores = () => {
           ].map((stat, index) => (
             <motion.div
               key={index}
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 + index * 0.1 }}
+              transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
               className="text-center"
             >
               <div className={`mx-auto w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center mb-4`}>
@@ -202,9 +202,9 @@ const Patrocinadores = () => {
 
       {/* CTA Section */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.5 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
         className="px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8"
       >
         <div className="text-center">
