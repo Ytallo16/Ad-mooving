@@ -19,7 +19,7 @@ const patrocinadores: Patrocinador[] = [
   {
     id: 1,
     nome: "TechCorp Solutions",
-    categoria: "Diamante",
+    categoria: "Ouro",
     logo: "🚀",
     descricao: "Líder em soluções tecnológicas inovadoras para o futuro da mobilidade urbana.",
     website: "https://techcorp.com",
@@ -81,6 +81,12 @@ const Patrocinadores = () => {
     ? patrocinadores 
     : patrocinadores.filter(p => p.categoria === categoriaFiltro);
 
+  const prioridade: Record<string, number> = { Ouro: 0, Prata: 1, Bronze: 2 };
+  const listaFinal = (categoriaFiltro === "Todas"
+    ? [...patrocinadores].sort((a, b) => (prioridade[a.categoria] - prioridade[b.categoria]) || a.nome.localeCompare(b.nome))
+    : patrocinadoresFiltrados.sort((a, b) => a.nome.localeCompare(b.nome))
+  );
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -126,7 +132,7 @@ const Patrocinadores = () => {
       {/* Filtros */}
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 mt-6">
         <div className="flex flex-wrap justify-center gap-2 mb-10">
-          {["Todas", "Diamante", "Ouro", "Prata", "Bronze"].map((categoria) => (
+          {["Todas", "Ouro", "Prata", "Bronze"].map((categoria) => (
             <Button
               key={categoria}
               variant={categoriaFiltro === categoria ? "default" : "outline"}
@@ -139,18 +145,18 @@ const Patrocinadores = () => {
         </div>
       </div>
 
-      {/* Lista de Patrocinadores */}
+      {/* Lista de Patrocinadores (simples, ordenada por prioridade) */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="px-4 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8"
       >
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {patrocinadoresFiltrados.map((patrocinador, index) => (
-            <PatrocinadorCard 
-              key={patrocinador.id} 
-              patrocinador={patrocinador} 
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
+          {listaFinal.map((patrocinador, index) => (
+            <PatrocinadorCard
+              key={patrocinador.id}
+              patrocinador={patrocinador}
               index={index}
             />
           ))}
@@ -170,7 +176,7 @@ const Patrocinadores = () => {
               Quer ser um patrocinador?
             </h2>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto font-29lt">
-              Junte-se às empresas visionárias que estão moldando o futuro da mobilidade urbana. 
+              Junte-se às empresas visionárias que estão moldando o futuro.
               Entre em contato conosco para conhecer as oportunidades de patrocínio.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -184,7 +190,7 @@ const Patrocinadores = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600"
+                 className="bg-white text-blue-600 hover:bg-gray-100"
               >
                 Baixar Kit do Patrocinador
               </Button>
