@@ -218,7 +218,7 @@ const LeafletMapComponent: React.FC<LeafletMapProps> = ({
     const map = useMap();
     useEffect(() => {
       if (!selected) return;
-      map.flyTo([selected.lat, selected.lng], 16, { animate: true, duration: 0.8 });
+      map.flyTo([selected.lat, selected.lng], 18, { animate: true, duration: 0.8 });
     }, [selected, map]);
     return null;
   };
