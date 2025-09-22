@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Polyline, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { Flag, Zap, Droplets, Trophy } from 'lucide-react';
@@ -48,12 +48,12 @@ interface LeafletMapProps {
 const pontosInteresse: PontoInteresse[] = [
   {
     id: 1,
-    nome: "Largada",
-    descricao: "Praça Central - Ponto de partida oficial",
+    nome: "Largada - Teresina Shopping",
+    descricao: "Ponto de partida oficial da corrida",
     km: 0,
     tipo: 'inicio',
-    lat: -23.5505, // Substitua pela latitude real da largada
-    lng: -46.6333, // Substitua pela longitude real da largada
+    lat: -5.086352724936339, // Latitude real da largada
+    lng: -42.79094257659999, // Longitude real da largada
     icone: <Flag className="w-5 h-5" />,
     cor: "green"
   },
@@ -61,10 +61,10 @@ const pontosInteresse: PontoInteresse[] = [
     id: 2,
     nome: "Checkpoint 1",
     descricao: "Posto de hidratação e cronometragem",
-    km: 2.5,
+    km: 1.5,
     tipo: 'checkpoint',
-    lat: -23.5485, // Substitua pela latitude real do checkpoint 1
-    lng: -46.6313, // Substitua pela longitude real do checkpoint 1
+    lat: -5.0842,
+    lng: -42.7878,
     icone: <Zap className="w-5 h-5" />,
     cor: "blue"
   },
@@ -72,10 +72,10 @@ const pontosInteresse: PontoInteresse[] = [
     id: 3,
     nome: "Hidratação",
     descricao: "Posto de água e isotônico",
-    km: 5.0,
+    km: 2.5,
     tipo: 'hidratacao',
-    lat: -23.5465, // Substitua pela latitude real do posto de hidratação
-    lng: -46.6293, // Substitua pela longitude real do posto de hidratação
+    lat: -5.0825,
+    lng: -42.7849,
     icone: <Droplets className="w-5 h-5" />,
     cor: "cyan"
   },
@@ -83,21 +83,21 @@ const pontosInteresse: PontoInteresse[] = [
     id: 4,
     nome: "Checkpoint 2",
     descricao: "Ponto de cronometragem intermediário",
-    km: 7.5,
+    km: 3.5,
     tipo: 'checkpoint',
-    lat: -23.5445, // Substitua pela latitude real do checkpoint 2
-    lng: -46.6273, // Substitua pela longitude real do checkpoint 2
+    lat: -5.0840,
+    lng: -42.7830,
     icone: <Zap className="w-5 h-5" />,
     cor: "blue"
   },
   {
     id: 5,
-    nome: "Chegada",
-    descricao: "Praça Central - Linha de chegada",
-    km: 10.0,
+    nome: "Chegada - Teresina Shopping",
+    descricao: "Linha de chegada da corrida",
+    km: 5.0,
     tipo: 'final',
-    lat: -23.5425, // Substitua pela latitude real da chegada
-    lng: -46.6253, // Substitua pela longitude real da chegada
+    lat: -5.0862,
+    lng: -42.7908,
     icone: <Trophy className="w-5 h-5" />,
     cor: "yellow"
   }
@@ -170,15 +170,75 @@ const LeafletMapComponent: React.FC<LeafletMapProps> = ({
   pontoSelecionado 
 }) => {
   const [mapCenter] = useState<[number, number]>([
-    pontos.length > 0 ? pontos[0].lat : -23.5505,
-    pontos.length > 0 ? pontos[0].lng : -46.6333
+    pontos.length > 0 ? pontos[0].lat : -5.086352724936339,
+    pontos.length > 0 ? pontos[0].lng : -42.79094257659999
   ]);
+  const [routedPath, setRoutedPath] = useState<[number, number][]>([]);
+  const markerRefs = useRef<Record<number, L.Marker | null>>({});
 
-  // Criar linha do percurso
-  const routePath = pontos.map(ponto => [ponto.lat, ponto.lng] as [number, number]);
+  // Construir rota seguindo as ruas usando OSRM (perfil a pé)
+  useEffect(() => {
+    const buildRoutedPath = async () => {
+      const coords = pontos.map(p => `${p.lng},${p.lat}`).join(';');
+      const buildFromProfile = async (profile: 'foot' | 'driving') => {
+        const url = `https://router.project-osrm.org/route/v1/${profile}/${coords}?overview=full&geometries=geojson&alternatives=false&steps=false`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        const data = await res.json();
+        const route = data?.routes?.[0]?.geometry?.coordinates;
+        if (!Array.isArray(route)) return null;
+        const latlngs: [number, number][] = route.map((c: [number, number]) => [c[1], c[0]]);
+        return latlngs;
+      };
+
+      if (!pontos || pontos.length < 2) {
+        setRoutedPath(pontos.map(p => [p.lat, p.lng] as [number, number]));
+        return;
+      }
+
+      // Tenta a pé; se a instância pública não suportar, cai para driving
+      const foot = await buildFromProfile('foot');
+      if (foot && foot.length > 1) {
+        setRoutedPath(foot);
+        return;
+      }
+      const driving = await buildFromProfile('driving');
+      if (driving && driving.length > 1) {
+        setRoutedPath(driving);
+        return;
+      }
+      // Fallback: linhas retas entre pontos
+      setRoutedPath(pontos.map(p => [p.lat, p.lng] as [number, number]));
+    };
+    buildRoutedPath();
+  }, [pontos]);
+
+  // Componente interno para focar no ponto selecionado quando mudar
+  const MapFocus: React.FC<{ selected: PontoInteresse | null | undefined }> = ({ selected }) => {
+    const map = useMap();
+    useEffect(() => {
+      if (!selected) return;
+      map.flyTo([selected.lat, selected.lng], 16, { animate: true, duration: 0.8 });
+    }, [selected, map]);
+    return null;
+  };
+
+  // Abrir popup do marcador do ponto selecionado após focar
+  useEffect(() => {
+    if (!pontoSelecionado) return;
+    const marker = markerRefs.current[pontoSelecionado];
+    if (marker) {
+      const timer = setTimeout(() => {
+        try {
+          marker.openPopup();
+        } catch {}
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [pontoSelecionado]);
 
   return (
-    <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-200">
+    <div className="w-full h-[420px] md:h-[600px] rounded-lg overflow-hidden border border-gray-200">
       <MapContainer
         center={mapCenter}
         zoom={13}
@@ -196,14 +256,18 @@ const LeafletMapComponent: React.FC<LeafletMapProps> = ({
         
         {/* Ajustar zoom para mostrar todos os pontos */}
         <MapBounds pontos={pontos} />
+        {/* Focar no ponto selecionado, se houver */}
+        <MapFocus selected={pontos.find(p => p.id === (pontoSelecionado ?? -1))} />
         
-        {/* Linha do percurso */}
-        <Polyline
-          positions={routePath}
-          color="#3b82f6"
-          weight={4}
-          opacity={0.8}
-        />
+        {/* Linha do percurso - usa rota por ruas quando disponível */}
+        {routedPath.length > 1 && (
+          <Polyline
+            positions={routedPath}
+            color="#3b82f6"
+            weight={4}
+            opacity={0.9}
+          />
+        )}
         
         {/* Marcadores dos pontos */}
         {pontos.map((ponto) => (
@@ -211,6 +275,7 @@ const LeafletMapComponent: React.FC<LeafletMapProps> = ({
             key={ponto.id}
             position={[ponto.lat, ponto.lng]}
             icon={createCustomIcon(ponto.cor, ponto.tipo)}
+            ref={(ref) => { markerRefs.current[ponto.id] = (ref as unknown as L.Marker) || null; }}
             eventHandlers={{
               click: () => {
                 if (onPontoClick) {
@@ -242,7 +307,7 @@ const LeafletMapComponent: React.FC<LeafletMapProps> = ({
 
 // Componente de loading
 const LoadingComponent: React.FC = () => (
-  <div className="w-full h-96 bg-gray-100 rounded-lg flex items-center justify-center">
+  <div className="w-full h-[420px] md:h-[600px] bg-gray-100 rounded-lg flex items-center justify-center">
     <div className="text-center">
       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-race-primary mx-auto mb-4"></div>
       <p className="text-gray-600">Carregando mapa...</p>
@@ -252,10 +317,10 @@ const LoadingComponent: React.FC = () => (
 
 // Componente de fallback caso o Leaflet não carregue
 const FallbackMap: React.FC<{ pontos: PontoInteresse[] }> = ({ pontos }) => (
-  <div className="w-full h-96 bg-gradient-to-br from-green-100 to-blue-100 rounded-lg p-8 overflow-hidden border border-gray-200">
+  <div className="w-full h-[420px] md:h-[600px] bg-gradient-to-br from-green-100 to-blue-100 rounded-lg p-8 overflow-hidden border border-gray-200">
     <div className="text-center mb-6">
       <h3 className="text-xl font-bold text-gray-800 mb-2">Percurso da Corrida</h3>
-      <p className="text-gray-600">Visualização do trajeto de 10km</p>
+      <p className="text-gray-600">Visualização do trajeto de 5km</p>
     </div>
     
     {/* Representação visual do percurso */}
@@ -274,7 +339,7 @@ const FallbackMap: React.FC<{ pontos: PontoInteresse[] }> = ({ pontos }) => (
             ponto.cor === 'cyan' ? 'bg-cyan-500' :
             ponto.cor === 'yellow' ? 'bg-yellow-500' : 'bg-gray-500'
           }`}
-          style={{ left: `${(ponto.km / 10) * 100}%` }}
+          style={{ left: `${(ponto.km / 5) * 100}%` }}
         >
           {ponto.tipo === 'inicio' ? '🏁' : 
            ponto.tipo === 'checkpoint' ? '⚡' : 
@@ -284,11 +349,11 @@ const FallbackMap: React.FC<{ pontos: PontoInteresse[] }> = ({ pontos }) => (
       ))}
       
       {/* Labels dos quilômetros */}
-      {[0, 2.5, 5, 7.5, 10].map((km, index) => (
+      {[0, 1, 2, 3, 4, 5].map((km, index) => (
         <div
           key={km}
           className="absolute top-1/2 transform -translate-y-1/2 text-xs font-semibold text-gray-600 bg-white px-2 py-1 rounded shadow-sm"
-          style={{ left: `${(km / 10) * 100}%` }}
+          style={{ left: `${(km / 5) * 100}%` }}
         >
           {km}km
         </div>
