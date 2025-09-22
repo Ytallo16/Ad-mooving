@@ -70,9 +70,7 @@ const Sobre = () => {
             <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">
               <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-8 font-teko">Cronograma do Dia</h3>
               <div className="relative mx-auto max-w-4xl">
-                {/* Linha vertical central da timeline */}
-                <div className="absolute left-6 top-0 bottom-0 border-l-2 border-race-primary/30" />
-                <ul className="space-y-8 pl-16">
+                <ul className="space-y-8">
                   {[
                     { hora: '06:00', desc: 'Credenciamento e retirada de kit' },
                     { hora: '07:30', desc: 'Aquecimento coletivo e orientações' },
@@ -80,8 +78,6 @@ const Sobre = () => {
                     { hora: '09:30', desc: 'Cerimônia de premiação' },
                   ].map((item) => (
                     <li key={item.hora} className="relative">
-                      {/* Ponto da timeline perfeitamente centralizado na linha */}
-                      <span className="absolute left-6 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-gradient-to-r from-race-primary to-race-secondary ring-4 ring-white" />
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                         <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-sm font-semibold bg-race-primary/10 text-race-primary min-w-[84px]">
                           {item.hora}
