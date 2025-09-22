@@ -133,6 +133,13 @@ All colors MUST be HSL.
   }
 }
 
+/* Desabilitar todas animações e transições do site */
+* {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+
 /* Custom animations for hero section - optimized for performance */
 @keyframes fadeIn {
   from {
