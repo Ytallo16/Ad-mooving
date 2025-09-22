@@ -290,7 +290,7 @@ const Inscricoes = () => {
                 <CardContent className="space-y-4">
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-white rounded-full"></div>
-                    <span className="text-sm">Experiência única de fé e movimento</span>
+                    <span className="text-sm">Contribuir com a obra missionária</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="w-2 h-2 bg-white rounded-full"></div>

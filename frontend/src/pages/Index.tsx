@@ -256,6 +256,8 @@ const Index = () => {
         </div>
       </motion.section>
 
+      
+
       {/* Galeria de Imagens - Momentos Especiais */}
       <motion.section 
         className="py-16 md:py-20 bg-white"

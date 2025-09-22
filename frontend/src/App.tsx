@@ -6,7 +6,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Index from "./pages/Index";
 import Inscricoes from "./pages/Inscricoes";
 import Patrocinadores from "./pages/Patrocinadores";
-import Percurso from "./pages/Percurso";
+import Sobre from "./pages/Sobre";
 import Pagamento from "./pagamento/index";
 import PagamentoSucesso from "./pages/PagamentoSucesso";
 import PagamentoCancelado from "./pages/PagamentoCancelado";
@@ -24,7 +24,7 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/inscricoes" element={<Inscricoes />} />
           <Route path="/patrocinadores" element={<Patrocinadores />} />
-          <Route path="/percurso" element={<Percurso />} />
+          <Route path="/sobre" element={<Sobre />} />
           <Route path="/pagamento" element={<Pagamento />} />
           <Route path="/pagamento/sucesso" element={<PagamentoSucesso />} />
           <Route path="/pagamento/cancelado" element={<PagamentoCancelado />} />
