@@ -46,14 +46,7 @@ const Navbar = () => {
           >
             Patrocinadores
           </Link>
-          <Link 
-            to="/contatos" 
-            className={`px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
-              location.pathname === "/contatos" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
-            }`}
-          >
-            Contatos
-          </Link>
+          
           <Link to="/inscricoes">
             <Button 
               variant={location.pathname === "/inscricoes" ? "default" : "outline"}
@@ -116,15 +109,7 @@ const Navbar = () => {
             >
               Patrocinadores
             </Link>
-            <Link 
-              to="/contatos" 
-              onClick={() => setIsMenuOpen(false)}
-              className={`block px-3 py-2 rounded-md text-sm font-medium transition-colors hover:bg-race-primary/10 font-29lt ${
-                location.pathname === "/contatos" ? "bg-race-primary/20 text-race-primary" : "text-foreground hover:text-race-primary"
-              }`}
-            >
-              Contatos
-            </Link>
+            
           </div>
         </div>
       )}

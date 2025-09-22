@@ -82,6 +82,10 @@ const Index = () => {
     }
   };
 
+  const [img1Loaded, setImg1Loaded] = useState(false);
+  const [img2Loaded, setImg2Loaded] = useState(false);
+  const [img3Loaded, setImg3Loaded] = useState(false);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -310,6 +314,9 @@ const Index = () => {
                 transition: { duration: 0.2 }
               }}
             >
+              <div className={`absolute inset-0 ${img1Loaded ? 'hidden' : 'block'}`}>
+                <div className="w-full h-full bg-gray-200" />
+              </div>
               <picture>
                 <source srcSet={img259} type="image/webp" />
                 <img 
@@ -319,6 +326,7 @@ const Index = () => {
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
+                  onLoad={() => setImg1Loaded(true)}
                 />
               </picture>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-150 will-change-opacity">
@@ -348,6 +356,9 @@ const Index = () => {
                 transition: { duration: 0.2 }
               }}
             >
+              <div className={`absolute inset-0 ${img2Loaded ? 'hidden' : 'block'}`}>
+                <div className="w-full h-full bg-gray-200" />
+              </div>
               <picture>
                 <source srcSet={img196} type="image/webp" />
                 <img 
@@ -357,6 +368,7 @@ const Index = () => {
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
+                  onLoad={() => setImg2Loaded(true)}
                 />
               </picture>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-100 will-change-opacity">
@@ -386,6 +398,9 @@ const Index = () => {
                 transition: { duration: 0.2 }
               }}
             >
+              <div className={`absolute inset-0 ${img3Loaded ? 'hidden' : 'block'}`}>
+                <div className="w-full h-full bg-gray-200" />
+              </div>
               <picture>
                 <source srcSet={img319} type="image/webp" />
                 <img 
@@ -395,6 +410,7 @@ const Index = () => {
                   loading="eager"
                   decoding="async"
                   fetchPriority="high"
+                  onLoad={() => setImg3Loaded(true)}
                 />
               </picture>
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-100 will-change-opacity">

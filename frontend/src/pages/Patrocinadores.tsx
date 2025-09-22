@@ -1,11 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  TrendingUp, 
-  Globe,
-  Building2,
-  Sparkles
-} from "lucide-react";
+import { TrendingUp, Globe, Building2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PatrocinadorCard from "@/components/PatrocinadorCard";
 import Navbar from "@/components/Navbar";
@@ -24,7 +19,7 @@ const patrocinadores: Patrocinador[] = [
   {
     id: 1,
     nome: "TechCorp Solutions",
-    categoria: "Diamante",
+    categoria: "Ouro",
     logo: "🚀",
     descricao: "Líder em soluções tecnológicas inovadoras para o futuro da mobilidade urbana.",
     website: "https://techcorp.com",
@@ -86,6 +81,12 @@ const Patrocinadores = () => {
     ? patrocinadores 
     : patrocinadores.filter(p => p.categoria === categoriaFiltro);
 
+  const prioridade: Record<string, number> = { Ouro: 0, Prata: 1, Bronze: 2 };
+  const listaFinal = (categoriaFiltro === "Todas"
+    ? [...patrocinadores].sort((a, b) => (prioridade[a.categoria] - prioridade[b.categoria]) || a.nome.localeCompare(b.nome))
+    : patrocinadoresFiltrados.sort((a, b) => a.nome.localeCompare(b.nome))
+  );
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -120,56 +121,18 @@ const Patrocinadores = () => {
             transition={{ duration: 0.4 }}
             className="text-center"
           >
-            <div className="flex items-center justify-center mb-4">
-              <Sparkles className="w-8 h-8 text-yellow-300 mr-3" />
-              <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-                Nossos Patrocinadores
-              </h1>
-              <Sparkles className="w-8 h-8 text-yellow-300 ml-3" />
-            </div>
-            <p className="max-w-2xl mx-auto text-xl text-blue-100">
-              Empresas visionárias que acreditam no futuro da mobilidade urbana e 
-              apoiam a inovação em nosso evento.
-            </p>
+            <h1 className="text-4xl font-bold text-white sm:text-5xl font-teko">Nossos Patrocinadores</h1>
+            <p className="max-w-2xl mx-auto text-lg text-blue-100 mt-3">Empresas que apoiam e acreditam no nosso evento.</p>
           </motion.div>
         </div>
       </div>
 
-      {/* Estatísticas */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.1 }}
-        className="px-4 py-12 mx-auto max-w-7xl sm:px-6 lg:px-8"
-      >
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { icone: Building2, valor: "6", label: "Patrocinadores", cor: "text-blue-600" },
-            { icone: TrendingUp, valor: "R$ 260k+", label: "Investimento Total", cor: "text-green-600" },
-            { icone: Globe, valor: "4", label: "Categorias", cor: "text-purple-600" },
-            { icone: Building2, valor: "1000+", label: "Participantes", cor: "text-orange-600" }
-          ].map((stat, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: 0.1 + index * 0.05 }}
-              className="text-center"
-            >
-              <div className={`mx-auto w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center mb-4`}>
-                <stat.icone className={`w-6 h-6 ${stat.cor}`} />
-              </div>
-              <div className="text-3xl font-bold text-gray-900 mb-2">{stat.valor}</div>
-              <div className="text-gray-600">{stat.label}</div>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
+      
 
       {/* Filtros */}
-      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {["Todas", "Diamante", "Ouro", "Prata", "Bronze"].map((categoria) => (
+      <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 mt-6">
+        <div className="flex flex-wrap justify-center gap-2 mb-10">
+          {["Todas", "Ouro", "Prata", "Bronze"].map((categoria) => (
             <Button
               key={categoria}
               variant={categoriaFiltro === categoria ? "default" : "outline"}
@@ -182,18 +145,18 @@ const Patrocinadores = () => {
         </div>
       </div>
 
-      {/* Lista de Patrocinadores */}
+      {/* Lista de Patrocinadores (simples, ordenada por prioridade) */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
         animate="visible"
         className="px-4 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8"
       >
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {patrocinadoresFiltrados.map((patrocinador, index) => (
-            <PatrocinadorCard 
-              key={patrocinador.id} 
-              patrocinador={patrocinador} 
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-2">
+          {listaFinal.map((patrocinador, index) => (
+            <PatrocinadorCard
+              key={patrocinador.id}
+              patrocinador={patrocinador}
               index={index}
             />
           ))}
@@ -213,7 +176,7 @@ const Patrocinadores = () => {
               Quer ser um patrocinador?
             </h2>
             <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto font-29lt">
-              Junte-se às empresas visionárias que estão moldando o futuro da mobilidade urbana. 
+              Junte-se às empresas visionárias que estão moldando o futuro.
               Entre em contato conosco para conhecer as oportunidades de patrocínio.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -227,7 +190,7 @@ const Patrocinadores = () => {
               <Button 
                 size="lg" 
                 variant="outline"
-                className="border-white text-white hover:bg-white hover:text-blue-600"
+                 className="bg-white text-blue-600 hover:bg-gray-100"
               >
                 Baixar Kit do Patrocinador
               </Button>
