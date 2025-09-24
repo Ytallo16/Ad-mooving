@@ -90,6 +90,9 @@ const Index = () => {
   // Inclui fuso horário para exibir corretamente no Google Agenda.
   const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('ADMOVING - Largada às 6h.')}&dates=20251214T090000Z/20251214T110000Z&details=${encodeURIComponent('ADMOVING - Largada às 6h.')} &location=${encodeURIComponent('Parque Potycabana, Teresina - PI')}&ctz=America/Fortaleza`;
 
+  // Link do Google Maps para o local do evento (Parque Potycabana)
+  const googleMapsUrl = `https://www.google.com/maps?q=${encodeURIComponent('Parque Potycabana, Teresina - PI')}`;
+
   // Removido: geração de arquivo ICS. Usaremos apenas o link do Google Agenda.
 
   return (
@@ -207,12 +210,32 @@ const Index = () => {
               </div>
             </motion.div>
 
-            {/* Card Local */}
+            {/* Card Local com ícone do Google Maps no canto superior direito */}
             <motion.div 
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group relative"
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
+              <button
+                onClick={(e) => { e.stopPropagation(); window.open(googleMapsUrl, '_blank', 'noopener,noreferrer'); }}
+                className="absolute top-2 right-2 inline-flex items-center justify-center w-10 h-10 rounded-md border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition"
+                title="Abrir no Google Maps"
+                aria-label="Abrir no Google Maps"
+              >
+                {/* Ícone vetorial estilo Google Maps */}
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                  <defs>
+                    <clipPath id="pinClip"><path d="M12 2c-3.8 0-7 3.06-7 6.84 0 1.97.86 3.63 2.02 5.16.88 1.17 1.92 2.28 2.91 3.55.56.72 1.12 1.48 1.67 2.31.2.3.38.6.56.9.18-.3.36-.6.56-.9.55-.83 1.11-1.59 1.67-2.31.99-1.27 2.03-2.38 2.91-3.55C18.14 12.47 19 10.81 19 8.84 19 5.06 15.8 2 12 2z"/></clipPath>
+                  </defs>
+                  <path fill="#34A853" d="M12 2c-3.8 0-7 3.06-7 6.84 0 1.97.86 3.63 2.02 5.16.88 1.17 1.92 2.28 2.91 3.55.56.72 1.12 1.48 1.67 2.31.2.3.38.6.56.9.18-.3.36-.6.56-.9.55-.83 1.11-1.59 1.67-2.31.99-1.27 2.03-2.38 2.91-3.55C18.14 12.47 19 10.81 19 8.84 19 5.06 15.8 2 12 2z"/>
+                  <g clipPath="url(#pinClip)">
+                    <rect x="-2" y="2" width="14" height="10" fill="#4285F4"/>
+                    <rect x="12" y="2" width="14" height="10" fill="#FBBC05"/>
+                    <rect x="-2" y="12" width="28" height="12" fill="#EA4335"/>
+                  </g>
+                  <circle cx="12" cy="9" r="3.2" fill="#fff"/>
+                </svg>
+              </button>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
