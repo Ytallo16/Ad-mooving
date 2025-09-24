@@ -273,11 +273,11 @@ const Index = () => {
               {/* Coluna esquerda: Verso estilizado */}
               <div className="text-left md:text-left md:max-w-none -ml-12 md:-ml-24 mt-16 md:mt-28 self-center">
                 <blockquote className="border-l-4 border-race-primary pl-0 md:pl-0">
-                  <h2 className="text-5xl md:text-7xl font-bold text-race-primary mb-3 md:mb-4 font-teko leading-tight">
+                  <h2 className="text-5xl md:text-7xl font-bold text-race-primary mb-3 md:mb-4 font-figtree leading-tight">
                     "Pois nele vivemos, nos movemos e existimos"
                   </h2>
                 </blockquote>
-                <p className="text-lg md:text-2xl text-race-secondary font-semibold italic md:ml-1">
+                <p className="text-lg md:text-2xl text-race-secondary font-semibold italic md:ml-1 font-figtree">
                   Atos 17:28
                 </p>
               </div>
