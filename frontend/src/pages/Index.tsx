@@ -284,9 +284,16 @@ const Index = () => {
 
               {/* Coluna direita: Texto de participação + Vídeo */}
               <div>
-                <p className="text-base md:text-lg text-gray-700 mb-4 leading-relaxed text-center md:text-left">
-                  A sua participação na 1 corrida da <span className="font-semibold">AD Moving</span> nos ajudou a construir uma igreja no sertão da Paraíba, assista:
-                </p>
+                <div className="mb-5 text-center md:text-left">
+                  <div className="h-1 w-12 bg-race-primary rounded mx-auto md:mx-0 mb-3"></div>
+                  <p className="text-xl md:text-3xl font-bold text-gray-900 leading-tight">
+                    <span className="text-race-primary">A sua participação</span> na 1ª corrida da 
+                    <span className="text-race-primary font-extrabold"> AD Moving</span>
+                  </p>
+                  <p className="text-base md:text-lg text-gray-600 mt-1 leading-relaxed">
+                    nos ajudou a construir uma igreja no sertão da Paraíba — assista:
+                  </p>
+                </div>
                 <div className="relative w-full max-w-2xl md:max-w-none mx-auto">
                   <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
                     <iframe
