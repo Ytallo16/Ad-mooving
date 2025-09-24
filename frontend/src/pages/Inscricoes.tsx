@@ -16,14 +16,24 @@ const Inscricoes = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
+    // Dados do atleta/criança
     full_name: "",
     cpf: "",
     email: "",
     phone: "",
     birth_date: "",
     gender: "",
-    modality: "ADULTO",
+    // Percurso e modalidade derivada
+    course: "RUN_5K", // KIDS | RUN_5K | WALK_3K
+    modality: "ADULTO", // ADULTO | INFANTIL (deriva do course)
+    // Camiseta
     shirt_size: "",
+    // Responsável (usado quando course == KIDS)
+    responsible_full_name: "",
+    responsible_cpf: "",
+    responsible_email: "",
+    responsible_phone: "",
+    // Declaração
     athlete_declaration: false
   });
 
@@ -44,38 +54,23 @@ const Inscricoes = () => {
 
 
   const getShirtSizes = () => {
-    if (formData.modality === 'INFANTIL') {
+    if (formData.course === 'KIDS' || formData.modality === 'INFANTIL') {
       return [
-        { value: '2', label: '2 anos' },
         { value: '4', label: '4 anos' },
         { value: '6', label: '6 anos' },
         { value: '8', label: '8 anos' },
         { value: '10', label: '10 anos' },
-        { value: '12', label: '12 anos' },
-        { value: '14', label: '14 anos' },
-        { value: '16', label: '16 anos' },
-      ];
-    } else if (formData.gender === 'F') {
-      return [
-        { value: 'PP', label: 'PP (Babylook)' },
-        { value: 'P', label: 'P (Babylook)' },
-        { value: 'M', label: 'M (Babylook)' },
-        { value: 'G', label: 'G (Babylook)' },
-        { value: 'GG', label: 'GG (Babylook)' },
-        { value: 'XG', label: 'XG (Babylook)' },
-        { value: 'XXG', label: 'XXG (Babylook)' },
-      ];
-    } else {
-      return [
-        { value: 'PP', label: 'PP' },
-        { value: 'P', label: 'P' },
-        { value: 'M', label: 'M' },
-        { value: 'G', label: 'G' },
-        { value: 'GG', label: 'GG' },
-        { value: 'XG', label: 'XG' },
-        { value: 'XXG', label: 'XXG' },
       ];
     }
+    return [
+      { value: 'PP', label: 'Tradicional PP' },
+      { value: 'P', label: 'Tradicional P' },
+      { value: 'M', label: 'Tradicional M' },
+      { value: 'G', label: 'Tradicional G' },
+      { value: 'GG', label: 'Tradicional GG' },
+      { value: 'XG', label: 'Tradicional XG' },
+      { value: 'XXG', label: 'Tradicional XXG' },
+    ];
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -91,7 +86,7 @@ const Inscricoes = () => {
     }
 
     const age = calculateAge(formData.birth_date);
-    if (age < 12) {
+    if ((formData.course === 'RUN_5K' || formData.course === 'WALK_3K') && age < 12) {
       toast({
         title: "Erro na inscrição",
         description: "O atleta deve ter pelo menos 12 anos para se inscrever.",
@@ -108,12 +103,20 @@ const Inscricoes = () => {
       console.log('API base usada:', apiBaseUrl);
       console.log('Dados enviados:', formData);
 
+      const payload = {
+        ...formData,
+        modality: formData.course === 'KIDS' ? 'INFANTIL' : 'ADULTO',
+        // Para KIDS, email/phone podem ser do responsável
+        email: formData.course === 'KIDS' && formData.responsible_email ? formData.responsible_email : formData.email,
+        phone: formData.course === 'KIDS' && formData.responsible_phone ? formData.responsible_phone : formData.phone,
+      };
+
       const response = await fetch(`${apiBaseUrl}/api/race-registrations/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
 
       if (response.ok) {
@@ -156,8 +159,13 @@ const Inscricoes = () => {
           phone: "",
           birth_date: "",
           gender: "",
+          course: "RUN_5K",
           modality: "ADULTO",
           shirt_size: "",
+          responsible_full_name: "",
+          responsible_cpf: "",
+          responsible_email: "",
+          responsible_phone: "",
           athlete_declaration: false
         });
       } else {
@@ -194,22 +202,16 @@ const Inscricoes = () => {
 
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => {
-      const newData = { ...prev, [field]: value };
+      const newData: any = { ...prev, [field]: value };
       
-      // Auto-detectar modalidade baseada na idade
-      if (field === 'birth_date' && typeof value === 'string') {
-        const age = calculateAge(value);
-        if (age > 0 && age < 18) {
-          newData.modality = 'INFANTIL';
-        } else if (age >= 18) {
-          newData.modality = 'ADULTO';
-        }
-        // Resetar tamanho da camisa quando mudar modalidade
+      // Sincronizar modalidade a partir do percurso
+      if (field === 'course') {
+        newData.modality = value === 'KIDS' ? 'INFANTIL' : 'ADULTO';
         newData.shirt_size = '';
       }
-      
-      // Resetar tamanho da camisa quando mudar gênero ou modalidade
-      if (field === 'gender' || field === 'modality') {
+
+      // Resetar tamanho da camisa quando mudar gênero
+      if (field === 'gender') {
         newData.shirt_size = '';
       }
       
@@ -381,7 +383,7 @@ const Inscricoes = () => {
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="full_name">Nome Completo *</Label>
+                        <Label htmlFor="full_name">{formData.course==='KIDS' ? 'Nome completo da criança *' : 'Nome Completo *'}</Label>
                         <Input
                           id="full_name"
                           value={formData.full_name}
@@ -391,48 +393,51 @@ const Inscricoes = () => {
                           className="border-race-primary-light/30 focus:border-race-primary"
                         />
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="cpf">CPF *</Label>
-                        <Input
-                          id="cpf"
-                          value={formatCPF(formData.cpf)}
-                          onChange={(e) => handleInputChange("cpf", e.target.value.replace(/\D/g, ''))}
-                          placeholder="000.000.000-00"
-                          required
-                          maxLength={14}
-                          className="border-race-primary-light/30 focus:border-race-primary"
-                        />
-                      </div>
+                      {formData.course !== 'KIDS' && (
+                        <div className="space-y-2">
+                          <Label htmlFor="cpf">CPF *</Label>
+                          <Input
+                            id="cpf"
+                            value={formatCPF(formData.cpf)}
+                            onChange={(e) => handleInputChange("cpf", e.target.value.replace(/\D/g, ''))}
+                            placeholder="000.000.000-00"
+                            required
+                            maxLength={14}
+                            className="border-race-primary-light/30 focus:border-race-primary"
+                          />
+                        </div>
+                      )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="email">Email *</Label>
-                        <Input
-                          id="email"
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => handleInputChange("email", e.target.value)}
-                          placeholder="seu@email.com"
-                          required
-                          className="border-race-primary-light/30 focus:border-race-primary"
-                        />
+                    {formData.course !== 'KIDS' && (
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="email">Email *</Label>
+                          <Input
+                            id="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => handleInputChange("email", e.target.value)}
+                            placeholder="seu@email.com"
+                            required
+                            className="border-race-primary-light/30 focus:border-race-primary"
+                          />
+                        </div>
+                        
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Telefone (WhatsApp) *</Label>
+                          <Input
+                            id="phone"
+                            value={formatPhone(formData.phone)}
+                            onChange={(e) => handleInputChange("phone", e.target.value.replace(/\D/g, ''))}
+                            placeholder="(11) 99999-9999"
+                            required
+                            maxLength={15}
+                            className="border-race-primary-light/30 focus:border-race-primary"
+                          />
+                        </div>
                       </div>
-                      
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Telefone (WhatsApp) *</Label>
-                        <Input
-                          id="phone"
-                          value={formatPhone(formData.phone)}
-                          onChange={(e) => handleInputChange("phone", e.target.value.replace(/\D/g, ''))}
-                          placeholder="(11) 99999-9999"
-                          required
-                          maxLength={15}
-                          className="border-race-primary-light/30 focus:border-race-primary"
-                        />
-                      </div>
-                    </div>
+                    )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
@@ -468,21 +473,17 @@ const Inscricoes = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="modality">Modalidade *</Label>
-                        <Select value={formData.modality} onValueChange={(value) => handleInputChange("modality", value)}>
+                        <Label htmlFor="course">Percurso *</Label>
+                        <Select value={formData.course} onValueChange={(value) => handleInputChange("course", value)}>
                           <SelectTrigger className="border-race-primary-light/30 focus:border-race-primary">
-                            <SelectValue placeholder="Selecione a modalidade" />
+                            <SelectValue placeholder="Selecione o percurso" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="ADULTO">Adulto</SelectItem>
-                            <SelectItem value="INFANTIL">Infantil</SelectItem>
+                            <SelectItem value="KIDS">Kids</SelectItem>
+                            <SelectItem value="RUN_5K">5KM (Corrida)</SelectItem>
+                            <SelectItem value="WALK_3K">3KM (Caminhada)</SelectItem>
                           </SelectContent>
                         </Select>
-                        {formData.birth_date && calculateAge(formData.birth_date) < 18 && formData.modality === 'ADULTO' && (
-                          <p className="text-xs text-amber-600">
-                            Sugestão: Modalidade infantil para menores de 18 anos
-                          </p>
-                        )}
                       </div>
                       
                       <div className="space-y-2">
@@ -499,34 +500,39 @@ const Inscricoes = () => {
                             ))}
                           </SelectContent>
                         </Select>
-                        {formData.gender === 'F' && formData.modality === 'ADULTO' && (
-                          <p className="text-xs text-muted-foreground">
-                            Camisetas femininas são do tipo babylook
-                          </p>
-                        )}
+                        <p className="text-xs text-muted-foreground">{formData.course==='KIDS' ? 'Tamanhos infantis 4, 6, 8, 10 anos' : 'Tamanhos adulto: Tradicional PP a XXG'}</p>
                       </div>
                     </div>
 
-                    <div className="bg-gradient-to-r from-race-primary-light/15 to-race-secondary-light/5 p-6 rounded-lg border border-race-primary-light/20">
-                      <h3 className="font-semibold text-race-primary mb-3 text-lg">Informações importantes:</h3>
-                      <ul className="text-sm text-muted-foreground space-y-2">
-                        <li className="flex items-center space-x-2">
-                          <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Inclui kit do corredor com camiseta</span>
-                        </li>
-                        <li className="flex items-center space-x-2">
-                          <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Hidratação durante o percurso</span>
-                        </li>
-                        <li className="flex items-center space-x-2">
-                          <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Medalha para todos os participantes</span>
-                        </li>
-                        <li className="flex items-center space-x-2">
-                          <div className="w-1.5 h-1.5 bg-race-primary rounded-full"></div>
-                          <span>Idade mínima: 12 anos</span>
-                        </li>
-                      </ul>
+                    {formData.course === 'KIDS' && (
+                      <div className="space-y-4 p-4 rounded-lg border border-race-primary-light/30 bg-white/70">
+                        <h3 className="font-semibold text-race-primary">Dados do Responsável</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-2">
+                            <Label htmlFor="responsible_full_name">Nome do Responsável *</Label>
+                            <Input id="responsible_full_name" value={formData.responsible_full_name} onChange={(e)=>handleInputChange('responsible_full_name', e.target.value)} required={formData.course==='KIDS'} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="responsible_cpf">CPF do Responsável *</Label>
+                            <Input id="responsible_cpf" value={formatCPF(formData.responsible_cpf)} onChange={(e)=>handleInputChange('responsible_cpf', e.target.value.replace(/\D/g,''))} placeholder="000.000.000-00" required={formData.course==='KIDS'} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="responsible_email">Email do Responsável *</Label>
+                            <Input id="responsible_email" type="email" value={formData.responsible_email} onChange={(e)=>handleInputChange('responsible_email', e.target.value)} required={formData.course==='KIDS'} />
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="responsible_phone">Telefone do Responsável *</Label>
+                            <Input id="responsible_phone" value={formatPhone(formData.responsible_phone)} onChange={(e)=>handleInputChange('responsible_phone', e.target.value.replace(/\D/g,''))} placeholder="(11) 99999-9999" required={formData.course==='KIDS'} />
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Aviso de doação de alimento */}
+                    <div className="p-5 rounded-lg border border-amber-300 bg-amber-50">
+                      <h3 className="font-semibold text-amber-800 mb-2">Corrida e Caminhada</h3>
+                      <p className="text-sm text-amber-900">+ 1kg de alimento não-perecível</p>
+                      <p className="text-xs text-amber-800 mt-1">Obs: Os alimentos deverão ser entregues no momento da retirada do kit do atleta.</p>
                     </div>
 
                     <div className="flex items-start space-x-3 p-4 bg-amber-50 border border-amber-200 rounded-lg">

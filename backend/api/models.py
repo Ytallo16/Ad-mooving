@@ -15,6 +15,12 @@ class RaceRegistration(models.Model):
         ('INFANTIL', 'Infantil'),
         ('ADULTO', 'Adulto'),
     ]
+
+    COURSE_CHOICES = [
+        ('KIDS', 'Kids'),
+        ('RUN_5K', '5KM (Corrida)'),
+        ('WALK_3K', '3KM (Caminhada)'),
+    ]
     
     SHIRT_SIZE_CHOICES = [
         ('PP', 'PP'),
@@ -27,14 +33,10 @@ class RaceRegistration(models.Model):
     ]
     
     INFANT_SHIRT_SIZE_CHOICES = [
-        ('2', '2 anos'),
         ('4', '4 anos'),
         ('6', '6 anos'),
         ('8', '8 anos'),
         ('10', '10 anos'),
-        ('12', '12 anos'),
-        ('14', '14 anos'),
-        ('16', '16 anos'),
     ]
     
     PAYMENT_STATUS_CHOICES = [
@@ -44,7 +46,7 @@ class RaceRegistration(models.Model):
     
     # Campos obrigatórios
     full_name = models.CharField(max_length=200, verbose_name="Nome Completo")
-    cpf = models.CharField(max_length=14, unique=True, verbose_name="CPF")
+    cpf = models.CharField(max_length=14, blank=True, null=True, verbose_name="CPF")
     email = models.EmailField(verbose_name="E-mail")  # Removida restrição unique
     phone = models.CharField(max_length=20, verbose_name="Telefone (WhatsApp)")
     birth_date = models.DateField(verbose_name="Data de nascimento")
@@ -58,11 +60,32 @@ class RaceRegistration(models.Model):
         help_text="Escolha entre Infantil ou Adulto",
         default='ADULTO'
     )
+    course = models.CharField(
+        max_length=10,
+        choices=COURSE_CHOICES,
+        verbose_name="Percurso",
+        help_text="Kids, 5KM (Corrida) ou 3KM (Caminhada)",
+        default='RUN_5K'
+    )
     shirt_size = models.CharField(
         max_length=3, 
         verbose_name="Tamanho da Camisa",
         help_text="Escolha o tamanho da sua camisa",
         default='M'
+    )
+
+    # Dados do responsável (para inscrições Kids)
+    responsible_full_name = models.CharField(
+        max_length=200, blank=True, null=True, verbose_name="Nome do Responsável"
+    )
+    responsible_cpf = models.CharField(
+        max_length=14, blank=True, null=True, verbose_name="CPF do Responsável"
+    )
+    responsible_email = models.EmailField(
+        blank=True, null=True, verbose_name="E-mail do Responsável"
+    )
+    responsible_phone = models.CharField(
+        max_length=20, blank=True, null=True, verbose_name="Telefone do Responsável"
     )
     
     # Campo de declaração obrigatória
