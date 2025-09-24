@@ -9,6 +9,7 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
     age = serializers.ReadOnlyField(help_text="Idade calculada automaticamente")
     gender_display = serializers.CharField(source='get_gender_display', read_only=True, help_text="Descrição do sexo")
     modality_display = serializers.CharField(source='get_modality_display', read_only=True, help_text="Descrição da modalidade")
+    course_display = serializers.CharField(source='get_course_display', read_only=True, help_text="Descrição do percurso")
     shirt_size_display = serializers.CharField(source='get_shirt_size_display', read_only=True, help_text="Descrição do tamanho da camisa")
     payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True, help_text="Descrição do status do pagamento")
     
@@ -19,8 +20,9 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
         model = RaceRegistration
         fields = [
             'id', 'full_name', 'cpf', 'email', 'phone', 'birth_date', 
-            'gender', 'gender_display', 'modality', 'modality_display',
+            'gender', 'gender_display', 'modality', 'modality_display', 'course', 'course_display',
             'shirt_size', 'shirt_size_display', 'available_shirt_sizes',
+            'responsible_full_name', 'responsible_cpf', 'responsible_email', 'responsible_phone',
             'athlete_declaration', 'payment_status', 'payment_status_display',
             'registration_email_sent', 'payment_email_sent', 'age', 
             'created_at', 'updated_at'
@@ -31,22 +33,10 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
         """
         Retorna os tamanhos de camisa disponíveis baseados na modalidade e sexo
         """
-        if obj.modality == 'INFANTIL':
+        if obj.modality == 'INFANTIL' or obj.course == 'KIDS':
             return dict(RaceRegistration.INFANT_SHIRT_SIZE_CHOICES)
-        elif obj.gender == 'F':
-            # Para mulheres, sempre retorna tamanhos babylook
-            return {
-                'PP': 'PP (Babylook)',
-                'P': 'P (Babylook)',
-                'M': 'M (Babylook)',
-                'G': 'G (Babylook)',
-                'GG': 'GG (Babylook)',
-                'XG': 'XG (Babylook)',
-                'XXG': 'XXG (Babylook)',
-            }
-        else:
-            # Para homens adultos
-            return dict(RaceRegistration.SHIRT_SIZE_CHOICES)
+        # Adulto: tamanhos tradicionais
+        return {k: f'Tradicional {k}' for k, _ in RaceRegistration.SHIRT_SIZE_CHOICES}
     
     def validate_cpf(self, value):
         """
@@ -95,12 +85,14 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
         if value > timezone.now().date():
             raise serializers.ValidationError("A data de nascimento não pode ser no futuro.")
         
-        # Verificar se a pessoa tem pelo menos 12 anos
+        # Para ADULTO, exigir pelo menos 12 anos; para KIDS/INFANTIL, permitir inferiores
+        request_data = getattr(self, 'initial_data', {})
+        modality = request_data.get('modality')
+        course = request_data.get('course')
         today = timezone.now().date()
         age = today.year - value.year - ((today.month, today.day) < (value.month, value.day))
-        
-        if age < 12:
-            raise serializers.ValidationError("O atleta deve ter pelo menos 12 anos para se inscrever.")
+        if (modality == 'ADULTO' or course in ['RUN_5K', 'WALK_3K']) and age < 12:
+            raise serializers.ValidationError("Para adulto/percurso 5KM/3KM, o atleta deve ter pelo menos 12 anos.")
         
         return value
     
@@ -114,12 +106,17 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
                 "Você deve marcar 'Ciente' para se inscrever."
             )
         
-        # Validar tamanho da camisa baseado na modalidade
+        # Sincronizar modalidade a partir do percurso
+        course = data.get('course') or self.initial_data.get('course')
         modality = data.get('modality')
+        if course and not modality:
+            data['modality'] = 'INFANTIL' if course == 'KIDS' else 'ADULTO'
+            modality = data['modality']
+
+        # Validar tamanho da camisa baseado na modalidade/percurso
         shirt_size = data.get('shirt_size')
-        
-        if modality == 'INFANTIL':
-            valid_sizes = ['2', '4', '6', '8', '10', '12', '14', '16']
+        if modality == 'INFANTIL' or course == 'KIDS':
+            valid_sizes = ['4', '6', '8', '10']
             if shirt_size not in valid_sizes:
                 raise serializers.ValidationError(
                     f"Para modalidade infantil, o tamanho deve ser: {', '.join(valid_sizes)}"
@@ -130,5 +127,20 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     f"Para modalidade adulto, o tamanho deve ser: {', '.join(valid_sizes)}"
                 )
+
+        # Campos do responsável para KIDS
+        if modality == 'INFANTIL' or course == 'KIDS':
+            for field in ['responsible_full_name', 'responsible_cpf']:
+                if not data.get(field) and not self.initial_data.get(field):
+                    raise serializers.ValidationError({field: 'Campo obrigatório para inscrição infantil.'})
+            # Para infantil: email/phone/cpf do atleta não são obrigatórios
+            data['cpf'] = data.get('cpf') or None
+            data['email'] = data.get('email') or data.get('responsible_email') or None
+            data['phone'] = data.get('phone') or data.get('responsible_phone') or None
         
         return data 
+
+    def create(self, validated_data):
+        # Se inscrição infantil e email/phone do responsável fornecidos separadamente,
+        # opcionalmente sincronizar (mantemos como estão; principal é que email/phone existam)
+        return super().create(validated_data)

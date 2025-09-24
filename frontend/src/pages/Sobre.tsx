@@ -93,6 +93,53 @@ const Sobre = () => {
             </div>
           </section>
 
+          {/* Premiação */}
+          <section className="mt-12">
+            <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">
+              <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-6 font-teko">Premiação</h3>
+              <p className="text-gray-700 text-base md:text-lg">
+                Troféus para os 3 primeiros colocados de cada categoria (masculino e feminino).
+              </p>
+            </div>
+          </section>
+
+          {/* Retirada de Kits */}
+          <section className="mt-12">
+            <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">
+              <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-6 font-teko">Retirada de Kits</h3>
+              <div className="space-y-2 text-gray-700">
+                <p><span className="font-semibold">Data:</span> em breve</p>
+                <p><span className="font-semibold">Local:</span> em breve</p>
+                <p className="mt-3 font-semibold">Documentos Necessários:</p>
+                <ul className="list-disc pl-5 text-sm md:text-base">
+                  <li>Comprovante de inscrição e documento original com foto.</li>
+                </ul>
+                <p className="text-sm md:text-base mt-3">
+                  A retirada de kits por terceiros poderá ser feita mediante apresentação do comprovante de inscrição e cópia de documento de identificação com foto do inscrito.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          {/* Kit do Atleta - estilo lista simples com ícone e bullets */}
+          <section className="mt-12">
+            <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-3xl" aria-hidden>👕</span>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900">Kit do Atleta</h3>
+              </div>
+              <hr className="border-gray-200 mb-6" />
+              <ul className="list-disc pl-6 space-y-4 text-gray-800 text-base md:text-lg">
+                <li>Camiseta oficial</li>
+                <li>Número de peito</li>
+                <li>Chip de cronometragem</li>
+                <li>Medalha (pós-prova)</li>
+                <li>Ecobag</li>
+                <li>Pódio e backdrop para fotos</li>
+              </ul>
+            </div>
+          </section>
+
           {/* Regras - organização limpa em duas colunas, sem ícones */}
           <section className="mt-12">
             <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">

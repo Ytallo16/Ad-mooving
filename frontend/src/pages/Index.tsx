@@ -208,7 +208,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Horário</h3>
-                <p className="text-2xl font-bold text-gray-800 mb-1">Largada às 6h</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">Largada às 06h</p>
                 <p className="text-gray-600 font-medium">Manhã</p>
               </div>
             </motion.div>
@@ -599,7 +599,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Kit do Corredor - Preview */}
+            {/* Kit do Corredor - Preview */}
       <section className="py-16 md:py-24 bg-white">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
@@ -655,8 +655,8 @@ const Index = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-race-primary mb-2 font-teko">Cronometragem oficial</h4>
-                <p className="text-gray-600 text-sm">Cronometragem profissional</p>
+                <h4 className="text-xl font-bold text-race-primary mb-2 font-teko">Camiseta oficial</h4>
+                <p className="text-gray-600 text-sm">Modelo do evento</p>
               </div>
 
               {/* Medalha */}
@@ -666,8 +666,8 @@ const Index = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-race-secondary mb-2 font-teko">Medalha</h4>
-                <p className="text-gray-600 text-sm">Conquista para todos</p>
+                <h4 className="text-xl font-bold text-race-secondary mb-2 font-teko">Número de peito</h4>
+                <p className="text-gray-600 text-sm">Identificação oficial</p>
               </div>
 
               {/* Número */}
@@ -677,8 +677,40 @@ const Index = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-green-600 mb-2 font-teko">Número</h4>
-                <p className="text-gray-600 text-sm">Identificação oficial</p>
+                <h4 className="text-xl font-bold text-green-600 mb-2 font-teko">Chip de cronometragem</h4>
+                <p className="text-gray-600 text-sm">Tempo oficial</p>
+              </div>
+              {/* Medalha pós-prova */}
+              <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-6 text-center border border-indigo-200 hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-indigo-600 mb-2 font-teko">Medalha (pós-prova)</h4>
+                <p className="text-gray-600 text-sm">Premiação de participação</p>
+              </div>
+
+              {/* Ecobag */}
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 text-center border border-emerald-200 hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 10a2 2 0 01-2 2H8a2 2 0 01-2-2L5 9z" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-emerald-600 mb-2 font-teko">Ecobag</h4>
+                <p className="text-gray-600 text-sm">Itens do kit na sacola</p>
+              </div>
+
+              {/* Pódio e Backdrop para fotos */}
+              <div className="bg-gradient-to-br from-pink-50 to-purple-100 rounded-2xl p-6 text-center border border-pink-200 hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 20h18M7 20V10a1 1 0 011-1h2a1 1 0 011 1v10m4 0v-6a1 1 0 011-1h2a1 1 0 011 1v6" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-pink-700 mb-2 font-teko">Pódio e backdrop</h4>
+                <p className="text-gray-600 text-sm">Área oficial para fotos</p>
               </div>
             </div>
 
