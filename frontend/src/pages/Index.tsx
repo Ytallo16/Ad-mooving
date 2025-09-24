@@ -86,6 +86,12 @@ const Index = () => {
   const [img2Loaded, setImg2Loaded] = useState(false);
   const [img3Loaded, setImg3Loaded] = useState(false);
 
+  // Link do Google Calendar para o evento (14/12/2025, 06:00-08:00 BRT → 09:00-11:00 UTC)
+  // Inclui fuso horário para exibir corretamente no Google Agenda.
+  const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('ADMOVING - Largada às 6h.')}&dates=20251214T090000Z/20251214T110000Z&details=${encodeURIComponent('ADMOVING - Largada às 6h.')} &location=${encodeURIComponent('Parque Potycabana, Teresina - PI')}&ctz=America/Fortaleza`;
+
+  // Removido: geração de arquivo ICS. Usaremos apenas o link do Google Agenda.
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -152,12 +158,25 @@ const Index = () => {
           
           {/* Cards de Informações - Grid Responsivo */}
           <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-16" variants={staggerContainer}>
-            {/* Card Data */}
+            {/* Card Data com ícone do Google Agenda no canto superior direito */}
             <motion.div 
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group relative"
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
+              <button
+                onClick={(e) => { e.stopPropagation(); window.open(googleCalendarUrl, '_blank', 'noopener,noreferrer'); }}
+                className="absolute top-2 right-2 inline-flex items-center justify-center w-10 h-10 rounded-md border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition"
+                title="Adicionar ao Google Agenda"
+                aria-label="Adicionar ao Google Agenda"
+              >
+                <img 
+                  src="https://www.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_24_2x.png" 
+                  alt="Google Agenda"
+                  width="24"
+                  height="24"
+                />
+              </button>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +185,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Data</h3>
                 <p className="text-2xl font-bold text-gray-800 mb-1">14 de Dezembro, 2025</p>
-                <p className="text-gray-600 font-medium">Sábado</p>
+                <p className="text-gray-600 font-medium">Domingo</p>
               </div>
             </motion.div>
 
@@ -183,7 +202,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Horário</h3>
-                <p className="text-2xl font-bold text-gray-800 mb-1">6:00 às 8:00</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">Largada às 6h</p>
                 <p className="text-gray-600 font-medium">Manhã</p>
               </div>
             </motion.div>
@@ -202,7 +221,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Local</h3>
-                <p className="text-2xl font-bold text-gray-800 mb-1">Teresina Shopping</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">Parque Potycabana</p>
                 <p className="text-gray-600 font-medium">Ponto de encontro principal</p>
               </div>
             </motion.div>

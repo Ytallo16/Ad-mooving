@@ -48,7 +48,7 @@ interface LeafletMapProps {
 const pontosInteresse: PontoInteresse[] = [
   {
     id: 1,
-    nome: "Largada - Teresina Shopping",
+    nome: "Largada - Parque Potycabana",
     descricao: "Ponto de partida oficial da corrida",
     km: 0,
     tipo: 'inicio',
