@@ -116,6 +116,12 @@ case $ENVIRONMENT in
         stop_containers
         pull_images
         start_containers
+        log "🔎 Variáveis de ambiente (back/frontend) em execução"
+        ${COMPOSE_CMD} ps
+        echo "\n== Backend ENV (mascarado) =="
+        ${COMPOSE_CMD} exec -T backend printenv | egrep '^(API_SECRET_KEY|DJANGO_SETTINGS_MODULE|DEBUG|ALLOWED_HOSTS|STRIPE_|RACE_|KIT_|CONTACT_)' | sed -E 's/(API_SECRET_KEY|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET)=.*/\1=****/g' || true
+        echo "\n== Frontend ENV (mascarado) =="
+        ${COMPOSE_CMD} exec -T frontend printenv | egrep '^(VITE_|NODE_ENV|PORT)$' | sed -E 's/(VITE_API_SECRET)=.*/\1=****/g' || true
         log "🎉 Deploy para produção concluído!"
         ;;
     "staging")
@@ -125,6 +131,12 @@ case $ENVIRONMENT in
         stop_containers
         pull_images
         start_containers
+        log "🔎 Variáveis de ambiente (back/frontend) em execução"
+        ${COMPOSE_CMD} ps
+        echo "\n== Backend ENV (mascarado) =="
+        ${COMPOSE_CMD} exec -T backend printenv | egrep '^(API_SECRET_KEY|DJANGO_SETTINGS_MODULE|DEBUG|ALLOWED_HOSTS|STRIPE_|RACE_|KIT_|CONTACT_)' | sed -E 's/(API_SECRET_KEY|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET)=.*/\1=****/g' || true
+        echo "\n== Frontend ENV (mascarado) =="
+        ${COMPOSE_CMD} exec -T frontend printenv | egrep '^(VITE_|NODE_ENV|PORT)$' | sed -E 's/(VITE_API_SECRET)=.*/\1=****/g' || true
         log "🎉 Deploy para staging concluído!"
         ;;
     "logs")
