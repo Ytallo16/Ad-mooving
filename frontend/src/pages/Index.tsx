@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Trophy, Clock, Heart } from "lucide-react";
+import { Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 // Desativando framer-motion para teste de performance
@@ -92,6 +92,9 @@ const Index = () => {
 
   // Link do Google Maps para o local do evento (Parque Potycabana)
   const googleMapsUrl = `https://www.google.com/maps?q=${encodeURIComponent('Parque Potycabana, Teresina - PI')}`;
+
+  // Instagram da igreja (configurável por env)
+  const instagramUrl = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/addirceu';
 
   // Removido: geração de arquivo ICS. Usaremos apenas o link do Google Agenda.
 
@@ -267,12 +270,12 @@ const Index = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-race-primary/20 rounded-full blur-3xl animate-pulse delay-500"></div>
         </div>
         
-        <div className="container mx-auto px-0 md:px-1 relative z-10">
+        <div className="container mx-auto px-3 md:px-6 relative z-10">
           <motion.div variants={fadeInUp}>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center -mx-4 md:-mx-12">
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start">
               {/* Coluna esquerda: Verso estilizado */}
-              <div className="text-left md:text-left md:max-w-none -ml-12 md:-ml-24 mt-16 md:mt-28 self-center">
-                <blockquote className="border-l-4 border-race-primary pl-0 md:pl-0">
+              <div className="text-left md:text-left md:max-w-none mt-6 md:mt-10 md:self-start md:col-span-2">
+                <blockquote className="border-l-4 border-race-primary pl-3 md:pl-4">
                   <h2 className="text-5xl md:text-7xl font-bold text-race-primary mb-3 md:mb-4 font-figtree leading-tight">
                     "Pois nele vivemos, nos movemos e existimos"
                   </h2>
@@ -283,7 +286,7 @@ const Index = () => {
               </div>
 
               {/* Coluna direita: Texto de participação + Vídeo */}
-              <div>
+              <div className="md:col-span-3">
                 <div className="mb-5 text-center md:text-left">
                   <div className="h-1 w-12 bg-race-primary rounded mx-auto md:mx-0 mb-3"></div>
                   <p className="text-xl md:text-3xl font-bold text-gray-900 leading-tight">
@@ -294,8 +297,8 @@ const Index = () => {
                     nos ajudou a construir uma igreja no sertão da Paraíba — assista:
                   </p>
                 </div>
-                <div className="relative w-full max-w-2xl md:max-w-none mx-auto">
-                  <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                <div className="relative w-full max-w-4xl md:max-w-none mx-auto">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 bg-black/5">
                     <iframe
                       width="100%"
                       height="100%"
@@ -309,9 +312,25 @@ const Index = () => {
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl pointer-events-none"></div>
                 </div>
+
+                {/* Instagram pill será posicionado globalmente no canto inferior esquerdo em telas md+ */}
+
+                {/* CTA removido conforme solicitado */}
               </div>
             </div>
           </motion.div>
+          {/* Instagram floating pill - bottom-left on md+ */}
+          <div className="hidden md:flex items-center gap-3 fixed left-6 bottom-6 z-20 rounded-full border border-gray-200 bg-white/80 backdrop-blur px-4 py-2 shadow">
+            <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm">
+              <Instagram className="w-5 h-5 text-pink-600" />
+            </span>
+            <div>
+              <p className="text-xs text-gray-600 leading-none">Nos acompanhe</p>
+              <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-gray-900 leading-tight hover:underline">
+                @ieadcgd
+              </a>
+            </div>
+          </div>
         </div>
       </motion.section>
 
