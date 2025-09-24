@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, MapPin, Users, Trophy, Clock, Heart } from "lucide-react";
+import { Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 // Desativando framer-motion para teste de performance
@@ -86,6 +86,18 @@ const Index = () => {
   const [img2Loaded, setImg2Loaded] = useState(false);
   const [img3Loaded, setImg3Loaded] = useState(false);
 
+  // Link do Google Calendar para o evento (14/12/2025, 06:00-08:00 BRT → 09:00-11:00 UTC)
+  // Inclui fuso horário para exibir corretamente no Google Agenda.
+  const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('ADMOVING - Largada às 6h.')}&dates=20251214T090000Z/20251214T110000Z&details=${encodeURIComponent('ADMOVING - Largada às 6h.')} &location=${encodeURIComponent('Parque Potycabana, Teresina - PI')}&ctz=America/Fortaleza`;
+
+  // Link do Google Maps para o local do evento (Parque Potycabana)
+  const googleMapsUrl = `https://www.google.com/maps?q=${encodeURIComponent('Parque Potycabana, Teresina - PI')}`;
+
+  // Instagram da igreja (configurável por env)
+  const instagramUrl = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/addirceu';
+
+  // Removido: geração de arquivo ICS. Usaremos apenas o link do Google Agenda.
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -152,12 +164,25 @@ const Index = () => {
           
           {/* Cards de Informações - Grid Responsivo */}
           <motion.div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-16" variants={staggerContainer}>
-            {/* Card Data */}
+            {/* Card Data com ícone do Google Agenda no canto superior direito */}
             <motion.div 
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group relative"
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
+              <button
+                onClick={(e) => { e.stopPropagation(); window.open(googleCalendarUrl, '_blank', 'noopener,noreferrer'); }}
+                className="absolute top-2 right-2 inline-flex items-center justify-center w-10 h-10 rounded-md border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition"
+                title="Adicionar ao Google Agenda"
+                aria-label="Adicionar ao Google Agenda"
+              >
+                <img 
+                  src="https://www.gstatic.com/calendar/images/dynamiclogo_2020q4/calendar_24_2x.png" 
+                  alt="Google Agenda"
+                  width="24"
+                  height="24"
+                />
+              </button>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,7 +191,7 @@ const Index = () => {
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Data</h3>
                 <p className="text-2xl font-bold text-gray-800 mb-1">14 de Dezembro, 2025</p>
-                <p className="text-gray-600 font-medium">Sábado</p>
+                <p className="text-gray-600 font-medium">Domingo</p>
               </div>
             </motion.div>
 
@@ -183,17 +208,37 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Horário</h3>
-                <p className="text-2xl font-bold text-gray-800 mb-1">6:00 às 8:00</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">Largada às 6h</p>
                 <p className="text-gray-600 font-medium">Manhã</p>
               </div>
             </motion.div>
 
-            {/* Card Local */}
+            {/* Card Local com ícone do Google Maps no canto superior direito */}
             <motion.div 
-              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
+              className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group relative"
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
             >
+              <button
+                onClick={(e) => { e.stopPropagation(); window.open(googleMapsUrl, '_blank', 'noopener,noreferrer'); }}
+                className="absolute top-2 right-2 inline-flex items-center justify-center w-10 h-10 rounded-md border border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition"
+                title="Abrir no Google Maps"
+                aria-label="Abrir no Google Maps"
+              >
+                {/* Ícone vetorial estilo Google Maps */}
+                <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+                  <defs>
+                    <clipPath id="pinClip"><path d="M12 2c-3.8 0-7 3.06-7 6.84 0 1.97.86 3.63 2.02 5.16.88 1.17 1.92 2.28 2.91 3.55.56.72 1.12 1.48 1.67 2.31.2.3.38.6.56.9.18-.3.36-.6.56-.9.55-.83 1.11-1.59 1.67-2.31.99-1.27 2.03-2.38 2.91-3.55C18.14 12.47 19 10.81 19 8.84 19 5.06 15.8 2 12 2z"/></clipPath>
+                  </defs>
+                  <path fill="#34A853" d="M12 2c-3.8 0-7 3.06-7 6.84 0 1.97.86 3.63 2.02 5.16.88 1.17 1.92 2.28 2.91 3.55.56.72 1.12 1.48 1.67 2.31.2.3.38.6.56.9.18-.3.36-.6.56-.9.55-.83 1.11-1.59 1.67-2.31.99-1.27 2.03-2.38 2.91-3.55C18.14 12.47 19 10.81 19 8.84 19 5.06 15.8 2 12 2z"/>
+                  <g clipPath="url(#pinClip)">
+                    <rect x="-2" y="2" width="14" height="10" fill="#4285F4"/>
+                    <rect x="12" y="2" width="14" height="10" fill="#FBBC05"/>
+                    <rect x="-2" y="12" width="28" height="12" fill="#EA4335"/>
+                  </g>
+                  <circle cx="12" cy="9" r="3.2" fill="#fff"/>
+                </svg>
+              </button>
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -202,7 +247,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Local</h3>
-                <p className="text-2xl font-bold text-gray-800 mb-1">Teresina Shopping</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">Parque Potycabana</p>
                 <p className="text-gray-600 font-medium">Ponto de encontro principal</p>
               </div>
             </motion.div>
@@ -225,38 +270,67 @@ const Index = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-race-primary/20 rounded-full blur-3xl animate-pulse delay-500"></div>
         </div>
         
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div className="text-center max-w-4xl mx-auto" variants={fadeInUp}>
-            <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-8 font-teko leading-tight">
-              "Pois nele vivemos, nos movemos e existimos"
-            </h2>
-            <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed">
-              Mais que uma corrida, é uma jornada de transformação pessoal e espiritual
-            </p>
-            <p className="text-base md:text-lg text-race-secondary font-semibold italic">
-              Atos 17:28
-            </p>
-            
-            {/* Vídeo do YouTube */}
-            <motion.div className="my-12" variants={fadeInUp}>
-              <div className="relative w-full max-w-2xl mx-auto">
-                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src="https://www.youtube.com/embed/9BbjXy2_KZs?si=lGzYBrBgvlYG0JKG&autoplay=1&mute=1&controls=1&rel=0&modestbranding=1"
-                    title="ADMOOVING - Vídeo Motivacional"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl pointer-events-none"></div>
+        <div className="container mx-auto px-3 md:px-6 relative z-10">
+          <motion.div variants={fadeInUp}>
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-6 md:gap-10 items-start">
+              {/* Coluna esquerda: Verso estilizado */}
+              <div className="text-left md:text-left md:max-w-none mt-6 md:mt-10 md:self-start md:col-span-2">
+                <blockquote className="border-l-4 border-race-primary pl-3 md:pl-4">
+                  <h2 className="text-5xl md:text-7xl font-bold text-race-primary mb-3 md:mb-4 font-figtree leading-tight">
+                    "Pois nele vivemos, nos movemos e existimos"
+                  </h2>
+                </blockquote>
+                <p className="text-lg md:text-2xl text-race-secondary font-semibold italic md:ml-1 font-figtree">
+                  Atos 17:28
+                </p>
               </div>
-                          
-            </motion.div>
+
+              {/* Coluna direita: Texto de participação + Vídeo */}
+              <div className="md:col-span-3">
+                <div className="mb-5 text-center md:text-left">
+                  <div className="h-1 w-12 bg-race-primary rounded mx-auto md:mx-0 mb-3"></div>
+                  <p className="text-xl md:text-3xl font-bold text-gray-900 leading-tight">
+                    <span className="text-race-primary">A sua participação</span> na 1ª corrida da 
+                    <span className="text-race-primary font-extrabold"> AD Moving</span>
+                  </p>
+                  <p className="text-base md:text-lg text-gray-600 mt-1 leading-relaxed">
+                    nos ajudou a construir uma igreja no sertão da Paraíba — assista:
+                  </p>
+                </div>
+                <div className="relative w-full max-w-4xl md:max-w-none mx-auto">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl ring-1 ring-black/5 bg-black/5">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src="https://www.youtube.com/embed/9BbjXy2_KZs?si=lGzYBrBgvlYG0JKG&autoplay=1&mute=1&controls=1&rel=0&modestbranding=1"
+                      title="ADMOVING - Vídeo"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl pointer-events-none"></div>
+                </div>
+
+                {/* Instagram pill será posicionado globalmente no canto inferior esquerdo em telas md+ */}
+
+                {/* CTA removido conforme solicitado */}
+              </div>
+            </div>
           </motion.div>
+          {/* Instagram floating pill - bottom-left on md+ */}
+          <div className="hidden md:flex items-center gap-3 fixed left-6 bottom-6 z-20 rounded-full border border-gray-200 bg-white/80 backdrop-blur px-4 py-2 shadow">
+            <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm">
+              <Instagram className="w-5 h-5 text-pink-600" />
+            </span>
+            <div>
+              <p className="text-xs text-gray-600 leading-none">Nos acompanhe</p>
+              <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-gray-900 leading-tight hover:underline">
+                @ieadcgd
+              </a>
+            </div>
+          </div>
         </div>
       </motion.section>
 
@@ -289,7 +363,7 @@ const Index = () => {
           >
             <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-6 font-teko">Momentos Especiais</h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Reviva os melhores momentos das edições anteriores
+              Reviva os melhores momentos da edição anterior
             </p>
           </motion.div>
           

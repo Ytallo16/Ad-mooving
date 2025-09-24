@@ -19,8 +19,10 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				'teko': ['TEKO', 'sans-serif'],
-				'29lt': ['29LT bukra', 'sans-serif'],
+				sans: ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				'teko': ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				'29lt': ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				'figtree': ['Figtree', 'ui-sans-serif', 'system-ui', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
