@@ -701,6 +701,17 @@ const Index = () => {
                 <h4 className="text-xl font-bold text-emerald-600 mb-2 font-teko">Ecobag</h4>
                 <p className="text-gray-600 text-sm">Itens do kit na sacola</p>
               </div>
+
+              {/* Pódio e Backdrop para fotos */}
+              <div className="bg-gradient-to-br from-pink-50 to-purple-100 rounded-2xl p-6 text-center border border-pink-200 hover:shadow-lg transition-all duration-300">
+                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 20h18M7 20V10a1 1 0 011-1h2a1 1 0 011 1v10m4 0v-6a1 1 0 011-1h2a1 1 0 011 1v6" />
+                  </svg>
+                </div>
+                <h4 className="text-xl font-bold text-pink-700 mb-2 font-teko">Pódio e backdrop</h4>
+                <p className="text-gray-600 text-sm">Área oficial para fotos</p>
+              </div>
             </div>
 
             {/* Call to action */}

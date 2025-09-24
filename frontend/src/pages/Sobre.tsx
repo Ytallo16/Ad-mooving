@@ -121,6 +121,25 @@ const Sobre = () => {
             </div>
           </section>
 
+          {/* Kit do Atleta - estilo lista simples com ícone e bullets */}
+          <section className="mt-12">
+            <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">
+              <div className="flex items-center gap-3 mb-6">
+                <span className="text-3xl" aria-hidden>👕</span>
+                <h3 className="text-2xl md:text-3xl font-bold text-gray-900">Kit do Atleta</h3>
+              </div>
+              <hr className="border-gray-200 mb-6" />
+              <ul className="list-disc pl-6 space-y-4 text-gray-800 text-base md:text-lg">
+                <li>Camiseta oficial</li>
+                <li>Número de peito</li>
+                <li>Chip de cronometragem</li>
+                <li>Medalha (pós-prova)</li>
+                <li>Ecobag</li>
+                <li>Pódio e backdrop para fotos</li>
+              </ul>
+            </div>
+          </section>
+
           {/* Regras - organização limpa em duas colunas, sem ícones */}
           <section className="mt-12">
             <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">

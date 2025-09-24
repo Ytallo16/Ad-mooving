@@ -266,39 +266,8 @@ const Inscricoes = () => {
       
       <Navbar />
       
-      {/* Patrocinadores - Lateral Esquerda */}
-      <div className="hidden xl:block fixed left-4 top-32 bottom-8 w-32 z-[1000]">
-        <div className="h-full flex flex-col justify-center">
-          <div className="text-center mb-4">
-            <h3 className="text-sm font-semibold text-race-primary transform -rotate-90 whitespace-nowrap">PATROCINADORES</h3>
-          </div>
-          <div className="space-y-6 flex-1 flex flex-col justify-center">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={`sponsor-left-${i}`} className="w-full h-20 bg-white/90 border border-gray-200 rounded-xl shadow-lg flex items-center justify-center overflow-hidden hover:shadow-xl transition-shadow">
-                {/* Substitua por: <img src="/logos/patrocinador.png" alt="Patrocinador" className="w-full h-full object-contain p-2" /> */}
-                <span className="text-xs text-gray-500">Logo</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Patrocinadores - Lateral Direita */}
-      <div className="hidden xl:block fixed right-4 top-32 bottom-8 w-32 z-[1000]">
-        <div className="h-full flex flex-col justify-center">
-          <div className="text-center mb-4">
-            <h3 className="text-sm font-semibold text-race-primary transform rotate-90 whitespace-nowrap">APOIADORES</h3>
-          </div>
-          <div className="space-y-6 flex-1 flex flex-col justify-center">
-            {Array.from({ length: 4 }).map((_, i) => (
-              <div key={`sponsor-right-${i}`} className="w-full h-20 bg-white/90 border border-gray-200 rounded-xl shadow-lg flex items-center justify-center overflow-hidden hover:shadow-xl transition-shadow">
-                {/* Substitua por: <img src="/logos/apoiador.png" alt="Apoiador" className="w-full h-full object-contain p-2" /> */}
-                <span className="text-xs text-gray-500">Logo</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+     
+     
       
       <div className="pt-24 pb-12 px-4 relative z-10">
         <div className="container mx-auto max-w-4xl">
@@ -354,7 +323,7 @@ const Inscricoes = () => {
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Horário:</span>
-                    <span className="text-sm text-muted-foreground">07:00h</span>
+                    <span className="text-sm text-muted-foreground">06:00h</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Local:</span>
