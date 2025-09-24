@@ -267,37 +267,43 @@ const Index = () => {
           <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-60 h-60 bg-race-primary/20 rounded-full blur-3xl animate-pulse delay-500"></div>
         </div>
         
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div className="text-center max-w-4xl mx-auto" variants={fadeInUp}>
-            <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-8 font-teko leading-tight">
-              "Pois nele vivemos, nos movemos e existimos"
-            </h2>
-            <p className="text-lg md:text-xl text-gray-700 mb-4 leading-relaxed">
-              Mais que uma corrida, é uma jornada de transformação pessoal e espiritual
-            </p>
-            <p className="text-base md:text-lg text-race-secondary font-semibold italic">
-              Atos 17:28
-            </p>
-            
-            {/* Vídeo do YouTube */}
-            <motion.div className="my-12" variants={fadeInUp}>
-              <div className="relative w-full max-w-2xl mx-auto">
-                <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
-                  <iframe
-                    width="100%"
-                    height="100%"
-                    src="https://www.youtube.com/embed/9BbjXy2_KZs?si=lGzYBrBgvlYG0JKG&autoplay=1&mute=1&controls=1&rel=0&modestbranding=1"
-                    title="ADMOOVING - Vídeo Motivacional"
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    className="w-full h-full"
-                  ></iframe>
-                </div>
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl pointer-events-none"></div>
+        <div className="container mx-auto px-0 md:px-1 relative z-10">
+          <motion.div variants={fadeInUp}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center -mx-4 md:-mx-12">
+              {/* Coluna esquerda: Verso estilizado */}
+              <div className="text-left md:text-left md:max-w-none -ml-12 md:-ml-24 mt-16 md:mt-28 self-center">
+                <blockquote className="border-l-4 border-race-primary pl-0 md:pl-0">
+                  <h2 className="text-5xl md:text-7xl font-bold text-race-primary mb-3 md:mb-4 font-teko leading-tight">
+                    "Pois nele vivemos, nos movemos e existimos"
+                  </h2>
+                </blockquote>
+                <p className="text-lg md:text-2xl text-race-secondary font-semibold italic md:ml-1">
+                  Atos 17:28
+                </p>
               </div>
-                          
-            </motion.div>
+
+              {/* Coluna direita: Texto de participação + Vídeo */}
+              <div>
+                <p className="text-base md:text-lg text-gray-700 mb-4 leading-relaxed text-center md:text-left">
+                  A sua participação na 1 corrida da <span className="font-semibold">AD Moving</span> nos ajudou a construir uma igreja no sertão da Paraíba, assista:
+                </p>
+                <div className="relative w-full max-w-2xl md:max-w-none mx-auto">
+                  <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
+                    <iframe
+                      width="100%"
+                      height="100%"
+                      src="https://www.youtube.com/embed/9BbjXy2_KZs?si=lGzYBrBgvlYG0JKG&autoplay=1&mute=1&controls=1&rel=0&modestbranding=1"
+                      title="ADMOVING - Vídeo"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="w-full h-full"
+                    ></iframe>
+                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent rounded-2xl pointer-events-none"></div>
+                </div>
+              </div>
+            </div>
           </motion.div>
         </div>
       </motion.section>
@@ -331,7 +337,7 @@ const Index = () => {
           >
             <h2 className="text-3xl md:text-5xl font-bold text-race-primary mb-6 font-teko">Momentos Especiais</h2>
             <p className="text-lg md:text-xl text-gray-600 max-w-3xl mx-auto">
-              Reviva os melhores momentos das edições anteriores
+              Reviva os melhores momentos da edição anterior
             </p>
           </motion.div>
           
