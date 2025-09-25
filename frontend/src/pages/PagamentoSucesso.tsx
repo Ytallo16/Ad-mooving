@@ -19,7 +19,8 @@ const PagamentoSucesso = () => {
       }
 
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/payment/verify-status/?session_id=${sessionId}`);
+        const base = (import.meta as any).env?.VITE_API_BASE_URL || (window as any).ENV?.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+        const response = await fetch(`${base}/api/payment/verify-status/?session_id=${sessionId}`);
         const data = await response.json();
         
         if (data.success && data.payment_status === 'paid') {
