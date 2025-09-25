@@ -5,7 +5,6 @@ WORKDIR /app
 
 # Copiar arquivos de dependências
 COPY package*.json ./
-COPY bun.lockb ./
 
 # Instalar dependências (inclui devDependencies para rodar o build com Vite)
 RUN npm ci
