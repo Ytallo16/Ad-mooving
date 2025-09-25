@@ -1,1 +1,32 @@
 .env
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pytest_cache/
+.mypy_cache/
+
+# Virtual envs
+venv/
+.venv/
+env/
+.env
+
+# Django / SQLite
+db.sqlite3
+*.sqlite3
+*.sqlite
+media/
+staticfiles/
+
+# IDE/OS
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Docker
+*.pid

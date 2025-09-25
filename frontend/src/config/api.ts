@@ -28,18 +28,18 @@ export const apiRequest = async (
     headers: { ...defaultOptions.headers, ...(options.headers || {}) },
   };
 
-  // Tentativa no host primário com timeout curto; fallback para localhost
+  // Sempre prioriza produção; em falha/5xx/timeout, tenta local
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
   try {
-    const res = await fetch(`${API_CONFIG.PRIMARY_BASE_URL}${endpoint}`, {
-      ...mergedOptions,
-      signal: controller.signal,
-    });
+    const res = await fetch(`${API_CONFIG.PRIMARY_BASE_URL}${endpoint}`, { ...mergedOptions, signal: controller.signal });
     clearTimeout(timeout);
+    if (!res.ok && res.status >= 500) {
+      return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
+    }
     return res;
   } catch (_) {
-    // Fallback: localhost
+    clearTimeout(timeout);
     return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
   }
 };
