@@ -13,7 +13,11 @@ RUN npm ci
 # Copiar código fonte
 COPY . .
 
-# Build da aplicação para produção
+# Build da aplicação para produção (consome VITE_* do ambiente de build)
+ARG VITE_API_BASE_URL
+ARG VITE_API_SECRET
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+ENV VITE_API_SECRET=${VITE_API_SECRET}
 RUN npm run build
 
 # Production stage - servir arquivos estáticos

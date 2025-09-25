@@ -50,37 +50,7 @@ if [ ! -f ".env" ]; then
     error "Arquivo .env não encontrado. Por favor, crie o arquivo de configuração."
 fi
 
-# Função para build do frontend
-build_frontend() {
-    log "Fazendo build do frontend..."
-    cd ../frontend
-    
-    # Instalar dependências
-    log "Instalando dependências do frontend..."
-    npm ci
-    
-    # Build do frontend
-    log "Executando build do frontend..."
-    npm run build
-    
-    # Verificar se o build foi bem-sucedido
-    if [ ! -d "dist" ]; then
-        error "Build do frontend falhou - diretório dist não encontrado"
-    fi
-    
-    log "✅ Build do frontend concluído!"
-    cd ../backend
-}
-
-# Função para corrigir permissões do frontend
-fix_frontend_permissions() {
-    log "🔧 Corrigindo permissões do frontend..."
-    sudo chown -R www-data:www-data /home/deploy/Ad-mooving/frontend/dist
-    sudo find /home/deploy/Ad-mooving/frontend/dist -type d -exec chmod 755 {} \;
-    sudo find /home/deploy/Ad-mooving/frontend/dist -type f -exec chmod 644 {} \;
-    sudo systemctl reload nginx
-    log "✅ Permissões ajustadas e Nginx recarregado"
-}
+# Build do frontend ocorrerá apenas dentro do Dockerfile do frontend durante o docker compose build
 
 # Função para parar containers existentes
 stop_containers() {
@@ -111,32 +81,16 @@ show_logs() {
 case $ENVIRONMENT in
     "production")
         log "Iniciando deploy para PRODUÇÃO"
-        build_frontend
-        fix_frontend_permissions
         stop_containers
         pull_images
         start_containers
-        log "🔎 Variáveis de ambiente (back/frontend) em execução"
-        ${COMPOSE_CMD} ps
-        echo "\n== Backend ENV (mascarado) =="
-        ${COMPOSE_CMD} exec -T backend printenv | egrep '^(API_SECRET_KEY|DJANGO_SETTINGS_MODULE|DEBUG|ALLOWED_HOSTS|STRIPE_|RACE_|KIT_|CONTACT_)' | sed -E 's/(API_SECRET_KEY|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET)=.*/\1=****/g' || true
-        echo "\n== Frontend ENV (mascarado) =="
-        ${COMPOSE_CMD} exec -T frontend printenv | egrep '^(VITE_|NODE_ENV|PORT)$' | sed -E 's/(VITE_API_SECRET)=.*/\1=****/g' || true
         log "🎉 Deploy para produção concluído!"
         ;;
     "staging")
         log "Iniciando deploy para STAGING"
-        build_frontend
-        fix_frontend_permissions
         stop_containers
         pull_images
         start_containers
-        log "🔎 Variáveis de ambiente (back/frontend) em execução"
-        ${COMPOSE_CMD} ps
-        echo "\n== Backend ENV (mascarado) =="
-        ${COMPOSE_CMD} exec -T backend printenv | egrep '^(API_SECRET_KEY|DJANGO_SETTINGS_MODULE|DEBUG|ALLOWED_HOSTS|STRIPE_|RACE_|KIT_|CONTACT_)' | sed -E 's/(API_SECRET_KEY|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET)=.*/\1=****/g' || true
-        echo "\n== Frontend ENV (mascarado) =="
-        ${COMPOSE_CMD} exec -T frontend printenv | egrep '^(VITE_|NODE_ENV|PORT)$' | sed -E 's/(VITE_API_SECRET)=.*/\1=****/g' || true
         log "🎉 Deploy para staging concluído!"
         ;;
     "logs")
