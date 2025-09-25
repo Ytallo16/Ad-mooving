@@ -10,6 +10,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 
 import { useNavigate } from "react-router-dom";
+import { apiRequest } from "@/config/api";
 
 const Inscricoes = () => {
   const { toast } = useToast();
@@ -98,16 +99,6 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const apiBaseUrlPrimary = 'https://api.admoving.demo.addirceu.com.br';
-      const apiBaseUrlFallback = 'http://127.0.0.1:8000';
-      // Tenta primário; se falhar, usa fallback
-      let targetBase = apiBaseUrlPrimary;
-      try {
-        await fetch(apiBaseUrlPrimary + '/api/health/', { method: 'GET', signal: AbortSignal.timeout(3000) });
-      } catch {
-        targetBase = apiBaseUrlFallback;
-      }
-      console.log('API base usada:', targetBase);
       console.log('Dados enviados:', formData);
 
       const payload = {
@@ -118,11 +109,9 @@ const Inscricoes = () => {
         phone: formData.course === 'KIDS' && formData.responsible_phone ? formData.responsible_phone : formData.phone,
       };
 
-      const response = await fetch(`${targetBase}/api/race-registrations/`, {
+      const response = await apiRequest(`/api/race-registrations/`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
       });
 
