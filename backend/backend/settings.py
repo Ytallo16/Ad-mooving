@@ -28,8 +28,14 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=True, cast=bool)
 
-# Permitir hosts configuráveis por variável de ambiente. Padrão: todos.
-ALLOWED_HOSTS = ["*"]
+# Hosts permitidos para segurança
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",  # Para Docker
+    "api.admoving.demo.addirceu.com.br",  # Domínio da API
+    "admoving.demo.addirceu.com.br",  # Domínio principal (caso precise)
+]
 
 
 # Application definition
@@ -192,20 +198,19 @@ SPECTACULAR_SETTINGS = {
 }
 
 # CORS settings
-# Durante desenvolvimento, permitir todas as origens
-CORS_ALLOW_ALL_ORIGINS = config('CORS_ALLOW_ALL_ORIGINS', default=True, cast=bool)
+# Usar origens específicas para segurança
+CORS_ALLOW_ALL_ORIGINS = False
 
-# Origens específicas para produção (descomente quando necessário)
-# CORS_ALLOWED_ORIGINS = [
-#     "http://localhost:3000",  # React default port
-#     "http://127.0.0.1:3000",
-#     "http://localhost:5173",  # Vite default port
-#     "http://127.0.0.1:5173",
-#     "http://localhost:4173",  # Vite preview
-#     "http://127.0.0.1:4173",
-#     "http://localhost:8080",  # Outras portas comuns
-#     "http://127.0.0.1:8080",
-# ]
+# Origens permitidas
+CORS_ALLOWED_ORIGINS = [
+    # Localhost para desenvolvimento
+    "http://localhost:3000",  # React/Vite dev
+    "http://127.0.0.1:3000",
+    
+    # Domínio de produção
+    "https://admoving.demo.addirceu.com.br",  # Site principal
+    "https://api.admoving.demo.addirceu.com.br",  # API (caso precise)
+]
 
 CORS_ALLOW_CREDENTIALS = True
 
