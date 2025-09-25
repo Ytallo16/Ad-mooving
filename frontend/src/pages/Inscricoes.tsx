@@ -98,8 +98,7 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const apiBaseUrl = 'http://127.0.0.1:8000'; // URL local para desenvolvimento
-      
+      const apiBaseUrl = (import.meta as any).env?.VITE_API_BASE_URL || (window as any).ENV?.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
       console.log('API base usada:', apiBaseUrl);
       console.log('Dados enviados:', formData);
 
