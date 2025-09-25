@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { XCircle, Home, RefreshCw, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import InstagramFloat from "@/components/InstagramFloat";
 
 const PagamentoCancelado = () => {
   const [searchParams] = useSearchParams();
@@ -120,6 +122,9 @@ const PagamentoCancelado = () => {
           </Card>
         </div>
       </div>
+      
+      <Footer />
+      <InstagramFloat />
     </div>
   );
 };

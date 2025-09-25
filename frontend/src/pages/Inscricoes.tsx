@@ -8,6 +8,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/ui/date-picker";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import InstagramFloat from "@/components/InstagramFloat";
 
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "@/config/api";
@@ -415,11 +417,7 @@ const Inscricoes = () => {
                           maxDate={new Date().toISOString().split('T')[0]}
                           minDate="1920-01-01"
                         />
-                        {formData.birth_date && (
-                          <p className="text-xs text-muted-foreground">
-                            Idade: {calculateAge(formData.birth_date)} anos
-                          </p>
-                        )}
+                    
                       </div>
                       
                       <div className="space-y-2">
@@ -444,9 +442,9 @@ const Inscricoes = () => {
                             <SelectValue placeholder="Selecione o percurso" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="KIDS">Kids</SelectItem>
+                            <SelectItem value="KIDS">Kids(3 a 10 anos)</SelectItem>
                             <SelectItem value="RUN_5K">5KM (Corrida)</SelectItem>
-                            <SelectItem value="WALK_3K">3KM (Caminhada)</SelectItem>
+                            <SelectItem value="WALK_3K">2,5KM (Caminhada)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -533,6 +531,9 @@ const Inscricoes = () => {
           </div>
         </div>
       </div>
+      
+      <Footer />
+      <InstagramFloat />
     </div>
   );
 };

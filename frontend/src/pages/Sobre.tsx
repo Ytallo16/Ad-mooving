@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import InstagramFloat from "@/components/InstagramFloat";
 import LeafletMap, { pontosInteresse as defaultPontos } from "@/components/LeafletMap";
 
 const Sobre = () => {
@@ -72,10 +74,10 @@ const Sobre = () => {
               <div className="relative mx-auto max-w-4xl">
                 <ul className="space-y-8">
                   {[
-                    { hora: '06:00', desc: 'Credenciamento e retirada de kit' },
-                    { hora: '07:30', desc: 'Aquecimento coletivo e orientações' },
-                    { hora: '08:00', desc: 'Largada oficial (5 km)' },
-                    { hora: '09:30', desc: 'Cerimônia de premiação' },
+                    { hora: '05:20h', desc: 'Concentração' },
+                    { hora: '05:40h', desc: 'Aquecimento' },
+                    { hora: '06h', desc: 'Largada' },
+                    { hora: '07:30h-09:30h', desc: 'Cerimônia de premiação' },
                   ].map((item) => (
                     <li key={item.hora} className="relative">
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
@@ -198,6 +200,9 @@ const Sobre = () => {
           </section>
         </div>
       </section>
+      
+      <Footer />
+      <InstagramFloat />
     </div>
   );
 };
