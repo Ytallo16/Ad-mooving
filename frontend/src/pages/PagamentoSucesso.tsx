@@ -5,6 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { CheckCircle, Home, Mail, Calendar } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InstagramFloat from "@/components/InstagramFloat";
 
 const PagamentoSucesso = () => {
   const [searchParams] = useSearchParams();
@@ -182,6 +183,7 @@ const PagamentoSucesso = () => {
       </div>
       
       <Footer />
+      <InstagramFloat />
     </div>
   );
 };

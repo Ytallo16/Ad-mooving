@@ -9,6 +9,7 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InstagramFloat from "@/components/InstagramFloat";
 
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "@/config/api";
@@ -532,6 +533,7 @@ const Inscricoes = () => {
       </div>
       
       <Footer />
+      <InstagramFloat />
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InstagramFloat from "@/components/InstagramFloat";
 // Desativando framer-motion para teste de performance
 const motion = {
   section: (props: any) => <section {...props} />,
@@ -324,18 +325,6 @@ const Index = () => {
               </div>
             </div>
           </motion.div>
-          {/* Instagram floating pill - bottom-left on md+ */}
-          <div className="hidden md:flex items-center gap-3 fixed left-6 bottom-6 z-20 rounded-full border border-gray-200 bg-white/80 backdrop-blur px-4 py-2 shadow">
-            <span className="inline-flex w-10 h-10 items-center justify-center rounded-full bg-white border border-gray-200 shadow-sm">
-              <Instagram className="w-5 h-5 text-pink-600" />
-            </span>
-            <div>
-              <p className="text-xs text-gray-600 leading-none">Nos acompanhe</p>
-              <a href={instagramUrl} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-gray-900 leading-tight hover:underline">
-                @ieadcgd
-              </a>
-            </div>
-          </div>
         </div>
       </motion.section>
 
@@ -805,6 +794,7 @@ const Index = () => {
       </section>
 
       <Footer />
+      <InstagramFloat />
     </div>
   );
 };

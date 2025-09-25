@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import InstagramFloat from "@/components/InstagramFloat";
 import LeafletMap, { pontosInteresse as defaultPontos } from "@/components/LeafletMap";
 
 const Sobre = () => {
@@ -201,6 +202,7 @@ const Sobre = () => {
       </section>
       
       <Footer />
+      <InstagramFloat />
     </div>
   );
 };
