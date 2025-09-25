@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Home, Mail, Calendar } from "lucide-react";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const PagamentoSucesso = () => {
   const [searchParams] = useSearchParams();
@@ -179,6 +180,8 @@ const PagamentoSucesso = () => {
           </Card>
         </div>
       </div>
+      
+      <Footer />
     </div>
   );
 };

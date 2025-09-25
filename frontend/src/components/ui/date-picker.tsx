@@ -31,6 +31,7 @@ export function DatePicker({
   maxDate,
   minDate
 }: DatePickerProps) {
+  const [open, setOpen] = React.useState(false);
   const dateValue = value ? new Date(value + "T00:00:00") : undefined;
 
   const maxDateObj = maxDate ? new Date(maxDate + "T00:00:00") : undefined;
@@ -40,13 +41,14 @@ export function DatePicker({
     if (selectedDate) {
       const isoString = selectedDate.toISOString().split('T')[0];
       onChange?.(isoString);
+      setOpen(false); // Fechar o popover quando uma data for selecionada
     } else {
       onChange?.("");
     }
   };
 
   return (
-    <Popover>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"

@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Instagram } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 // Desativando framer-motion para teste de performance
 const motion = {
   section: (props: any) => <section {...props} />,
@@ -195,7 +196,7 @@ const Index = () => {
               </div>
             </motion.div>
 
-            {/* Card Horário */}
+            {/* Card Cronograma */}
             <motion.div 
               className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-100 hover:border-race-primary/20 group"
               variants={fadeInUp}
@@ -204,12 +205,16 @@ const Index = () => {
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Horário</h3>
-                <p className="text-2xl font-bold text-gray-800 mb-1">Largada às 06h</p>
-                <p className="text-gray-600 font-medium">Manhã</p>
+                <h3 className="text-xl font-bold text-race-primary mb-3 font-teko">Cronograma</h3>
+                <div className="text-gray-700 font-medium space-y-1">
+                  <p>Concentração: 05:20h</p>
+                  <p>Aquecimento: 05:40h</p>
+                  <p>Largada: 06h</p>
+                  <p>Cerimônia de premiação: 07:30h-09:30h</p>
+                </div>
               </div>
             </motion.div>
 
@@ -508,7 +513,7 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 max-w-4xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
             {/* 5km Corrida */}
             <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-8 md:p-10 border-2 border-race-primary/20 hover:border-race-primary/40 transition-all duration-300 hover:shadow-xl group">
               <div className="text-center">
@@ -517,7 +522,7 @@ const Index = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-bold text-race-primary mb-4 font-teko">5km Corrida</h3>
+                <h3 className="text-3xl font-bold text-race-primary mb-4 font-teko">Corrida</h3>
                 <p className="text-gray-600 mb-6 text-lg">Para corredores de todas as idades</p>
                 <div className="mb-8">
                   <span className="text-5xl font-bold text-race-primary">R$ 80,00</span>
@@ -590,6 +595,47 @@ const Index = () => {
                 </div>
                 <Link to="/inscricoes">
                   <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 text-lg">
+                    Inscrever-se
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* Caminhada */}
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-8 md:p-10 border-2 border-emerald-200 hover:border-emerald-300 transition-all duration-300 hover:shadow-xl group">
+              <div className="text-center">
+                <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
+                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2" />
+                  </svg>
+                </div>
+                <h3 className="text-3xl font-bold text-emerald-700 mb-4 font-teko">Caminhada</h3>
+                <p className="text-gray-600 mb-6 text-lg">2,5 km - Para quem prefere participar no seu ritmo</p>
+                <div className="mb-8">
+                  <span className="text-5xl font-bold text-emerald-700">R$ 80,00</span>
+                </div>
+                <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-gray-700 font-medium">Kit completo do participante</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-gray-700 font-medium">Medalha de participação</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-gray-700 font-medium">Sem cronometragem</span>
+                  </div>
+                </div>
+                <Link to="/inscricoes">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 text-lg">
                     Inscrever-se
                   </Button>
                 </Link>
@@ -702,15 +748,15 @@ const Index = () => {
                 <p className="text-gray-600 text-sm">Itens do kit na sacola</p>
               </div>
 
-              {/* Pódio e Backdrop para fotos */}
+              {/* Troféus para vencedores das categorias */}
               <div className="bg-gradient-to-br from-pink-50 to-purple-100 rounded-2xl p-6 text-center border border-pink-200 hover:shadow-lg transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 20h18M7 20V10a1 1 0 011-1h2a1 1 0 011 1v10m4 0v-6a1 1 0 011-1h2a1 1 0 011 1v6" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21h8m-4-4v4m8-16h-3a5 5 0 01-10 0H2v2a5 5 0 005 5h10a5 5 0 005-5V5z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-pink-700 mb-2 font-teko">Pódio e backdrop</h4>
-                <p className="text-gray-600 text-sm">Área oficial para fotos</p>
+                <h4 className="text-xl font-bold text-pink-700 mb-2 font-teko">Troféus para vencedores</h4>
+                <p className="text-gray-600 text-sm">Premiação para campeões por categoria</p>
               </div>
             </div>
 
@@ -758,40 +804,7 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-gray-900 text-white py-12">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            <div>
-              <h3 className="text-xl font-bold text-race-primary mb-4 font-teko">ADMOVING</h3>
-              <p className="text-gray-400 leading-relaxed">
-                Mais que uma corrida, é uma jornada de fé, saúde e transformação pessoal.
-              </p>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Links Rápidos</h4>
-              <div className="space-y-2">
-                <Link to="/inscricoes" className="block text-gray-400 hover:text-white transition-colors">Inscrições</Link>
-                <Link to="/sobre" className="block text-gray-400 hover:text-white transition-colors">Sobre o Evento</Link>
-                <Link to="/patrocinadores" className="block text-gray-400 hover:text-white transition-colors">Patrocinadores</Link>
-              </div>
-            </div>
-            <div>
-              <h4 className="text-lg font-semibold mb-4">Contato</h4>
-              <div className="space-y-2 text-gray-400">
-                <p>📧 contato@admooving.com</p>
-                <p>📱 (86) 99999-9999</p>
-                <p> Teresina Shopping</p>
-              </div>
-            </div>
-          </div>
-          <div className="border-t border-gray-800 pt-8 text-center">
-            <p className="text-gray-400">
-              © 2025 ADMOVING - Corrida da Igreja. Todos os direitos reservados.
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
