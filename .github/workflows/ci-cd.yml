@@ -28,10 +28,10 @@ jobs:
         
         # Deploy na VPS
         ssh ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "
-          cd /home/deploy/Ad-mooving/backend &&
+          cd /home/deploy/Ad-mooving &&
           git pull origin main &&
-          chmod +x deploy.sh &&
-          ./deploy.sh production
+          cd backend && chmod +x deploy.sh && cd .. &&
+          ./backend/deploy.sh production
         "
         
         echo "✅ Deployment completed!"

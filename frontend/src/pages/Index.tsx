@@ -395,7 +395,7 @@ const Index = () => {
                 <source srcSet={img259} type="image/webp" />
                 <img 
                   src={img259} 
-                  alt="ADMOOVING - Momento Especial 1"  
+                  alt="ADMOVING - Momento Especial 1"  
                   className="w-full h-64 object-cover transition-transform duration-150 group-hover:scale-[1.02] will-change-transform"
                   loading="eager"
                   decoding="async"
@@ -437,7 +437,7 @@ const Index = () => {
                 <source srcSet={img196} type="image/webp" />
                 <img 
                   src={img196} 
-                  alt="ADMOOVING - Momento Especial 2" 
+                  alt="ADMOVING - Momento Especial 2" 
                   className="w-full h-64 object-cover transition-transform duration-150 group-hover:scale-[1.02] will-change-transform"
                   loading="eager"
                   decoding="async"
@@ -479,7 +479,7 @@ const Index = () => {
                 <source srcSet={img319} type="image/webp" />
                 <img 
                   src={img319} 
-                  alt="ADMOOVING - Momento Especial 3" 
+                  alt="ADMOVING - Momento Especial 3" 
                   className="w-full h-64 object-cover transition-transform duration-150 group-hover:scale-[1.02] will-change-transform"
                   loading="eager"
                   decoding="async"
@@ -620,7 +620,7 @@ const Index = () => {
                 <div className="relative max-w-md mx-auto">
                   <img 
                     src="/kit.jpeg" 
-                    alt="Kit do Corredor ADMOOVING - Camiseta Oficial" 
+                    alt="Kit do Corredor ADMOVING - Camiseta Oficial" 
                     className="w-full h-auto rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).style.display = 'none';
@@ -717,7 +717,7 @@ const Index = () => {
             {/* Call to action */}
             <div className="text-center mt-12">
               <p className="text-lg text-gray-700 mb-6">
-                Garante já o seu kit exclusivo da 2ª Edição do ADMOOVING!
+                Garante já o seu kit exclusivo da 2ª Edição do ADMOVING!
               </p>
               <Link to="/inscricoes">
                 <Button className="bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white font-bold py-4 px-8 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105">
@@ -763,7 +763,7 @@ const Index = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
             <div>
-              <h3 className="text-xl font-bold text-race-primary mb-4 font-teko">ADMOOVING</h3>
+              <h3 className="text-xl font-bold text-race-primary mb-4 font-teko">ADMOVING</h3>
               <p className="text-gray-400 leading-relaxed">
                 Mais que uma corrida, é uma jornada de fé, saúde e transformação pessoal.
               </p>
@@ -787,7 +787,7 @@ const Index = () => {
           </div>
           <div className="border-t border-gray-800 pt-8 text-center">
             <p className="text-gray-400">
-              © 2025 ADMOOVING - Corrida da Igreja. Todos os direitos reservados.
+              © 2025 ADMOVING - Corrida da Igreja. Todos os direitos reservados.
             </p>
           </div>
         </div>

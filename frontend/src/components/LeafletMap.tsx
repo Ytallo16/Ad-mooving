@@ -37,7 +37,7 @@ interface LeafletMapProps {
   pontoSelecionado?: number | null;
 }
 
-// Coordenadas do percurso da corrida ADMOOVING
+// Coordenadas do percurso da corrida ADMOVING
 // ATENÇÃO: Substitua estas coordenadas pelas coordenadas reais do seu percurso
 // Para obter as coordenadas exatas, use o OpenStreetMap:
 // 1. Acesse https://www.openstreetmap.org/
