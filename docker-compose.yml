@@ -1,14 +1,13 @@
 version: "3.9"
 
 services:
-  # Backend Django API
   api:
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     container_name: admooving_api
     env_file:
-      - ./.env
+      - ./backend/.env
     environment:
       - DEBUG=${DEBUG:-False}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS}
@@ -20,7 +19,6 @@ services:
       - DB_HOST=${DB_HOST:-host.docker.internal}
       - DB_PORT=${DB_PORT:-5432}
     volumes:
-      # Arquivos estáticos coletados
       - api_static:/app/staticfiles
     ports:
       - "8000:8000"
@@ -29,16 +27,22 @@ services:
       - "host.docker.internal:host-gateway"
     networks:
       - admooving_network
+
   web:
     build:
-      context: ../frontend
+      context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL}
+        VITE_API_SECRET: ${VITE_API_SECRET}
+        VITE_INSTAGRAM_URL: ${VITE_INSTAGRAM_URL}
     container_name: admooving_web
     env_file:
-      - ../frontend/.env
+      - ./frontend/.env
     environment:
       - VITE_API_BASE_URL=${VITE_API_BASE_URL}
       - VITE_API_SECRET=${VITE_API_SECRET}
+      - VITE_INSTAGRAM_URL=${VITE_INSTAGRAM_URL}
     ports:
       - "3000:3000"
     depends_on:
@@ -46,11 +50,13 @@ services:
     restart: unless-stopped
     networks:
       - admooving_network
+
 volumes:
-  # Volume para arquivos estáticos coletados
   api_static:
     driver: local
 
 networks:
   admooving_network:
     driver: bridge
+
+

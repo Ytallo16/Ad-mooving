@@ -45,9 +45,12 @@ if ! docker info > /dev/null 2>&1; then
     error "Docker não está rodando. Por favor, inicie o Docker e tente novamente."
 fi
 
-# Verificar se o arquivo .env existe
-if [ ! -f ".env" ]; then
-    error "Arquivo .env não encontrado. Por favor, crie o arquivo de configuração."
+# Verificar arquivos .env esperados (raiz usa compose com backend/.env e frontend/.env)
+if [ ! -f "./backend/.env" ]; then
+    error "Arquivo ./backend/.env não encontrado."
+fi
+if [ ! -f "./frontend/.env" ]; then
+    warn "Arquivo ./frontend/.env não encontrado (VITE_*). O build do frontend pode usar apenas defaults."
 fi
 
 # Build do frontend ocorrerá apenas dentro do Dockerfile do frontend durante o docker compose build

@@ -16,7 +16,7 @@ const Navbar = () => {
             alt="Logo AD Dirceu" 
             className="h-12 md:h-20 w-auto"
           />
-          <h1 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-race-primary to-race-secondary bg-clip-text text-transparent font-teko">ADMOOVING</h1>
+          <h1 className="text-lg md:text-2xl font-bold bg-gradient-to-r from-race-primary to-race-secondary bg-clip-text text-transparent font-teko">ADMOVING</h1>
         </Link>
         
         {/* Desktop Navigation */}
