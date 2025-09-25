@@ -19,7 +19,14 @@ const PagamentoSucesso = () => {
       }
 
       try {
-        const base = (import.meta as any).env?.VITE_API_BASE_URL || (window as any).ENV?.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+        const primary = 'https://api.admoving.demo.addirceu.com.br';
+        const fallback = 'http://127.0.0.1:8000';
+        let base = primary;
+        try {
+          await fetch(primary + '/api/health/', { method: 'GET', signal: AbortSignal.timeout(3000) });
+        } catch {
+          base = fallback;
+        }
         const response = await fetch(`${base}/api/payment/verify-status/?session_id=${sessionId}`);
         const data = await response.json();
         
