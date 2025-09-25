@@ -1,7 +1,11 @@
-// Configuração da API
+// Configuração da API com fallback em runtime
+const PRIMARY_BASE_URL = 'https://api.admoving.demo.addirceu.com.br';
+const FALLBACK_BASE_URL = 'http://127.0.0.1:8000';
+
 export const API_CONFIG = {
-  BASE_URL: import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000',
-  SECRET: import.meta.env.VITE_API_SECRET || 'troque-essa-por-uma-chave-secreta', // Fallback somente para dev local
+  PRIMARY_BASE_URL,
+  FALLBACK_BASE_URL,
+  SECRET: (import.meta as any).env?.VITE_API_SECRET || 'troque-essa-por-uma-chave-secreta',
 };
 
 // Função para criar headers com autenticação
@@ -18,20 +22,25 @@ export const apiRequest = async (
   endpoint: string, 
   options: RequestInit = {}
 ): Promise<Response> => {
-  const url = `${API_CONFIG.BASE_URL}${endpoint}`;
-  
-  const defaultOptions: RequestInit = {
-    headers: createAuthHeaders(),
-  };
-
+  const defaultOptions: RequestInit = { headers: createAuthHeaders() };
   const mergedOptions: RequestInit = {
     ...defaultOptions,
     ...options,
-    headers: {
-      ...defaultOptions.headers,
-      ...(options.headers || {}),
-    },
+    headers: { ...defaultOptions.headers, ...(options.headers || {}) },
   };
 
-  return fetch(url, mergedOptions);
+  // Tentativa no host primário com timeout curto; fallback para localhost
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
+  try {
+    const res = await fetch(`${API_CONFIG.PRIMARY_BASE_URL}${endpoint}`, {
+      ...mergedOptions,
+      signal: controller.signal,
+    });
+    clearTimeout(timeout);
+    return res;
+  } catch (_) {
+    // Fallback: localhost
+    return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
+  }
 };

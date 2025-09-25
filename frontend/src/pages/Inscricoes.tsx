@@ -98,8 +98,16 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      const apiBaseUrl = (import.meta as any).env?.VITE_API_BASE_URL || (window as any).ENV?.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
-      console.log('API base usada:', apiBaseUrl);
+      const apiBaseUrlPrimary = 'https://api.admoving.demo.addirceu.com.br';
+      const apiBaseUrlFallback = 'http://127.0.0.1:8000';
+      // Tenta primário; se falhar, usa fallback
+      let targetBase = apiBaseUrlPrimary;
+      try {
+        await fetch(apiBaseUrlPrimary + '/api/health/', { method: 'GET', signal: AbortSignal.timeout(3000) });
+      } catch {
+        targetBase = apiBaseUrlFallback;
+      }
+      console.log('API base usada:', targetBase);
       console.log('Dados enviados:', formData);
 
       const payload = {
@@ -110,7 +118,7 @@ const Inscricoes = () => {
         phone: formData.course === 'KIDS' && formData.responsible_phone ? formData.responsible_phone : formData.phone,
       };
 
-      const response = await fetch(`${apiBaseUrl}/api/race-registrations/`, {
+      const response = await fetch(`${targetBase}/api/race-registrations/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
