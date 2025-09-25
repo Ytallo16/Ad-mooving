@@ -1,20 +1,11 @@
-## Autenticação por chave (X-API-KEY)
+## Autenticação
 
-A API exige o header `X-API-KEY` com um token fixo para todas as rotas sob `/api/` (exceto admin e docs). O token é lido de `API_SECRET_KEY` no ambiente.
+No momento, a API não exige token para acessar as rotas públicas sob `/api/`.
 
-Passos:
+Boas práticas:
 
-1. Defina a variável de ambiente no servidor:
-   - `API_SECRET_KEY=uma-chave-segura-com-32+caracteres`
-2. Em desenvolvimento, crie um arquivo `.env` e defina a mesma variável.
-3. O frontend deve enviar `X-API-KEY` usando `VITE_API_SECRET`.
-
-Segurança:
-
-- Não commite `.env` ou o token. Use `.env.example` como referência.
-- Use HTTPS em produção para proteger o header.
-- Se a API for pública, considere restringir `ALLOWED_HOSTS`, CORS e validar `Origin`/`Referer`.
-- Rotas de webhook externas (ex.: Stripe) devem ser adicionadas à lista de exceções no middleware, se necessário.
+- Use HTTPS em produção.
+- Restrinja `ALLOWED_HOSTS` e CORS conforme o ambiente.
 # Backend Django - Ad-mooving
 
 Backend da aplicação Ad-mooving desenvolvido com Django e Django REST Framework, incluindo documentação automática com Swagger.

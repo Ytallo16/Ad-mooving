@@ -1,17 +1,6 @@
-## Envio de X-API-KEY
+## Autenticação
 
-O frontend envia o header `X-API-KEY` lido de `VITE_API_SECRET` (defina no `.env`). Exemplo de `.env`:
-
-```
-VITE_API_BASE_URL=http://127.0.0.1:8000
-VITE_API_SECRET=troque-essa-por-uma-chave-secreta
-```
-
-Segurança:
-
-- Nunca commite `.env` com segredos.
-- Em produção, sirva o site e a API sob HTTPS.
-- Se exposto publicamente, considere restringir CORS/origens confiáveis e validação de `Origin`/`Referer` no backend.
+Atualmente o frontend não envia token nas requisições; os endpoints públicos funcionam sem autenticação.
 # Welcome to your Lovable project
 
 ## Project info

@@ -12,7 +12,6 @@ export const API_CONFIG = {
 export const createAuthHeaders = (additionalHeaders: Record<string, string> = {}): Record<string, string> => {
   return {
     'Content-Type': 'application/json',
-    'X-API-KEY': API_CONFIG.SECRET,
     ...additionalHeaders,
   };
 };

@@ -60,7 +60,6 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'api.middleware.TokenAuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -200,20 +199,6 @@ SPECTACULAR_SETTINGS = {
         'defaultModelsExpandDepth': 3,
         'defaultModelExpandDepth': 3,
     },
-    # Expor X-API-KEY no Swagger para autenticação pelo botão Authorize
-    'APPEND_COMPONENTS': {
-        'securitySchemes': {
-            'XApiKeyAuth': {
-                'type': 'apiKey',
-                'in': 'header',
-                'name': 'X-API-KEY',
-                'description': 'Informe a chave definida em API_SECRET_KEY',
-            },
-        }
-    },
-    'SECURITY': [
-        {'XApiKeyAuth': []}
-    ],
 }
 
 # CORS settings
@@ -254,7 +239,6 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
     'access-control-allow-origin',
-    'x-api-key',
 ]
 
 # Email settings
@@ -279,6 +263,3 @@ STRIPE_ENABLE_PIX = config('STRIPE_ENABLE_PIX', default=True, cast=bool)
 STRIPE_CONNECT_ACCOUNT_ID = config('STRIPE_CONNECT_ACCOUNT_ID', default='')  # Se usar Stripe Connect
 STRIPE_APPLICATION_FEE_AMOUNT = config('STRIPE_APPLICATION_FEE_AMOUNT', default=0, cast=int)  # em centavos
 
-# API fixed token for simple header-based auth
-# Read from environment and provide a safe, obvious-to-change default
-API_SECRET_KEY = os.getenv("API_SECRET_KEY", "troque-essa-por-uma-chave-secreta")

@@ -93,8 +93,8 @@ const Index = () => {
   // Link do Google Maps para o local do evento (Parque Potycabana)
   const googleMapsUrl = `https://www.google.com/maps?q=${encodeURIComponent('Parque Potycabana, Teresina - PI')}`;
 
-  // Instagram da igreja (configurável por env)
-  const instagramUrl = import.meta.env.VITE_INSTAGRAM_URL || 'https://www.instagram.com/addirceu';
+  // Instagram da igreja (fixo)
+  const instagramUrl = 'https://www.instagram.com/addirceu';
 
   // Removido: geração de arquivo ICS. Usaremos apenas o link do Google Agenda.
 

@@ -31,6 +31,19 @@ warn() {
     echo -e "${YELLOW}[WARNING] $1${NC}"
 }
 
+# Carregar variáveis do frontend/.env para o ambiente do shell (para build args VITE_*)
+load_frontend_env() {
+    if [ -f "./frontend/.env" ]; then
+        log "Carregando variáveis do ./frontend/.env para build do frontend..."
+        set -a
+        # shellcheck disable=SC1091
+        . ./frontend/.env
+        set +a
+    else
+        warn "./frontend/.env não encontrado; VITE_* podem não ser injetadas no build."
+    fi
+}
+
 # Detectar comando do Docker Compose (v1 ou v2)
 if command -v docker-compose >/dev/null 2>&1; then
     COMPOSE_CMD="docker-compose"
@@ -84,6 +97,7 @@ show_logs() {
 case $ENVIRONMENT in
     "production")
         log "Iniciando deploy para PRODUÇÃO"
+        load_frontend_env
         stop_containers
         pull_images
         start_containers
@@ -91,6 +105,7 @@ case $ENVIRONMENT in
         ;;
     "staging")
         log "Iniciando deploy para STAGING"
+        load_frontend_env
         stop_containers
         pull_images
         start_containers
