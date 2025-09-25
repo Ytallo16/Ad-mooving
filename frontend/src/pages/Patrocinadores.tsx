@@ -34,7 +34,7 @@ const patrocinadores: Patrocinador[] = [
     id: 1,
     nome: "Cleiton Cell",
     logo: logoCleiton,
-    descricao: "Especialista em assistência técnica de celulares e smartphones. Conserto rápido e confiável.",
+    descricao: "Especialista em assistência técnica de celulares e smartphones.",
     instagram: "cleitoncellprimeoficial",
     whatsapp: "(86) 8826-1642",
     backgroundImage: backgroundCleiton,
@@ -151,21 +151,21 @@ const Patrocinadores = () => {
                     </div>
                   </div>
                 </div>
-                <CardContent className="p-6 space-y-5 flex-1 flex flex-col">
-                  <p className="text-gray-700 leading-relaxed flex-1">{p.descricao}</p>
+                <CardContent className="p-6 space-y-2 flex-1 flex flex-col">
+                  <p className="text-gray-700 leading-relaxed">{p.descricao}</p>
 
                   {(p.instagram || p.whatsapp) && (
-                    <div className="pt-2 border-t border-gray-100 mt-auto">
-                      <div className="flex flex-wrap gap-3 mt-4">
+                    <div className="pt-0 border-t border-gray-100 mt-0 sm:mt-1">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 mt-1 sm:mt-2">
                         {p.instagram && (
                           <a
                             href={`https://www.instagram.com/${p.instagram.replace('@','')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
+                            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition text-sm"
                           >
                             <Instagram className="w-4 h-4" />
-                            <span>@{p.instagram.replace('@','')}</span>
+                            <span className="truncate max-w-full">@{p.instagram.replace('@','')}</span>
                           </a>
                         )}
                         {p.whatsapp && (
@@ -173,10 +173,10 @@ const Patrocinadores = () => {
                             href={`https://wa.me/55${p.whatsapp.replace(/\D/g, '')}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition"
+                            className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-3 py-2 rounded-md border border-gray-200 text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition text-sm"
                           >
                             <WhatsAppIcon className="w-4 h-4" />
-                            <span>WhatsApp</span>
+                            <span className="truncate max-w-full">WhatsApp</span>
                           </a>
                         )}
                       </div>
