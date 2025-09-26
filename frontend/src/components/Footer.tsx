@@ -23,7 +23,10 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Contato</h4>
             <div className="space-y-2 text-gray-400">
-              <p className="flex items-center gap-2">
+              <a 
+                href="mailto:admoving@addirceu.com.br?subject=Contato%20ADMOVING&body=Olá,%20gostaria%20de%20saber%20mais%20sobre%20o%20evento%20ADMOVING."
+                className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+              >
                 {/* Gmail icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -39,8 +42,13 @@ const Footer = () => {
                   />
                 </svg>
                 <span>admoving@addirceu.com.br</span>
-              </p>
-              <p className="flex items-center gap-2">
+              </a>
+              <a 
+                href="https://wa.me/5586920012341"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+              >
                 {/* WhatsApp icon */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -60,7 +68,7 @@ const Footer = () => {
                   />
                 </svg>
                 <span>+55 86 92001-2341</span>
-              </p>
+              </a>
             </div>
           </div>
         </div>
