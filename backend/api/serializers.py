@@ -40,29 +40,42 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
     
     def validate_cpf(self, value):
         """
-        Validação básica do CPF - DESABILITADA TEMPORARIAMENTE
+        Validação do CPF com restrição apenas para pagamentos confirmados
         """
-        # Validação desabilitada para testes
-        return value
-        
+        if not value:
+            return value
+            
         # Remove caracteres não numéricos
-        # cpf = ''.join(filter(str.isdigit, value))
+        cpf = ''.join(filter(str.isdigit, value))
         
-        # if len(cpf) != 11:
-        #     raise serializers.ValidationError("CPF deve ter 11 dígitos.")
+        if len(cpf) != 11:
+            raise serializers.ValidationError("CPF deve ter 11 dígitos.")
         
-        # # Verifica se todos os dígitos são iguais
-        # if cpf == cpf[0] * 11:
-        #     raise serializers.ValidationError("CPF inválido.")
+        # Verifica se todos os dígitos são iguais
+        if cpf == cpf[0] * 11:
+            raise serializers.ValidationError("CPF inválido.")
         
-        # # Validação dos dígitos verificadores
-        # for i in range(9, 11):
-        #     value = sum((int(cpf[num]) * ((i + 1) - num) for num in range(0, i)))
-        #     digit = ((value * 10) % 11) % 10
-        #     if int(cpf[i]) != digit:
-        #         raise serializers.ValidationError("CPF inválido.")
+        # Validação dos dígitos verificadores
+        for i in range(9, 11):
+            value = sum((int(cpf[num]) * ((i + 1) - num) for num in range(0, i)))
+            digit = ((value * 10) % 11) % 10
+            if int(cpf[i]) != digit:
+                raise serializers.ValidationError("CPF inválido.")
         
-        # return value
+        # Verificar se já existe inscrição PAGA com este CPF
+        from .models import RaceRegistration
+        existing_paid = RaceRegistration.objects.filter(
+            cpf=cpf, 
+            payment_status='PAID'
+        ).exists()
+        
+        if existing_paid:
+            raise serializers.ValidationError(
+                "Já existe uma inscrição com este CPF. "
+                
+            )
+        
+        return value
     
     def validate_phone(self, value):
         """

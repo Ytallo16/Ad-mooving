@@ -130,6 +130,16 @@ class RaceRegistration(models.Model):
         verbose_name="Data do Pagamento"
     )
     
+    # Número de inscrição (gerado quando pagamento é confirmado)
+    registration_number = models.CharField(
+        max_length=5,
+        blank=True,
+        null=True,
+        unique=True,
+        verbose_name="Número de Inscrição",
+        help_text="Número único de 5 dígitos gerado quando pagamento é confirmado"
+    )
+    
     # Campos para controle de emails enviados
     registration_email_sent = models.BooleanField(
         default=False, 

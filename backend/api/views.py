@@ -379,7 +379,13 @@ def payment_webhook(request):
         # Atualiza o status de pagamento
         old_status = registration.payment_status
         registration.payment_status = payment_status
-        registration.save(update_fields=['payment_status', 'updated_at'])
+        
+        # Se o pagamento foi confirmado, gerar número de inscrição
+        if payment_status == 'PAID' and not registration.registration_number:
+            from .services import generate_unique_registration_number
+            registration.registration_number = generate_unique_registration_number()
+        
+        registration.save(update_fields=['payment_status', 'registration_number', 'updated_at'])
         
         # Se o pagamento foi confirmado e ainda não enviou email de pagamento
         if payment_status == 'PAID' and not registration.payment_email_sent:
@@ -633,10 +639,17 @@ def verify_payment_status(request):
                         registration.payment_date = timezone.now()
                         if session.payment_intent:
                             registration.stripe_payment_intent_id = session.payment_intent
+                        
+                        # Gerar número de inscrição único se ainda não existe
+                        if not registration.registration_number:
+                            from .services import generate_unique_registration_number
+                            registration.registration_number = generate_unique_registration_number()
+                        
                         registration.save(update_fields=[
                             'payment_status', 
                             'payment_date', 
-                            'stripe_payment_intent_id'
+                            'stripe_payment_intent_id',
+                            'registration_number'
                         ])
                         
                         # Enviar email de confirmação se ainda não enviado

@@ -206,6 +206,10 @@ CORS_ALLOWED_ORIGINS = [
     # Localhost para desenvolvimento
     "http://localhost:3000",  # React/Vite dev
     "http://127.0.0.1:3000",
+    "http://localhost:8080",  # Vite dev server
+    "http://127.0.0.1:8080",
+    "http://localhost:5173",  # Vite dev server alternativo
+    "http://127.0.0.1:5173",
     
     # Domínio de produção
     "https://admoving.demo.addirceu.com.br",  # Site principal
@@ -234,6 +238,8 @@ CORS_ALLOW_HEADERS = [
     'x-csrftoken',
     'x-requested-with',
     'access-control-allow-origin',
+    'access-control-allow-methods',
+    'access-control-allow-headers',
 ]
 
 # Email settings

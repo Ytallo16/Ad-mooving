@@ -7,16 +7,58 @@ from decouple import config
 from email.header import Header
 from email.utils import formataddr
 import stripe
+import random
 
 # Configurar Stripe com a chave secreta
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+def generate_unique_registration_number():
+    """
+    Gera um número único de 5 dígitos para inscrição
+    """
+    from .models import RaceRegistration
+    
+    max_attempts = 100  # Evitar loop infinito
+    attempts = 0
+    
+    while attempts < max_attempts:
+        # Gera número de 5 dígitos (10000 a 99999)
+        number = str(random.randint(10000, 99999))
+        
+        # Verifica se já existe
+        if not RaceRegistration.objects.filter(registration_number=number).exists():
+            return number
+        
+        attempts += 1
+    
+    # Se não conseguir gerar um número único, usar timestamp
+    return str(int(timezone.now().timestamp()))[-5:].zfill(5)
 
 def send_registration_confirmation_email(registration):
     """
     Envia email de confirmação da inscrição (quando o usuário se inscreve)
     """
-    # Assunto com acentos e emojis
-    subject_text = 'Inscrição Recebida – Corrida Ad-mooving 🏃✨'
+    # Determina o template baseado no tipo de inscrição
+    course = registration.course
+    
+    if course == 'RUN_5K':
+        subject_text = 'Inscrição Recebida – Corrida 5K Ad-mooving 🏃‍♂️'
+        html_template = 'api/emails/registration_confirmation_run.html'
+        text_template = 'api/emails/registration_confirmation_run.txt'
+    elif course == 'WALK_3K':
+        subject_text = 'Inscrição Recebida – Caminhada 2,5K Ad-mooving 🚶‍♀️'
+        html_template = 'api/emails/registration_confirmation_walk.html'
+        text_template = 'api/emails/registration_confirmation_walk.txt'
+    elif course == 'KIDS':
+        subject_text = 'Inscrição Recebida – Kids Ad-mooving 👶'
+        html_template = 'api/emails/registration_confirmation_kids.html'
+        text_template = 'api/emails/registration_confirmation_kids.txt'
+    else:
+        # Fallback para o template original
+        subject_text = 'Inscrição Recebida – Corrida Ad-mooving 🏃✨'
+        html_template = 'api/emails/registration_confirmation.html'
+        text_template = 'api/emails/registration_confirmation.txt'
+    
     subject = str(Header(subject_text, 'utf-8'))
     
     # Informações da corrida (configuráveis via .env)
@@ -44,10 +86,10 @@ def send_registration_confirmation_email(registration):
     }
     
     # Renderiza o template HTML
-    html_message = render_to_string('api/emails/registration_confirmation.html', context)
+    html_message = render_to_string(html_template, context)
     
     # Renderiza o template de texto plano
-    text_message = render_to_string('api/emails/registration_confirmation.txt', context)
+    text_message = render_to_string(text_template, context)
     
     try:
         # Garante que as mensagens estão em UTF-8
@@ -90,6 +132,11 @@ def send_payment_confirmation_email(registration):
     """
     Envia email de confirmação do pagamento (quando o pagamento é aprovado)
     """
+    # Gera número de inscrição único se ainda não existe
+    if not registration.registration_number:
+        registration.registration_number = generate_unique_registration_number()
+        registration.save(update_fields=['registration_number'])
+    
     # Assunto com acentos e emojis
     subject_text = 'Pagamento Confirmado – Corrida Ad-mooving 🎉💳'
     subject = str(Header(subject_text, 'utf-8'))
@@ -338,10 +385,15 @@ def process_stripe_webhook_event(event):
                     if session.get('payment_intent'):
                         registration.stripe_payment_intent_id = session['payment_intent']
                     
+                    # Gerar número de inscrição único se ainda não existe
+                    if not registration.registration_number:
+                        registration.registration_number = generate_unique_registration_number()
+                    
                     registration.save(update_fields=[
                         'payment_status', 
                         'payment_date', 
-                        'stripe_payment_intent_id'
+                        'stripe_payment_intent_id',
+                        'registration_number'
                     ])
                     
                     # Enviar email de confirmação de pagamento
