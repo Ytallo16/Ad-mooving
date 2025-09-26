@@ -98,10 +98,33 @@ const Sobre = () => {
           {/* Premiação */}
           <section className="mt-12">
             <div className="bg-white rounded-3xl border border-gray-200 p-8 md:p-12">
-              <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-6 font-teko">Premiação</h3>
-              <p className="text-gray-700 text-base md:text-lg">
-                Troféus para os 3 primeiros colocados de cada categoria (masculino e feminino).
-              </p>
+              <div className="flex items-center justify-between gap-4 mb-6">
+                <h3 className="text-2xl md:text-3xl font-bold text-race-primary font-teko">Premiação</h3>
+               
+              </div>
+
+              {/* Destaques rápidos */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div className="rounded-2xl border border-gray-200 p-4">
+                  <div className="text-2xl mb-1">🏆</div>
+                  <div className="font-semibold text-gray-900">Pódio Geral</div>
+                  <p className="text-sm text-gray-600">Masculino e Feminino — 1º, 2º e 3º colocados</p>
+                </div>
+                <div className="rounded-2xl border border-gray-200 p-4">
+                  <div className="text-2xl mb-1">⏱️</div>
+                  <div className="font-semibold text-gray-900">Cronometragem</div>
+                  <p className="text-sm text-gray-600">Resultados oficiais para a corrida</p>
+                </div>
+                <div className="rounded-2xl border border-gray-200 p-4">
+                  <div className="text-2xl mb-1">🎖️</div>
+                  <div className="font-semibold text-gray-900">Medalha</div>
+                  <p className="text-sm text-gray-600">Todos os participantes concluintes recebem medalha</p>
+                </div>
+              </div>
+
+          
+
+              
             </div>
           </section>
 
