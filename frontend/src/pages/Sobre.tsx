@@ -208,7 +208,7 @@ const Sobre = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
                   { titulo: 'Mesa de Frutas', desc: 'Banana, maçã, melancia e laranja', emoji: '🍌' },
-                  { titulo: 'Iogurte & Água', desc: 'Hidratação e reposição leve', emoji: '🥛' },
+                  { titulo: 'Premiação', desc: 'Cerimônia de premiação dos vencedores', emoji: '🏆' },
                   { titulo: 'Suporte Médico', desc: 'Primeiros socorros no local', emoji: '⛑️' },
                   { titulo: 'Área de Fotos', desc: 'Backdrop oficial e medalha', emoji: '📸' },
                 ].map((b) => (
