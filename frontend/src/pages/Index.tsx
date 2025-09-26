@@ -512,7 +512,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-3xl font-bold text-race-primary mb-4 font-teko">Corrida</h3>
-                <p className="text-gray-600 mb-6 text-lg">Para corredores de todas as idades</p>
+                <p className="text-gray-600 mb-6 text-lg">5 km - Para corredores de todas as idades</p>
                 <div className="mb-8">
                   <span className="text-5xl font-bold text-race-primary">R$ 80,00</span>
                 </div>
@@ -521,7 +521,7 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Kit completo do corredor</span>
+                    <span className="text-gray-700 font-medium">Kit completo</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -608,7 +608,7 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Kit completo do participante</span>
+                    <span className="text-gray-700 font-medium">Kit completo</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -620,7 +620,7 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Sem cronometragem</span>
+                    <span className="text-gray-700 font-medium">Participativa</span>
                   </div>
                 </div>
                 <Link to="/inscricoes">

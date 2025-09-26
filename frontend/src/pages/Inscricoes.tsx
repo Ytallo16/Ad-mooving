@@ -317,7 +317,7 @@ const Inscricoes = () => {
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Data:</span>
-                    <span className="text-sm text-muted-foreground">15 de Dezembro, 2024</span>
+                    <span className="text-sm text-muted-foreground">14 de Dezembro, 2024</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Horário:</span>
