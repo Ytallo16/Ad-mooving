@@ -6,10 +6,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { DatePicker } from "@/components/ui/date-picker";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
+import { CreditCard, Smartphone } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 import { apiRequest } from "@/config/api";
@@ -18,6 +20,9 @@ const Inscricoes = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'pix' | null>(null);
+  const [registrationData, setRegistrationData] = useState<any>(null);
   const [formData, setFormData] = useState({
     // Dados do atleta/criança
     full_name: "",
@@ -121,33 +126,14 @@ const Inscricoes = () => {
         const result = await response.json();
         console.log('Resultado da API:', result);
         
-        // Verificar se há dados de pagamento na resposta
-        if (result.payment && result.payment.checkout_url) {
-          toast({
-            title: "Inscrição realizada com sucesso! 🎉",
-            description: "Redirecionando para o pagamento...",
-          });
-          
-          // Aguardar um momento para o usuário ver a mensagem
-          setTimeout(() => {
-            // Redirecionar para o Stripe Checkout
-            window.location.href = result.payment.checkout_url;
-          }, 1500);
-          
-        } else if (result.registration) {
-          // Caso a inscrição foi criada mas sem pagamento
-          toast({
-            title: "Inscrição realizada! ⚠️",
-            description: "Inscrição criada mas houve um problema com o pagamento. Entre em contato conosco.",
-            variant: "destructive"
-          });
-        } else {
-          // Resposta padrão (compatibilidade com versão antiga)
-          toast({
-            title: "Inscrição realizada com sucesso! 🎉",
-            description: "Você receberá um email de confirmação em breve com todos os detalhes.",
-          });
-        }
+        // Salvar dados da inscrição e mostrar modal de pagamento
+        setRegistrationData(result);
+        setShowPaymentModal(true);
+        
+        toast({
+          title: "Inscrição realizada com sucesso! 🎉",
+          description: "Escolha sua forma de pagamento para finalizar.",
+        });
         
         // Resetar o formulário
         setFormData({
@@ -212,9 +198,43 @@ const Inscricoes = () => {
       if (field === 'gender') {
         newData.shirt_size = '';
       }
-      
+
       return newData;
     });
+  };
+
+  const handlePaymentMethodSelect = (method: 'card' | 'pix') => {
+    setSelectedPaymentMethod(method);
+  };
+
+  const handlePaymentConfirm = () => {
+    if (!selectedPaymentMethod) return;
+
+    if (selectedPaymentMethod === 'card') {
+      // Redirecionar para Stripe
+      if (registrationData?.payment?.checkout_url) {
+        window.location.href = registrationData.payment.checkout_url;
+      } else {
+        toast({
+          title: "Erro no pagamento",
+          description: "URL de pagamento não encontrada. Entre em contato conosco.",
+          variant: "destructive"
+        });
+      }
+    } else if (selectedPaymentMethod === 'pix') {
+      // Placeholder para PIX
+      toast({
+        title: "PIX em breve! 📱",
+        description: "A opção de pagamento via PIX estará disponível em breve. Por enquanto, use cartão de crédito.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handlePaymentCancel = () => {
+    setShowPaymentModal(false);
+    setSelectedPaymentMethod(null);
+    setRegistrationData(null);
   };
 
   const formatCPF = (value: string) => {
@@ -534,6 +554,103 @@ const Inscricoes = () => {
       
       <Footer />
       <InstagramFloat />
+
+      {/* Modal de Seleção de Pagamento */}
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-teko">Escolha sua forma de pagamento</DialogTitle>
+            <DialogDescription className="text-center">
+              Selecione como deseja pagar sua inscrição
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Opção Cartão de Crédito */}
+            <div 
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                selectedPaymentMethod === 'card' 
+                  ? 'border-race-primary bg-race-primary/5' 
+                  : 'border-gray-200 hover:border-race-primary/50'
+              }`}
+              onClick={() => handlePaymentMethodSelect('card')}
+            >
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-full ${
+                  selectedPaymentMethod === 'card' 
+                    ? 'bg-race-primary text-white' 
+                    : 'bg-gray-100 text-gray-600'
+                }`}>
+                  <CreditCard className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">Cartão de Crédito</h3>
+                  <p className="text-sm text-gray-600">Pague com segurança via Stripe</p>
+                </div>
+                <div className={`w-4 h-4 rounded-full border-2 ${
+                  selectedPaymentMethod === 'card' 
+                    ? 'border-race-primary bg-race-primary' 
+                    : 'border-gray-300'
+                }`}>
+                  {selectedPaymentMethod === 'card' && (
+                    <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Opção PIX */}
+            <div 
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                selectedPaymentMethod === 'pix' 
+                  ? 'border-race-primary bg-race-primary/5' 
+                  : 'border-gray-200 hover:border-race-primary/50'
+              }`}
+              onClick={() => handlePaymentMethodSelect('pix')}
+            >
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-full ${
+                  selectedPaymentMethod === 'pix' 
+                    ? 'bg-race-primary text-white' 
+                    : 'bg-gray-100 text-gray-600'
+                }`}>
+                  <Smartphone className="h-5 w-5" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">PIX</h3>
+                  <p className="text-sm text-gray-600">Pagamento instantâneo (em breve)</p>
+                </div>
+                <div className={`w-4 h-4 rounded-full border-2 ${
+                  selectedPaymentMethod === 'pix' 
+                    ? 'border-race-primary bg-race-primary' 
+                    : 'border-gray-300'
+                }`}>
+                  {selectedPaymentMethod === 'pix' && (
+                    <div className="w-full h-full rounded-full bg-white scale-50"></div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handlePaymentCancel}
+              className="w-full sm:w-auto"
+            >
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handlePaymentConfirm}
+              disabled={!selectedPaymentMethod}
+              className="w-full sm:w-auto bg-race-primary hover:bg-race-primary/90"
+            >
+              {selectedPaymentMethod === 'card' ? 'Pagar com Cartão' : 'Continuar com PIX'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

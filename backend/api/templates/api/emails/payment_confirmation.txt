@@ -5,6 +5,14 @@ Olá, {{ registration.full_name }}!
 Parabéns! Seu pagamento foi processado com sucesso em {{ payment_date }}.
 Sua vaga na {{ race_info.name }} está garantida!
 
+{% if registration.registration_number %}
+🏷️ SEU NÚMERO DE INSCRIÇÃO
+===========================
+{{ registration.registration_number }}
+
+Guarde este número! Você precisará dele no dia da corrida.
+
+{% endif %}
 📋 DETALHES DA SUA INSCRIÇÃO
 ================================
 Nome: {{ registration.full_name }}

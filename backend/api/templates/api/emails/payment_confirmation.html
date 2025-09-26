@@ -126,6 +126,14 @@
             <h3>✅ Parabéns, {{ registration.full_name }}!</h3>
             <p>Seu pagamento foi processado com sucesso em <strong>{{ payment_date }}</strong>. 
             Sua vaga na {{ race_info.name }} está garantida!</p>
+            
+            {% if registration.registration_number %}
+            <div style="background-color: #fff3cd; border: 2px solid #ffc107; border-radius: 8px; padding: 15px; margin: 15px 0; text-align: center;">
+                <h3 style="color: #856404; margin: 0 0 10px 0;">🏷️ Seu Número de Inscrição</h3>
+                <div style="font-size: 32px; font-weight: bold; color: #856404; letter-spacing: 3px;">{{ registration.registration_number }}</div>
+                <p style="margin: 10px 0 0 0; color: #856404; font-size: 14px;">Guarde este número! Você precisará dele no dia da corrida.</p>
+            </div>
+            {% endif %}
         </div>
 
         <h2>📋 Detalhes da sua Inscrição</h2>

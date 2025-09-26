@@ -1,0 +1,32 @@
+INSCRIÇÃO RECEBIDA - KIDS AD-MOOVING 👶
+
+Olá, {{ registration.responsible_full_name }}!
+
+Recebemos a inscrição do(a) {{ registration.full_name }} para a Corrida Kids Ad-mooving em {{ confirmation_date }}.
+
+⚠️ IMPORTANTE: A inscrição está registrada, mas ainda não está confirmada. A confirmação acontecerá após a aprovação do pagamento.
+
+👨‍👩‍👧‍👦 PARA OS PAIS:
+Esta é uma corrida especial para crianças de 3 a 10 anos. O evento será supervisionado e seguro para nossos pequenos atletas!
+
+📋 DETALHES DA INSCRIÇÃO:
+- Modalidade: Corrida Kids (3 a 10 anos)
+- Nome da Criança: {{ registration.full_name }}
+- Responsável: {{ registration.responsible_full_name }}
+- CPF do Responsável: {{ registration.responsible_cpf }}
+- Email: {{ registration.responsible_email }}
+- Telefone: {{ registration.responsible_phone }}
+- Camiseta: {{ registration.get_shirt_size_display }}
+
+🏁 INFORMAÇÕES DO EVENTO:
+- Data: 14 de Dezembro de 2025
+- Horário: 06:00h (largada)
+- Local: Teresina Shopping
+- Percurso: Corrida Kids (distância adequada para a idade)
+- Supervisão: Equipe especializada em eventos infantis
+
+Dúvidas? Entre em contato conosco:
+📧 {{ contact_email }} | 📱 {{ contact_whatsapp }}
+
+Obrigado por inscrever seu(a) pequeno(a) atleta na Ad-mooving! 🏁
+Equipe Ad-mooving
