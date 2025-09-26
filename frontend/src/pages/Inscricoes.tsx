@@ -106,15 +106,33 @@ const Inscricoes = () => {
     setIsLoading(true);
     
     try {
-      console.log('Dados enviados:', formData);
+      console.log('Dados enviados (raw):', formData);
+
+      // Sanitização forte no envio
+      const sanitizedCpf = (formData.cpf || '').toString().replace(/\D/g, '').slice(0, 11);
+      const sanitizedResponsibleCpf = (formData.responsible_cpf || '').toString().replace(/\D/g, '').slice(0, 11);
+
+      // Validação básica no cliente (somente quando não for KIDS)
+      if (formData.course !== 'KIDS' && sanitizedCpf.length !== 11) {
+        toast({
+          title: "CPF inválido",
+          description: "Informe um CPF com 11 dígitos.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+        return;
+      }
 
       const payload = {
         ...formData,
+        cpf: sanitizedCpf || undefined,
+        responsible_cpf: formData.course === 'KIDS' ? sanitizedResponsibleCpf || undefined : undefined,
         modality: formData.course === 'KIDS' ? 'INFANTIL' : 'ADULTO',
         // Para KIDS, email/phone podem ser do responsável
         email: formData.course === 'KIDS' && formData.responsible_email ? formData.responsible_email : formData.email,
         phone: formData.course === 'KIDS' && formData.responsible_phone ? formData.responsible_phone : formData.phone,
       };
+      console.log('Payload sanitizado:', payload);
 
       const response = await apiRequest(`/api/race-registrations/`, {
         method: 'POST',
@@ -122,8 +140,20 @@ const Inscricoes = () => {
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        const result = await response.json();
+      let parsedJson: any = null;
+      let rawText: string | null = null;
+      try {
+        parsedJson = await response.clone().json();
+      } catch (_) {
+        try { rawText = await response.text(); } catch (__) { rawText = null; }
+      }
+
+      console.log('Resposta da API -> status:', response.status, 'ok:', response.ok);
+      if (parsedJson) console.log('Resultado da API (JSON):', parsedJson);
+      if (!parsedJson && rawText) console.log('Resultado da API (texto):', rawText);
+
+      if (response.ok && parsedJson) {
+        const result = parsedJson;
         console.log('Resultado da API:', result);
         
         // Salvar dados da inscrição e mostrar modal de pagamento
@@ -153,16 +183,16 @@ const Inscricoes = () => {
           athlete_declaration: false
         });
       } else {
-        const errorData = await response.json();
+        const errorData = parsedJson || rawText || 'Erro desconhecido';
         console.error('Erro da API:', errorData);
         
         let errorMessage = "Erro ao processar inscrição. Tente novamente.";
         
-        if (errorData.cpf && errorData.cpf[0]) {
+        if (errorData && typeof errorData === 'object' && errorData.cpf && errorData.cpf[0]) {
           errorMessage = "CPF já cadastrado ou inválido.";
-        } else if (errorData.non_field_errors) {
+        } else if (errorData && typeof errorData === 'object' && errorData.non_field_errors) {
           errorMessage = errorData.non_field_errors[0];
-        } else if (errorData.detail) {
+        } else if (errorData && typeof errorData === 'object' && errorData.detail) {
           errorMessage = errorData.detail;
         }
         
@@ -235,6 +265,24 @@ const Inscricoes = () => {
     setShowPaymentModal(false);
     setSelectedPaymentMethod(null);
     setRegistrationData(null);
+  };
+
+  // Restringe digitacao a apenas numeros (permite teclas de controle)
+  const allowOnlyDigitsKeyDown = (e: any) => {
+    const allowedKeys = [
+      'Backspace', 'Delete', 'Tab', 'Escape', 'Enter',
+      'ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'
+    ];
+    if (
+      allowedKeys.includes(e.key) ||
+      // Permitir Ctrl/Cmd + A/C/V/X
+      (e.ctrlKey || e.metaKey)
+    ) {
+      return;
+    }
+    if (!/^[0-9]$/.test(e.key)) {
+      e.preventDefault();
+    }
   };
 
   const formatCPF = (value: string) => {
@@ -386,7 +434,9 @@ const Inscricoes = () => {
                           <Input
                             id="cpf"
                             value={formatCPF(formData.cpf)}
-                            onChange={(e) => handleInputChange("cpf", e.target.value.replace(/\D/g, ''))}
+                            onChange={(e) => handleInputChange("cpf", e.target.value.replace(/\D/g, '').slice(0, 11))}
+                            onKeyDown={allowOnlyDigitsKeyDown}
+                            inputMode="numeric"
                             placeholder="000.000.000-00"
                             required
                             maxLength={14}
@@ -416,7 +466,9 @@ const Inscricoes = () => {
                           <Input
                             id="phone"
                             value={formatPhone(formData.phone)}
-                            onChange={(e) => handleInputChange("phone", e.target.value.replace(/\D/g, ''))}
+                            onChange={(e) => handleInputChange("phone", e.target.value.replace(/\D/g, '').slice(0, 11))}
+                            onKeyDown={allowOnlyDigitsKeyDown}
+                            inputMode="numeric"
                             placeholder="(11) 99999-9999"
                             required
                             maxLength={15}
@@ -497,7 +549,15 @@ const Inscricoes = () => {
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_cpf">CPF do Responsável *</Label>
-                            <Input id="responsible_cpf" value={formatCPF(formData.responsible_cpf)} onChange={(e)=>handleInputChange('responsible_cpf', e.target.value.replace(/\D/g,''))} placeholder="000.000.000-00" required={formData.course==='KIDS'} />
+                            <Input
+                              id="responsible_cpf"
+                              value={formatCPF(formData.responsible_cpf)}
+                              onChange={(e)=>handleInputChange('responsible_cpf', e.target.value.replace(/\D/g,'').slice(0,11))}
+                              onKeyDown={allowOnlyDigitsKeyDown}
+                              inputMode="numeric"
+                              placeholder="000.000.000-00"
+                              required={formData.course==='KIDS'}
+                            />
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_email">Email do Responsável *</Label>

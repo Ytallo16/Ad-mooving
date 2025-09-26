@@ -28,18 +28,22 @@ export const apiRequest = async (
     headers: { ...defaultOptions.headers, ...(options.headers || {}) },
   };
 
-  // Sempre prioriza produção; em falha/5xx/timeout, tenta local
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
-  try {
-    const res = await fetch(`${API_CONFIG.PRIMARY_BASE_URL}${endpoint}`, { ...mergedOptions, signal: controller.signal });
-    clearTimeout(timeout);
-    if (!res.ok && res.status >= 500) {
-      return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
-    }
-    return res;
-  } catch (_) {
-    clearTimeout(timeout);
-    return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
-  }
+  // TEMPORÁRIO: Usar apenas servidor local para debug
+  console.log(`[API] Fazendo requisição para: ${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`);
+  return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
+  
+  // // Sempre prioriza produção; em falha/5xx/timeout, tenta local
+  // const controller = new AbortController();
+  // const timeout = setTimeout(() => controller.abort(), 5000);
+  // try {
+  //   const res = await fetch(`${API_CONFIG.PRIMARY_BASE_URL}${endpoint}`, { ...mergedOptions, signal: controller.signal });
+  //   clearTimeout(timeout);
+  //   if (!res.ok && res.status >= 500) {
+  //     return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
+  //   }
+  //   return res;
+  // } catch (_) {
+  //   clearTimeout(timeout);
+  //   return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
+  // }
 };

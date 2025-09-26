@@ -6,127 +6,130 @@
     <title>Inscrição Recebida - Kids Ad-mooving</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: Arial, sans-serif;
             line-height: 1.6;
             color: #333;
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
         }
-        .wrapper {
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        .container {
+            background-color: white;
+            border: 1px solid #ddd;
+            padding: 30px;
         }
         .header {
-            background: linear-gradient(135deg, #dc2626, #ef4444);
-            color: white;
-            padding: 30px;
             text-align: center;
+            border-bottom: 2px solid #ffc107;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
         }
-        .title {
+        .header h1 {
             margin: 0;
             font-size: 24px;
-            font-weight: bold;
-        }
-        .content {
-            padding: 30px;
-        }
-        .highlight {
-            background: #fef2f2;
-            border-left: 4px solid #ef4444;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 4px;
+            color: #ffc107;
         }
         .info-box {
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
             padding: 20px;
             margin: 20px 0;
         }
-        .info-title {
+        .details-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        .details-table th,
+        .details-table td {
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .details-table th {
+            background-color: #f8f9fa;
             font-weight: bold;
-            color: #dc2626;
-            margin-bottom: 10px;
         }
         .footer {
-            background: #f8fafc;
-            padding: 20px;
             text-align: center;
-            color: #64748b;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #dee2e6;
+            color: #666;
             font-size: 14px;
-        }
-        .contact {
-            background: #fef2f2;
-            border-radius: 8px;
-            padding: 15px;
-            margin: 20px 0;
-            text-align: center;
-        }
-        .kids-note {
-            background: #fef3c7;
-            border: 2px solid #f59e0b;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 20px 0;
-            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="wrapper">
+    <div class="container">
         <div class="header">
-            <h1 class="title">👶 Inscrição Recebida - Kids Ad-mooving</h1>
+            <h1>Inscrição Recebida</h1>
+            <p>Kids Ad-mooving</p>
         </div>
-        <div class="content">
-            <p>Olá, <strong>{{ registration.responsible_full_name }}</strong>!</p>
-            
-            <p>Recebemos a inscrição do(a) <strong>{{ registration.full_name }}</strong> para a <strong>Corrida Kids Ad-mooving</strong> em <strong>{{ confirmation_date }}</strong>.</p>
-            
-            <div class="highlight">
-                <strong>⚠️ Importante:</strong> A inscrição está registrada, mas ainda não está confirmada. A confirmação acontecerá após a aprovação do pagamento.
-            </div>
-            
-            <div class="kids-note">
-                <strong>👨‍👩‍👧‍👦 Para os Pais:</strong><br>
-                Esta é uma corrida especial para crianças de 3 a 10 anos. O evento será supervisionado e seguro para nossos pequenos atletas!
-            </div>
-            
-            <div class="info-box">
-                <div class="info-title">📋 Detalhes da inscrição:</div>
-                <ul>
-                    <li><strong>Modalidade:</strong> Corrida Kids (3 a 10 anos)</li>
-                    <li><strong>Nome da Criança:</strong> {{ registration.full_name }}</li>
-                    <li><strong>Responsável:</strong> {{ registration.responsible_full_name }}</li>
-                    <li><strong>CPF do Responsável:</strong> {{ registration.responsible_cpf }}</li>
-                    <li><strong>Email:</strong> {{ registration.responsible_email }}</li>
-                    <li><strong>Telefone:</strong> {{ registration.responsible_phone }}</li>
-                    <li><strong>Camiseta:</strong> {{ registration.get_shirt_size_display }}</li>
-                </ul>
-            </div>
-            
-            <div class="info-box">
-                <div class="info-title">🏁 Informações do Evento:</div>
-                <ul>
-                    <li><strong>Data:</strong> 14 de Dezembro de 2025</li>
-                    <li><strong>Horário:</strong> 06:00h (largada)</li>
-                    <li><strong>Local:</strong> Teresina Shopping</li>
-                    <li><strong>Percurso:</strong> Corrida Kids (distância adequada para a idade)</li>
-                    <li><strong>Supervisão:</strong> Equipe especializada em eventos infantis</li>
-                </ul>
-            </div>
-            
-            <div class="contact">
-                <p><strong>Dúvidas?</strong> Entre em contato conosco:</p>
-                <p>📧 {{ contact_email }} | 📱 {{ contact_whatsapp }}</p>
-            </div>
+
+        <div class="info-box">
+            <h2>Olá, {{ registration.full_name }}!</h2>
+            <p>A inscrição do seu filho(a) para a <strong>Kids Ad-mooving</strong> foi recebida com sucesso!</p>
+            <p>Você receberá um email de confirmação de pagamento assim que o pagamento for processado.</p>
         </div>
+
+        <h3>Detalhes da Inscrição</h3>
+        <table class="details-table">
+            <tr>
+                <th>Nome Completo</th>
+                <td>{{ registration.full_name }}</td>
+            </tr>
+            <tr>
+                <th>CPF</th>
+                <td>{{ registration.cpf }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ registration.email }}</td>
+            </tr>
+            <tr>
+                <th>Telefone</th>
+                <td>{{ registration.phone }}</td>
+            </tr>
+            <tr>
+                <th>Modalidade</th>
+                <td>{{ registration.get_modality_display }}</td>
+            </tr>
+            <tr>
+                <th>Tamanho da Camisa</th>
+                <td>{{ registration.get_shirt_size_display }}</td>
+            </tr>
+        </table>
+
+        <h3>Próximos Passos</h3>
+        <ul>
+            <li>Complete o pagamento para confirmar a vaga do seu filho(a)</li>
+            <li>Você receberá um email de confirmação após o pagamento</li>
+            <li>Guarde este email como comprovante de inscrição</li>
+        </ul>
+
+        <h3>Detalhes da Kids</h3>
+        <ul>
+            <li><strong>Data:</strong> 14 de Dezembro de 2025</li>
+            <li><strong>Horário:</strong> 07:00h</li>
+            <li><strong>Local:</strong> Parque Potycabana</li>
+            <li><strong>Modalidade:</strong> Kids (Corrida Infantil)</li>
+        </ul>
+
+        <h3>Informações Importantes para Pais</h3>
+        <ul>
+            <li>O acompanhamento de um responsável é obrigatório</li>
+            <li>Traga documento de identificação do responsável</li>
+            <li>Chegue com 30 minutos de antecedência</li>
+            <li>Use roupas confortáveis e tênis adequado</li>
+        </ul>
+
         <div class="footer">
-            <p>Obrigado por inscrever seu(a) pequeno(a) atleta na Ad-mooving! 🏁</p>
+            <p><strong>Precisa de ajuda?</strong></p>
+            <p>Email: {{ contact_email }}</p>
+            <p>WhatsApp: {{ contact_whatsapp }}</p>
+            <p>Obrigado por inscrever seu filho(a) na Kids Ad-mooving!</p>
             <p>Equipe Ad-mooving</p>
         </div>
     </div>

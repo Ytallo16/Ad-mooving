@@ -212,7 +212,18 @@ class RaceRegistrationViewSet(ModelViewSet):
         e automaticamente cria uma sessão de pagamento Stripe.
         """
         try:
+            print(f"DEBUG: Content-Type: {getattr(request, 'content_type', None)}")
+            try:
+                raw_body = request.body.decode('utf-8', errors='ignore') if hasattr(request, 'body') else None
+                print(f"DEBUG: Raw body (first 300): {raw_body[:300] if raw_body else None}")
+            except Exception as _e:
+                print(f"DEBUG: Raw body decode error: {_e}")
             print(f"DEBUG: Dados recebidos: {request.data}")
+            try:
+                raw_cpf = request.data.get('cpf')
+                print(f"DEBUG: CPF recebido (raw): {raw_cpf} len={len(str(raw_cpf)) if raw_cpf is not None else None}")
+            except Exception:
+                pass
             
             serializer = self.get_serializer(data=request.data)
             if not serializer.is_valid():
@@ -220,7 +231,16 @@ class RaceRegistrationViewSet(ModelViewSet):
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
             
             # Salva a inscrição
+            try:
+                val_cpf = serializer.validated_data.get('cpf')
+                print(f"DEBUG: CPF validado (limpo): {val_cpf} len={len(str(val_cpf)) if val_cpf is not None else None}")
+            except Exception:
+                pass
             instance = serializer.save()
+            try:
+                print(f"DEBUG: CPF salvo no banco: {instance.cpf} len={len(str(instance.cpf)) if instance.cpf is not None else None}")
+            except Exception:
+                pass
             print(f"DEBUG: Inscrição criada: ID {instance.id}")
             
             # Envia email de confirmação de inscrição (não de pagamento)
