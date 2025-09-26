@@ -1,32 +1,44 @@
-INSCRIÇÃO RECEBIDA - KIDS AD-MOOVING 👶
+INSCRIÇÃO RECEBIDA - KIDS AD-MOOVING
 
-Olá, {{ registration.responsible_full_name }}!
+Olá, {{ registration.full_name }}!
 
-Recebemos a inscrição do(a) {{ registration.full_name }} para a Corrida Kids Ad-mooving em {{ confirmation_date }}.
+A inscrição do seu filho(a) para a Kids Ad-mooving foi recebida com sucesso!
+Você receberá um email de confirmação de pagamento assim que o pagamento for processado.
 
-⚠️ IMPORTANTE: A inscrição está registrada, mas ainda não está confirmada. A confirmação acontecerá após a aprovação do pagamento.
+DETALHES DA INSCRIÇÃO
+=====================
+Nome: {{ registration.full_name }}
+CPF: {{ registration.cpf }}
+Email: {{ registration.email }}
+Telefone: {{ registration.phone }}
+Modalidade: {{ registration.get_modality_display }}
+Tamanho da Camisa: {{ registration.get_shirt_size_display }}
 
-👨‍👩‍👧‍👦 PARA OS PAIS:
-Esta é uma corrida especial para crianças de 3 a 10 anos. O evento será supervisionado e seguro para nossos pequenos atletas!
+PRÓXIMOS PASSOS
+===============
+- Complete o pagamento para confirmar a vaga do seu filho(a)
+- Você receberá um email de confirmação após o pagamento
+- Guarde este email como comprovante de inscrição
 
-📋 DETALHES DA INSCRIÇÃO:
-- Modalidade: Corrida Kids (3 a 10 anos)
-- Nome da Criança: {{ registration.full_name }}
-- Responsável: {{ registration.responsible_full_name }}
-- CPF do Responsável: {{ registration.responsible_cpf }}
-- Email: {{ registration.responsible_email }}
-- Telefone: {{ registration.responsible_phone }}
-- Camiseta: {{ registration.get_shirt_size_display }}
+DETALHES DA KIDS
+================
+Data: 14 de Dezembro de 2025
+Horário: 07:00h
+Local: Parque Potycabana
+Modalidade: Kids (Corrida Infantil)
 
-🏁 INFORMAÇÕES DO EVENTO:
-- Data: 14 de Dezembro de 2025
-- Horário: 06:00h (largada)
-- Local: Teresina Shopping
-- Percurso: Corrida Kids (distância adequada para a idade)
-- Supervisão: Equipe especializada em eventos infantis
+INFORMAÇÕES IMPORTANTES PARA PAIS
+==================================
+- O acompanhamento de um responsável é obrigatório
+- Traga documento de identificação do responsável
+- Chegue com 30 minutos de antecedência
+- Use roupas confortáveis e tênis adequado
 
-Dúvidas? Entre em contato conosco:
-📧 {{ contact_email }} | 📱 {{ contact_whatsapp }}
+PRECISA DE AJUDA?
+=================
+Email: {{ contact_email }}
+WhatsApp: {{ contact_whatsapp }}
 
-Obrigado por inscrever seu(a) pequeno(a) atleta na Ad-mooving! 🏁
+Obrigado por inscrever seu filho(a) na Kids Ad-mooving!
+
 Equipe Ad-mooving

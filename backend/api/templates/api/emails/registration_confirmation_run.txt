@@ -1,27 +1,37 @@
-INSCRIÇÃO RECEBIDA - CORRIDA 5K 🏃‍♂️
+INSCRIÇÃO RECEBIDA - CORRIDA 5K AD-MOOVING
 
 Olá, {{ registration.full_name }}!
 
-Recebemos sua inscrição para a Corrida Ad-mooving 5K em {{ confirmation_date }}.
+Sua inscrição para a Corrida 5K Ad-mooving foi recebida com sucesso!
+Você receberá um email de confirmação de pagamento assim que o pagamento for processado.
 
-⚠️ IMPORTANTE: Sua inscrição está registrada, mas ainda não está confirmada. A confirmação acontecerá após a aprovação do pagamento.
+DETALHES DA INSCRIÇÃO
+=====================
+Nome: {{ registration.full_name }}
+CPF: {{ registration.cpf }}
+Email: {{ registration.email }}
+Telefone: {{ registration.phone }}
+Modalidade: {{ registration.get_modality_display }}
+Tamanho da Camisa: {{ registration.get_shirt_size_display }}
 
-📋 DETALHES DA SUA INSCRIÇÃO:
-- Modalidade: Corrida 5K
-- Nome: {{ registration.full_name }}
-- CPF: {{ registration.cpf }}
-- Email: {{ registration.email }}
-- Telefone: {{ registration.phone }}
-- Camiseta: {{ registration.get_shirt_size_display }}
+PRÓXIMOS PASSOS
+===============
+- Complete o pagamento para confirmar sua vaga
+- Você receberá um email de confirmação após o pagamento
+- Guarde este email como comprovante de inscrição
 
-🏁 INFORMAÇÕES DO EVENTO:
-- Data: 14 de Dezembro de 2025
-- Horário: 06:00h (largada)
-- Local: Teresina Shopping
-- Percurso: 5km de corrida
+DETALHES DA CORRIDA
+===================
+Data: 14 de Dezembro de 2025
+Horário: 07:00h
+Local: Parque Potycabana
+Distância: 5K (Corrida)
 
-Dúvidas? Entre em contato conosco:
-📧 {{ contact_email }} | 📱 {{ contact_whatsapp }}
+PRECISA DE AJUDA?
+=================
+Email: {{ contact_email }}
+WhatsApp: {{ contact_whatsapp }}
 
-Obrigado por participar da Corrida Ad-mooving! 🏁
+Obrigado por participar da Corrida Ad-mooving!
+
 Equipe Ad-mooving

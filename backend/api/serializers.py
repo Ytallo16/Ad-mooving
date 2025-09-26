@@ -13,13 +13,17 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
     shirt_size_display = serializers.CharField(source='get_shirt_size_display', read_only=True, help_text="Descrição do tamanho da camisa")
     payment_status_display = serializers.CharField(source='get_payment_status_display', read_only=True, help_text="Descrição do status do pagamento")
     
+    # Campo CPF (entra cru; expomos também formato amigável em 'cpf_formatted')
+    cpf = serializers.CharField(max_length=14, required=False, allow_blank=True, allow_null=True)
+    cpf_formatted = serializers.SerializerMethodField(read_only=True, help_text="CPF formatado para exibição")
+    
     # Campos para seleção dinâmica
     available_shirt_sizes = serializers.SerializerMethodField(help_text="Tamanhos disponíveis baseados na modalidade e sexo")
     
     class Meta:
         model = RaceRegistration
         fields = [
-            'id', 'full_name', 'cpf', 'email', 'phone', 'birth_date', 
+            'id', 'full_name', 'cpf', 'cpf_formatted', 'email', 'phone', 'birth_date', 
             'gender', 'gender_display', 'modality', 'modality_display', 'course', 'course_display',
             'shirt_size', 'shirt_size_display', 'available_shirt_sizes',
             'responsible_full_name', 'responsible_cpf', 'responsible_email', 'responsible_phone',
@@ -38,6 +42,21 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
         # Adulto: tamanhos tradicionais
         return {k: f'Tradicional {k}' for k, _ in RaceRegistration.SHIRT_SIZE_CHOICES}
     
+    def to_internal_value(self, data):
+        """
+        Processa dados de entrada, removendo formatação do CPF
+        """
+        if 'cpf' in data and data['cpf']:
+            # Remove formatação do CPF (pontos, traços, espaços)
+            data['cpf'] = ''.join(filter(str.isdigit, data['cpf']))
+        return super().to_internal_value(data)
+    
+    def to_representation(self, instance):
+        """
+        Mantém 'cpf' cru (apenas dígitos) e fornece 'cpf_formatted' separado.
+        """
+        return super().to_representation(instance)
+
     def validate_cpf(self, value):
         """
         Validação do CPF com restrição apenas para pagamentos confirmados
@@ -75,7 +94,13 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
                 
             )
         
-        return value
+        return cpf  # Retorna o CPF limpo (apenas dígitos)
+
+    def get_cpf_formatted(self, obj):
+        """Formata o CPF (somente para exibição)."""
+        if obj.cpf and len(obj.cpf) == 11:
+            return f"{obj.cpf[:3]}.{obj.cpf[3:6]}.{obj.cpf[6:9]}-{obj.cpf[9:]}"
+        return obj.cpf
     
     def validate_phone(self, value):
         """
