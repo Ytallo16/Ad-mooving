@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,12 +13,13 @@ import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
 import { CreditCard, Smartphone } from "lucide-react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "@/config/api";
 
 const Inscricoes = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'pix' | null>(null);
@@ -44,6 +45,22 @@ const Inscricoes = () => {
     // Declaração
     athlete_declaration: false
   });
+
+  // Prefill course/modality from URL param on mount
+  useEffect(() => {
+    const courseParam = (searchParams.get('course') || '').toUpperCase();
+    const allowed = ['KIDS', 'RUN_5K', 'WALK_3K'];
+    if (allowed.includes(courseParam)) {
+      setFormData(prev => ({
+        ...prev,
+        course: courseParam as any,
+        modality: courseParam === 'KIDS' ? 'INFANTIL' : 'ADULTO',
+        shirt_size: ''
+      }));
+    }
+  // run once on mount
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
 
 

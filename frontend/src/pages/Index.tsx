@@ -535,7 +535,7 @@ const Index = () => {
                     <span className="text-gray-700 font-medium">Cronometragem oficial</span>
                   </div>
                 </div>
-                <Link to="/inscricoes">
+                <Link to="/inscricoes?course=RUN_5K">
                   <Button className="w-full bg-race-primary hover:bg-race-primary-dark text-white font-bold py-4 text-lg">
                     Inscrever-se
                   </Button>
@@ -581,7 +581,7 @@ const Index = () => {
                     <span className="text-gray-700 font-medium">Acompanhamento dos pais</span>
                   </div>
                 </div>
-                <Link to="/inscricoes">
+                <Link to="/inscricoes?course=KIDS">
                   <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 text-lg">
                     Inscrever-se
                   </Button>
@@ -622,7 +622,7 @@ const Index = () => {
                     <span className="text-gray-700 font-medium">Participativa</span>
                   </div>
                 </div>
-                <Link to="/inscricoes">
+                <Link to="/inscricoes?course=WALK_3K">
                   <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 text-lg">
                     Inscrever-se
                   </Button>
