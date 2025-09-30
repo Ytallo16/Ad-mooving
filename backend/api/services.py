@@ -124,10 +124,10 @@ def create_stripe_checkout_session(registration):
     try:
         # Determinar o valor baseado na modalidade
         if registration.modality == 'INFANTIL':
-            amount = 3000  # R$ 30,00 em centavos
+            amount = 5000  # R$ 50,00 em centavos
             description = f"Inscrição Infantil - Corrida Ad-mooving - {registration.full_name}"
         else:
-            amount = 5000  # R$ 50,00 em centavos  
+            amount = 8000  # R$ 80,00 em centavos  
             description = f"Inscrição Adulto - Corrida Ad-mooving - {registration.full_name}"
         
         # URLs de sucesso e cancelamento (ajustado para 8080 por padrão)
@@ -185,7 +185,6 @@ def create_stripe_checkout_session(registration):
                         'product_data': {
                             'name': f'Corrida Ad-mooving - {registration.get_modality_display()}',
                             'description': description,
-                            'images': [config('RACE_LOGO_URL', default='https://via.placeholder.com/300x200?text=Corrida+Ad-mooving')],
                         },
                         'unit_amount': amount,
                     },
@@ -365,13 +364,13 @@ def get_race_prices():
     """
     return {
         'INFANTIL': {
-            'amount': 3000,  # em centavos
-            'amount_brl': 30.00,  # em reais
+            'amount': 5000,  # em centavos
+            'amount_brl': 50.00,  # em reais
             'description': 'Inscrição modalidade infantil'
         },
         'ADULTO': {
-            'amount': 5000,  # em centavos
-            'amount_brl': 50.00,  # em reais
+            'amount': 8000,  # em centavos
+            'amount_brl': 80.00,  # em reais
             'description': 'Inscrição modalidade adulto'
         }
     }
