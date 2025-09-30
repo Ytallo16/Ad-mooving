@@ -5,6 +5,10 @@ Olá, {{ registration.full_name }}!
 Seu pagamento foi confirmado em {{ payment_date }}.
 A sua vaga na {{ race_info.name }} está confirmada.
 
+PAGAMENTO
+=========
+Valor pago: R$ {{ registration.payment_amount|floatformat:2 }}
+
 {% if registration.registration_number %}
 NÚMERO DE INSCRIÇÃO
 ===================

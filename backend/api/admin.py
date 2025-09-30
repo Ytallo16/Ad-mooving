@@ -4,8 +4,8 @@ from .models import RaceRegistration
 
 @admin.register(RaceRegistration)
 class RaceRegistrationAdmin(admin.ModelAdmin):
-    list_display = ['full_name', 'cpf', 'email', 'gender', 'modality', 'shirt_info', 'payment_status_colored', 'registration_email_sent', 'payment_email_sent', 'created_at']
-    list_filter = ['gender', 'modality', 'shirt_size', 'payment_status', 'registration_email_sent', 'payment_email_sent', 'birth_date', 'created_at', 'athlete_declaration']
+    list_display = ['full_name', 'cpf', 'email', 'gender', 'modality', 'shirt_info', 'payment_status_colored', 'payment_email_sent', 'created_at']
+    list_filter = ['gender', 'modality', 'shirt_size', 'payment_status', 'payment_email_sent', 'birth_date', 'created_at', 'athlete_declaration']
     search_fields = ['full_name', 'cpf', 'email', 'phone']
     readonly_fields = ['created_at', 'updated_at', 'age']
     ordering = ['-created_at']
@@ -27,7 +27,7 @@ class RaceRegistrationAdmin(admin.ModelAdmin):
             'description': 'Declaração obrigatória para inscrição'
         }),
         ('Controle de Emails', {
-            'fields': ('registration_email_sent', 'payment_email_sent'),
+            'fields': ('payment_email_sent',),
             'description': 'Controle dos emails enviados',
             'classes': ('collapse',)
         }),

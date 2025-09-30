@@ -11,7 +11,6 @@ from django.utils import timezone
 from .models import RaceRegistration
 from .serializers import RaceRegistrationSerializer
 from .services import (
-    send_registration_confirmation_email, 
     send_payment_confirmation_email,
     create_stripe_checkout_session,
     verify_stripe_checkout_session,
@@ -243,7 +242,7 @@ class RaceRegistrationViewSet(ModelViewSet):
                 pass
             print(f"DEBUG: Inscrição criada: ID {instance.id}")
             
-            # (Desativado) Email de confirmação de inscrição: enviaremos apenas email de pagamento
+            # Email de confirmação de inscrição removido: enviaremos apenas email de pagamento
             
             # Criar automaticamente sessão de pagamento Stripe
             try:
