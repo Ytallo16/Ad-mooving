@@ -51,23 +51,26 @@ def send_payment_confirmation_email(registration):
     
     # Informações da corrida (configuráveis via .env)
     race_info = {
-        'name': config('RACE_NAME', default='Corrida Ad-mooving 2024'),
-        'date': config('RACE_DATE', default='15 de Dezembro de 2024'),
-        'location': config('RACE_LOCATION', default='Parque potycabana'),
-        'start_time': config('RACE_START_TIME', default='07:00h'),
+        'name': config('RACE_NAME', default='Corrida Ad-moving 2025'),
+        'date': config('RACE_DATE', default='14 de Dezembro de 2025'),
+        'location': config('RACE_LOCATION', default='A ser informado'),
+        'start_time': config('RACE_START_TIME', default='06:00h'),
         'kit_pickup': {
-            'date': config('KIT_PICKUP_DATE', default='13 e 14 de Dezembro de 2024'),
-            'time': config('KIT_PICKUP_TIME', default='10:00h às 18:00h'),
-            'location': config('KIT_PICKUP_LOCATION', default='Loja Ad-mooving - Shopping Morumbi'),
+            'date': config('KIT_PICKUP_DATE', default='A ser informado'),
+            'time': config('KIT_PICKUP_TIME', default='A ser informado'),
+            'location': config('KIT_PICKUP_LOCATION', default='A ser informado'),
             'required_docs': config('KIT_PICKUP_DOCS', default='CPF e comprovante de inscrição')
         }
     }
     
     # Contexto para o template
+    # Ajustar data/hora para timezone local configurado (America/Sao_Paulo)
+    local_payment_dt = timezone.localtime(timezone.now())
+
     context = {
         'registration': registration,
         'race_info': race_info,
-        'payment_date': timezone.now().strftime('%d/%m/%Y às %H:%M'),
+        'payment_date': local_payment_dt.strftime('%d/%m/%Y às %H:%M'),
         'contact_email': config('CONTACT_EMAIL', default='contato@ad-mooving.com'),
         'contact_whatsapp': config('CONTACT_WHATSAPP', default='+55 86 9410-8906'),
         'email_type': 'payment'
@@ -117,7 +120,7 @@ def send_payment_confirmation_email(registration):
         return False
 
 
-def create_stripe_checkout_session(registration):
+def create_stripe_checkout_session(registration, base_url: str | None = None):
     """
     Cria uma sessão de checkout do Stripe para o pagamento da inscrição
     """
@@ -130,9 +133,21 @@ def create_stripe_checkout_session(registration):
             amount = 8000  # R$ 80,00 em centavos  
             description = f"Inscrição Adulto - Corrida Ad-mooving - {registration.full_name}"
         
-        # URLs de sucesso e cancelamento (ajustado para 8080 por padrão)
-        success_url = config('STRIPE_SUCCESS_URL', default='http://localhost:8080/pagamento/sucesso')
-        cancel_url = config('STRIPE_CANCEL_URL', default='http://localhost:8080/pagamento/cancelado')
+        # URLs: prioridade desejada -> 1) produção fixa, 2) localhost (se detectado), 3) PUBLIC_BASE_URL/env
+        prod_base = 'https://admoving.demo.addirceu.com.br'
+        local_base = None
+        if base_url and ('localhost' in base_url or '127.0.0.1' in base_url):
+            local_base = base_url.rstrip('/')
+        env_base = (config('PUBLIC_BASE_URL', default='') or '').rstrip('/') or None
+
+        base = prod_base
+        if local_base:
+            base = local_base
+        elif not base:
+            base = env_base or prod_base
+
+        success_url = config('STRIPE_SUCCESS_URL', default=f'{base}/pagamento/sucesso')
+        cancel_url = config('STRIPE_CANCEL_URL', default=f'{base}/pagamento/cancelado')
 
         # Métodos de pagamento: cartão sempre, Pix opcional
         enable_pix = getattr(settings, 'STRIPE_ENABLE_PIX', True)
@@ -287,6 +302,12 @@ def process_stripe_webhook_event(event):
                     # Atualizar o status do pagamento
                     registration.payment_status = 'PAID'
                     registration.payment_date = timezone.now()
+                    try:
+                        amt_total = session.get('amount_total')
+                        if amt_total is not None:
+                            registration.payment_amount = (amt_total or 0) / 100.0
+                    except Exception:
+                        pass
                     
                     # Salvar o Payment Intent ID se disponível
                     if session.get('payment_intent'):
@@ -300,7 +321,8 @@ def process_stripe_webhook_event(event):
                         'payment_status', 
                         'payment_date', 
                         'stripe_payment_intent_id',
-                        'registration_number'
+                        'registration_number',
+                        'payment_amount'
                     ])
                     
                     # Enviar email de confirmação de pagamento
