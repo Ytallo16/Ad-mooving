@@ -247,7 +247,14 @@ class RaceRegistrationViewSet(ModelViewSet):
             # Criar automaticamente sessão de pagamento Stripe
             try:
                 print("DEBUG: Criando sessão de pagamento Stripe...")
-                payment_result = create_stripe_checkout_session(instance)
+                # Detecta base_url do request para priorizar prod e cair para localhost quando aplicável
+                try:
+                    host = request.get_host() if hasattr(request, 'get_host') else ''
+                except Exception:
+                    host = ''
+                scheme = 'https' if request.is_secure() else 'http'
+                derived_base = f"{scheme}://{host}" if host else None
+                payment_result = create_stripe_checkout_session(instance, base_url=derived_base)
                 print(f"DEBUG: Resultado do pagamento: {payment_result}")
                 
                 if payment_result['success']:
@@ -652,6 +659,12 @@ def verify_payment_status(request):
                         registration.payment_date = timezone.now()
                         if session.payment_intent:
                             registration.stripe_payment_intent_id = session.payment_intent
+                        try:
+                            amt_total = getattr(session, 'amount_total', None)
+                            if amt_total is not None:
+                                registration.payment_amount = (amt_total or 0) / 100.0
+                        except Exception:
+                            pass
                         
                         # Gerar número de inscrição único se ainda não existe
                         if not registration.registration_number:
@@ -662,7 +675,8 @@ def verify_payment_status(request):
                             'payment_status', 
                             'payment_date', 
                             'stripe_payment_intent_id',
-                            'registration_number'
+                            'registration_number',
+                            'payment_amount'
                         ])
                         
                         # Enviar email de confirmação se ainda não enviado
