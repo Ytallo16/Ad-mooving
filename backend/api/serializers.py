@@ -60,6 +60,7 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
     def validate_cpf(self, value):
         """
         Validação do CPF com restrição apenas para pagamentos confirmados
+        Para KIDS, não validar duplicata de CPF do responsável
         """
         if not value:
             return value
@@ -81,7 +82,16 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
             if int(cpf[i]) != digit:
                 raise serializers.ValidationError("CPF inválido.")
         
-        # Verificar se já existe inscrição PAGA com este CPF
+        # Obter dados do request para verificar se é KIDS
+        request_data = getattr(self, 'initial_data', {})
+        modality = request_data.get('modality')
+        course = request_data.get('course')
+        
+        # Para KIDS/INFANTIL, não verificar duplicata de CPF (um pai pode inscrever vários filhos)
+        if modality == 'INFANTIL' or course == 'KIDS':
+            return cpf
+        
+        # Para ADULTO, verificar se já existe inscrição PAGA com este CPF
         from .models import RaceRegistration
         existing_paid = RaceRegistration.objects.filter(
             cpf=cpf, 
@@ -90,8 +100,8 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
         
         if existing_paid:
             raise serializers.ValidationError(
-                "Já existe uma inscrição com este CPF. "
-                
+                "Já existe uma inscrição paga com este CPF. "
+                "Se você não completou o pagamento anterior, pode tentar novamente."
             )
         
         return cpf  # Retorna o CPF limpo (apenas dígitos)
@@ -113,6 +123,33 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Telefone deve ter 10 ou 11 dígitos.")
         
         return value
+    
+    def validate_responsible_cpf(self, value):
+        """
+        Validação do CPF do responsável - permite duplicatas para KIDS
+        """
+        if not value:
+            return value
+            
+        # Remove caracteres não numéricos
+        cpf = ''.join(filter(str.isdigit, value))
+        
+        if len(cpf) != 11:
+            raise serializers.ValidationError("CPF deve ter 11 dígitos.")
+        
+        # Verifica se todos os dígitos são iguais
+        if cpf == cpf[0] * 11:
+            raise serializers.ValidationError("CPF inválido.")
+        
+        # Validação dos dígitos verificadores
+        for i in range(9, 11):
+            value_sum = sum((int(cpf[num]) * ((i + 1) - num) for num in range(0, i)))
+            digit = ((value_sum * 10) % 11) % 10
+            if int(cpf[i]) != digit:
+                raise serializers.ValidationError("CPF inválido.")
+        
+        # Para KIDS, permitir CPF do responsável repetido (um pai pode inscrever vários filhos)
+        return cpf  # Retorna o CPF limpo (apenas dígitos)
     
     def validate_birth_date(self, value):
         """

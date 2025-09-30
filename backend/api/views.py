@@ -243,13 +243,7 @@ class RaceRegistrationViewSet(ModelViewSet):
                 pass
             print(f"DEBUG: Inscrição criada: ID {instance.id}")
             
-            # Envia email de confirmação de inscrição (não de pagamento)
-            try:
-                send_registration_confirmation_email(instance)
-                print("DEBUG: Email de confirmação enviado")
-            except Exception as e:
-                print(f"DEBUG: Erro ao enviar email: {e}")
-                # Não interromper a criação se o email falhar
+            # (Desativado) Email de confirmação de inscrição: enviaremos apenas email de pagamento
             
             # Criar automaticamente sessão de pagamento Stripe
             try:

@@ -1,4 +1,4 @@
-INSCRIÇÃO RECEBIDA 🎉
+INSCRIÇÃO RECEBIDA
 
 Olá, {{ registration.full_name }}!
 
@@ -10,4 +10,4 @@ Dúvidas? Fale com a gente:
 - E-mail: {{ contact_email }}
 - WhatsApp: {{ contact_whatsapp }}
 
-Obrigado por participar da {{ race_info.name }}! 🏁 
+Obrigado por participar da {{ race_info.name }}!

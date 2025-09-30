@@ -42,20 +42,20 @@ def send_registration_confirmation_email(registration):
     course = registration.course
     
     if course == 'RUN_5K':
-        subject_text = 'Inscrição Recebida – Corrida 5K Ad-mooving 🏃‍♂️'
+        subject_text = 'Inscrição recebida – Corrida 5KM Ad-moving'
         html_template = 'api/emails/registration_confirmation_run.html'
         text_template = 'api/emails/registration_confirmation_run.txt'
     elif course == 'WALK_3K':
-        subject_text = 'Inscrição Recebida – Caminhada 2,5K Ad-mooving 🚶‍♀️'
+        subject_text = 'Inscrição recebida – Caminhada 2,5KM Ad-moving'
         html_template = 'api/emails/registration_confirmation_walk.html'
         text_template = 'api/emails/registration_confirmation_walk.txt'
     elif course == 'KIDS':
-        subject_text = 'Inscrição Recebida – Kids Ad-mooving 👶'
+        subject_text = 'Inscrição recebida – Kids Ad-mooving'
         html_template = 'api/emails/registration_confirmation_kids.html'
         text_template = 'api/emails/registration_confirmation_kids.txt'
     else:
         # Fallback para o template original
-        subject_text = 'Inscrição Recebida – Corrida Ad-mooving 🏃✨'
+        subject_text = 'Inscrição recebida – Corrida Ad-moving'
         html_template = 'api/emails/registration_confirmation.html'
         text_template = 'api/emails/registration_confirmation.txt'
     
@@ -97,8 +97,8 @@ def send_registration_confirmation_email(registration):
         text_message = force_str(text_message, encoding='utf-8')
         html_message = force_str(html_message, encoding='utf-8')
         
-        # Remetente amigável com emoji
-        friendly_from = formataddr((str(Header('Equipe Ad-mooving 🏁', 'utf-8')), settings.DEFAULT_FROM_EMAIL))
+        # Remetente simples, sem emoji
+        friendly_from = formataddr((str(Header('Equipe Ad-moving', 'utf-8')), settings.DEFAULT_FROM_EMAIL))
         
         # Cria a mensagem de email com encoding UTF-8 explícito
         email = EmailMultiAlternatives(
@@ -137,8 +137,8 @@ def send_payment_confirmation_email(registration):
         registration.registration_number = generate_unique_registration_number()
         registration.save(update_fields=['registration_number'])
     
-    # Assunto com acentos e emojis
-    subject_text = 'Pagamento Confirmado – Corrida Ad-mooving 🎉💳'
+    # Assunto simples, sem emojis
+    subject_text = 'Pagamento confirmado – Corrida Ad-moving'
     subject = str(Header(subject_text, 'utf-8'))
     
     # Informações da corrida (configuráveis via .env)
@@ -177,8 +177,8 @@ def send_payment_confirmation_email(registration):
         text_message = force_str(text_message, encoding='utf-8')
         html_message = force_str(html_message, encoding='utf-8')
         
-        # Remetente amigável com emoji
-        friendly_from = formataddr((str(Header('Equipe Ad-mooving 🏁', 'utf-8')), settings.DEFAULT_FROM_EMAIL))
+        # Remetente simples, sem emoji
+        friendly_from = formataddr((str(Header('Equipe Ad-moving', 'utf-8')), settings.DEFAULT_FROM_EMAIL))
         
         # Cria a mensagem de email com encoding UTF-8 explícito
         email = EmailMultiAlternatives(

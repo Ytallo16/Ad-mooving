@@ -76,15 +76,15 @@
         </div>
 
         <div class="success-box">
-            <h2>Parabéns, {{ registration.full_name }}!</h2>
-            <p>Seu pagamento foi processado com sucesso em <strong>{{ payment_date }}</strong>.</p>
-            <p>Sua vaga na {{ race_info.name }} está garantida!</p>
+            <h2>Pagamento confirmado</h2>
+            <p>Pagamento confirmado em <strong>{{ payment_date }}</strong>.</p>
+            <p>Sua vaga na {{ race_info.name }} está confirmada.</p>
             
             {% if registration.registration_number %}
             <div class="registration-number">
                 <h3>Número de Inscrição</h3>
                 <div style="font-size: 24px; font-weight: bold; color: #856404;">{{ registration.registration_number }}</div>
-                <p style="margin: 10px 0 0 0; color: #856404; font-size: 14px;">Guarde este número! Você precisará dele no dia da corrida.</p>
+                <p style="margin: 10px 0 0 0; color: #856404; font-size: 14px;">Guarde este número. Você precisará dele no dia da corrida.</p>
             </div>
             {% endif %}
         </div>
@@ -125,12 +125,11 @@
             <li>Documentos necessários: {{ race_info.kit_pickup.required_docs }}</li>
         </ul>
 
-        <h3>Seu Kit Incluirá</h3>
+        <h3>Kit do atleta</h3>
         <ul>
-            <li>Camiseta oficial da corrida</li>
-            <li>Número de peito personalizado</li>
-            <li>Informações importantes sobre a corrida</li>
-            <li>Brindes especiais</li>
+            <li>Camiseta da corrida</li>
+            <li>Número de peito</li>
+            <li>Instruções do evento</li>
         </ul>
 
         <h3>Detalhes da Corrida</h3>

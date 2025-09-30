@@ -21,16 +21,16 @@
     <div class="wrapper">
         <div class="card">
             <div class="header">
-                <h1 class="title">Inscrição recebida com sucesso 🎉</h1>
+                <h1 class="title">Inscrição recebida</h1>
             </div>
             <div class="content">
                 <p>Olá, <strong>{{ registration.full_name }}</strong>!</p>
                 <p>Recebemos sua inscrição em <strong>{{ confirmation_date }}</strong> para a <strong>{{ race_info.name }}</strong>.</p>
                 <p><strong>Importante:</strong> sua inscrição está registrada, porém <strong>ainda não está confirmada</strong>. A confirmação ocorrerá após a aprovação do pagamento. Assim que o pagamento for confirmado, você receberá outro e-mail com todas as informações detalhadas do evento e retirada de kit.</p>
-                <p class="muted">Em caso de dúvidas, entre em contato: {{ contact_email }} • WhatsApp {{ contact_whatsapp }}</p>
+                <p class="muted">Dúvidas: {{ contact_email }} • WhatsApp {{ contact_whatsapp }}</p>
             </div>
             <div class="footer">
-                Obrigado por participar da {{ race_info.name }}! 🏁
+                Obrigado por participar da {{ race_info.name }}.
             </div>
         </div>
     </div>

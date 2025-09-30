@@ -2,15 +2,15 @@ PAGAMENTO CONFIRMADO - {{ race_info.name|upper }}
 
 Olá, {{ registration.full_name }}!
 
-Parabéns! Seu pagamento foi processado com sucesso em {{ payment_date }}.
-Sua vaga na {{ race_info.name }} está garantida!
+Seu pagamento foi confirmado em {{ payment_date }}.
+A sua vaga na {{ race_info.name }} está confirmada.
 
 {% if registration.registration_number %}
 NÚMERO DE INSCRIÇÃO
 ===================
 {{ registration.registration_number }}
 
-Guarde este número! Você precisará dele no dia da corrida.
+Guarde este número. Você precisará dele no dia da corrida.
 
 {% endif %}
 DETALHES DA INSCRIÇÃO
@@ -29,12 +29,11 @@ PRÓXIMOS PASSOS
 - Local da Retirada: {{ race_info.kit_pickup.location }}
 - Documentos necessários: {{ race_info.kit_pickup.required_docs }}
 
-SEU KIT INCLUIRÁ
-================
-- Camiseta oficial da corrida
-- Número de peito personalizado
-- Informações importantes sobre a corrida
-- Brindes especiais
+KIT DO ATLETA
+=============
+- Camiseta da corrida
+- Número de peito
+- Instruções do evento
 
 DETALHES DA CORRIDA
 ===================
@@ -47,7 +46,6 @@ PRECISA DE AJUDA?
 Email: {{ contact_email }}
 WhatsApp: {{ contact_whatsapp }}
 
-Obrigado por participar da {{ race_info.name }}!
-Nos vemos na largada!
+Obrigado por participar da {{ race_info.name }}.
 
 Equipe Ad-mooving

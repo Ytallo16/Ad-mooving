@@ -61,7 +61,7 @@ class RaceRegistrationAdmin(admin.ModelAdmin):
     payment_status_colored.short_description = 'Status Pagamento'
     payment_status_colored.allow_tags = True
     
-    actions = ['mark_as_paid', 'mark_as_pending', 'resend_registration_email', 'resend_payment_email']
+    actions = ['mark_as_paid', 'mark_as_pending', 'resend_payment_email']
     
     def mark_as_paid(self, request, queryset):
         """Marca inscrições como pagas"""
@@ -93,20 +93,7 @@ class RaceRegistrationAdmin(admin.ModelAdmin):
         self.message_user(request, f'{updated} inscrições marcadas como pendentes.')
     mark_as_pending.short_description = "Marcar como pendente"
     
-    def resend_registration_email(self, request, queryset):
-        """Reenviar email de confirmação de inscrição"""
-        from .services import send_registration_confirmation_email
-        
-        sent = 0
-        for registration in queryset:
-            try:
-                send_registration_confirmation_email(registration)
-                sent += 1
-            except Exception:
-                pass
-        
-        self.message_user(request, f'{sent} emails de confirmação de inscrição reenviados.')
-    resend_registration_email.short_description = "Reenviar email de inscrição"
+    # Removido: ação de reenviar email de inscrição
     
     def resend_payment_email(self, request, queryset):
         """Reenviar email de confirmação de pagamento"""
