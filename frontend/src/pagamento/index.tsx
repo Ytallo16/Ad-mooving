@@ -1,11 +1,12 @@
 import { loadStripe } from '@stripe/stripe-js'
 import React from 'react'
+import { apiRequest } from '@/config/api'
 
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY!)
 
 const IndexPage = () => {
   const handleCheckout = async () => {
-    const res = await fetch('http://localhost:8000/pagamento/criar-sessao/', {
+    const res = await apiRequest('/pagamento/criar-sessao/', {
       method: 'POST',
     })
 
