@@ -12,6 +12,52 @@ import random
 # Configurar Stripe com a chave secreta
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
+# Cupons de desconto configurados no código
+AVAILABLE_COUPONS = {
+    'AD10': {
+        'discount_amount': 5.00,
+        'description': 'Desconto de R$ 5,00',
+        'valid_for_kids': True,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
+    # Adicione mais cupons aqui conforme necessário
+    # 'PROMO20': {
+    #     'discount_amount': 10.00,
+    #     'description': 'Desconto de R$ 10,00',
+    #     'valid_for_kids': False,
+    #     'valid_for_adult': True,
+    #     'is_active': True,
+    # },
+}
+
+def validate_coupon_code(coupon_code, modality=None):
+    """
+    Valida um código de cupom usando a configuração fixa
+    """
+    if not coupon_code:
+        return False, "Código do cupom é obrigatório", 0
+    
+    code = coupon_code.strip().upper()
+    
+    if code not in AVAILABLE_COUPONS:
+        return False, "Cupom não encontrado", 0
+    
+    coupon = AVAILABLE_COUPONS[code]
+    
+    if not coupon.get('is_active', False):
+        return False, "Cupom inativo", 0
+    
+    # Verificar modalidade
+    if modality:
+        if modality == 'INFANTIL' and not coupon.get('valid_for_kids', True):
+            return False, "Cupom não válido para modalidade Kids", 0
+        elif modality == 'ADULTO' and not coupon.get('valid_for_adult', True):
+            return False, "Cupom não válido para modalidade Adulto", 0
+    
+    return True, "Cupom válido", coupon['discount_amount']
+
+
 def generate_unique_registration_number():
     """
     Gera um número único de 5 dígitos para inscrição
@@ -67,10 +113,23 @@ def send_payment_confirmation_email(registration):
     # Ajustar data/hora para timezone local configurado (America/Sao_Paulo)
     local_payment_dt = timezone.localtime(timezone.now())
 
+    # Exibição amigável da modalidade conforme o percurso
+    course_code = getattr(registration, 'course', None)
+    if course_code == 'WALK_3K':
+        course_display = 'Caminhada'
+    elif course_code == 'RUN_5K':
+        course_display = 'Corrida'
+    elif course_code == 'KIDS':
+        course_display = 'Kids'
+    else:
+        # Fallback para exibição por modalidade caso não haja course
+        course_display = getattr(registration, 'get_modality_display', lambda: 'Corrida')()
+
     context = {
         'registration': registration,
         'race_info': race_info,
         'payment_date': local_payment_dt.strftime('%d/%m/%Y às %H:%M'),
+        'course_display': course_display,
         'contact_email': config('CONTACT_EMAIL', default='admoving@addirceu.com.br'),
         'contact_whatsapp': config('CONTACT_WHATSAPP', default='+55 86 9410-8906'),
         'email_type': 'payment'
@@ -120,7 +179,7 @@ def send_payment_confirmation_email(registration):
         return False
 
 
-def create_stripe_checkout_session(registration, base_url: str | None = None):
+def create_stripe_checkout_session(registration, base_url: str | None = None, coupon_code: str | None = None):
     """
     Cria uma sessão de checkout do Stripe para o pagamento da inscrição
     """
@@ -132,6 +191,31 @@ def create_stripe_checkout_session(registration, base_url: str | None = None):
         else:
             amount = 8000  # R$ 80,00 em centavos  
             description = f"Inscrição Adulto - Corrida Ad-mooving - {registration.full_name}"
+        
+        # Aplicar desconto do cupom se fornecido
+        coupon_discount = 0
+        if coupon_code:
+            try:
+                is_valid, message, discount_amount = validate_coupon_code(coupon_code, registration.modality)
+                
+                if is_valid and discount_amount > 0:
+                    coupon_discount = int(discount_amount * 100)  # Converter para centavos
+                    amount = max(amount - coupon_discount, 0)  # Não permitir valor negativo
+                    
+                    # Salvar informações do cupom na inscrição (se o modelo tiver esses campos)
+                    try:
+                        registration.coupon_code = coupon_code.strip().upper()
+                        registration.coupon_discount = discount_amount
+                        registration.save(update_fields=['coupon_code', 'coupon_discount'])
+                    except Exception:
+                        # Campos não existem no modelo, continuar sem salvar
+                        pass
+                    
+                    description += f" (Desconto: R$ {discount_amount:.2f})"
+                    
+            except Exception as e:
+                print(f"Erro ao aplicar cupom {coupon_code}: {e}")
+                # Continuar sem o cupom em caso de erro
         
         # URLs: prioridade desejada -> 1) produção fixa, 2) localhost (se detectado), 3) PUBLIC_BASE_URL/env
         prod_base = 'https://admoving.demo.addirceu.com.br'

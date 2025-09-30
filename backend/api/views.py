@@ -15,7 +15,8 @@ from .services import (
     create_stripe_checkout_session,
     verify_stripe_checkout_session,
     process_stripe_webhook_event,
-    get_race_prices
+    get_race_prices,
+    validate_coupon_code
 )
 
 # Create your views here.
@@ -254,7 +255,8 @@ class RaceRegistrationViewSet(ModelViewSet):
                     host = ''
                 scheme = 'https' if request.is_secure() else 'http'
                 derived_base = f"{scheme}://{host}" if host else None
-                payment_result = create_stripe_checkout_session(instance, base_url=derived_base)
+                coupon_code = request.data.get('coupon_code')  # Pegar cupom dos dados da requisição
+                payment_result = create_stripe_checkout_session(instance, base_url=derived_base, coupon_code=coupon_code)
                 print(f"DEBUG: Resultado do pagamento: {payment_result}")
                 
                 if payment_result['success']:
@@ -795,3 +797,84 @@ def race_prices(request):
     Retorna os preços das modalidades da corrida
     """
     return Response(get_race_prices())
+
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Validar cupom de desconto',
+    description='Valida um código de cupom e retorna o desconto aplicável',
+    request={
+        'type': 'object',
+        'properties': {
+            'coupon_code': {'type': 'string', 'description': 'Código do cupom'},
+            'modality': {'type': 'string', 'enum': ['INFANTIL', 'ADULTO'], 'description': 'Modalidade da inscrição'},
+        },
+        'required': ['coupon_code']
+    },
+    responses={
+        200: {
+            'description': 'Cupom válido',
+            'examples': [
+                {
+                    'application/json': {
+                        'valid': True,
+                        'discount_amount': 10.0,
+                        'message': 'Cupom válido'
+                    }
+                }
+            ]
+        },
+        400: {
+            'description': 'Cupom inválido',
+            'examples': [
+                {
+                    'application/json': {
+                        'valid': False,
+                        'discount_amount': 0,
+                        'message': 'Cupom não encontrado'
+                    }
+                }
+            ]
+        }
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def validate_coupon(request):
+    """
+    Valida um código de cupom e retorna informações sobre o desconto
+    """
+    try:
+        coupon_code = request.data.get('coupon_code', '').strip().upper()
+        modality = request.data.get('modality')
+        
+        if not coupon_code:
+            return Response({
+                'valid': False,
+                'discount_amount': 0,
+                'message': 'Código do cupom é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Validar cupom usando a configuração fixa
+        is_valid, message, discount_amount = validate_coupon_code(coupon_code, modality)
+        
+        if is_valid:
+            return Response({
+                'valid': True,
+                'discount_amount': float(discount_amount),
+                'message': message,
+                'coupon_code': coupon_code.strip().upper()
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'valid': False,
+                'discount_amount': 0,
+                'message': message
+            }, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        return Response({
+            'valid': False,
+            'discount_amount': 0,
+            'message': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

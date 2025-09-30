@@ -109,3 +109,5 @@ class RaceRegistrationAdmin(admin.ModelAdmin):
         
         self.message_user(request, f'{sent} emails de confirmação de pagamento reenviados.')
     resend_payment_email.short_description = "Reenviar email de pagamento (apenas pagos)"
+
+
