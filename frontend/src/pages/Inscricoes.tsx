@@ -24,6 +24,12 @@ const Inscricoes = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'pix' | null>(null);
   const [registrationData, setRegistrationData] = useState<any>(null);
+  const [couponCode, setCouponCode] = useState("");
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [couponMessage, setCouponMessage] = useState("");
+  const [isCouponValid, setIsCouponValid] = useState(false);
+  const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
+  const [couponTimeout, setCouponTimeout] = useState<NodeJS.Timeout | null>(null);
   const [formData, setFormData] = useState({
     // Dados do atleta/criança
     full_name: "",
@@ -98,6 +104,79 @@ const Inscricoes = () => {
     ];
   };
 
+  const validateCoupon = async (code: string) => {
+    if (!code.trim()) {
+      setCouponMessage("");
+      setCouponDiscount(0);
+      setIsCouponValid(false);
+      return;
+    }
+
+    setIsValidatingCoupon(true);
+    try {
+      console.log('Validando cupom:', code.trim(), 'modalidade:', formData.modality);
+      
+      const response = await apiRequest('/api/payment/validate-coupon/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          coupon_code: code.trim(),
+          modality: formData.modality
+        }),
+      });
+
+      console.log('Resposta da validação:', response.status, response.ok);
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('Resultado da validação:', result);
+      
+      if (result.valid) {
+        setCouponDiscount(result.discount_amount);
+        setCouponMessage(`Cupom válido! Desconto de R$ ${result.discount_amount.toFixed(2)}`);
+        setIsCouponValid(true);
+      } else {
+        setCouponDiscount(0);
+        setCouponMessage(result.message || "Cupom inválido");
+        setIsCouponValid(false);
+      }
+    } catch (error) {
+      console.error('Erro ao validar cupom:', error);
+      setCouponDiscount(0);
+      setCouponMessage("Erro ao validar cupom");
+      setIsCouponValid(false);
+    } finally {
+      setIsValidatingCoupon(false);
+    }
+  };
+
+  const handleCouponChange = (value: string) => {
+    setCouponCode(value);
+    
+    // Limpar timeout anterior
+    if (couponTimeout) {
+      clearTimeout(couponTimeout);
+    }
+    
+    // Limpar mensagens quando usuário digita
+    if (!value.trim()) {
+      setCouponMessage("");
+      setCouponDiscount(0);
+      setIsCouponValid(false);
+    }
+  };
+
+  const handleApplyCoupon = () => {
+    if (couponCode.trim()) {
+      validateCoupon(couponCode.trim());
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -148,6 +227,8 @@ const Inscricoes = () => {
         // Para KIDS, email/phone podem ser do responsável
         email: formData.course === 'KIDS' && formData.responsible_email ? formData.responsible_email : formData.email,
         phone: formData.course === 'KIDS' && formData.responsible_phone ? formData.responsible_phone : formData.phone,
+        // Incluir cupom se válido
+        coupon_code: isCouponValid && couponCode.trim() ? couponCode.trim() : undefined,
       };
       console.log('Payload sanitizado:', payload);
 
@@ -643,6 +724,49 @@ const Inscricoes = () => {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            {/* Campo de Cupom de Desconto */}
+            <div className="space-y-2">
+              <Label htmlFor="coupon">Cupom de Desconto (opcional)</Label>
+              <div className="space-y-2">
+                <div className="flex gap-2">
+                  <Input
+                    id="coupon"
+                    type="text"
+                    placeholder="Digite o código do cupom"
+                    value={couponCode}
+                    onChange={(e) => handleCouponChange(e.target.value)}
+                    className="border-race-primary-light/30 focus:border-race-primary flex-1"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleApplyCoupon();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={!couponCode.trim() || isValidatingCoupon}
+                    className="bg-race-primary hover:bg-race-primary/90 px-4"
+                  >
+                    {isValidatingCoupon ? "..." : "Aplicar"}
+                  </Button>
+                </div>
+                {isValidatingCoupon && (
+                  <p className="text-sm text-gray-500">Validando cupom...</p>
+                )}
+                {couponMessage && (
+                  <p className={`text-sm ${isCouponValid ? 'text-green-600' : 'text-red-600'}`}>
+                    {couponMessage}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="border-t pt-4">
+              <p className="text-sm text-gray-600 mb-4">Escolha sua forma de pagamento:</p>
+            </div>
+
             {/* Opção Cartão de Crédito */}
             <div 
               className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
@@ -706,6 +830,26 @@ const Inscricoes = () => {
                     <div className="w-full h-full rounded-full bg-white scale-50"></div>
                   )}
                 </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Resumo do Valor */}
+          <div className="border-t pt-4">
+            <div className="space-y-2">
+              <div className="flex justify-between text-sm">
+                <span>Valor da inscrição:</span>
+                <span>R$ {formData.modality === 'INFANTIL' ? '50,00' : '80,00'}</span>
+              </div>
+              {isCouponValid && couponDiscount > 0 && (
+                <div className="flex justify-between text-sm text-green-600">
+                  <span>Desconto do cupom:</span>
+                  <span>- R$ {couponDiscount.toFixed(2)}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-semibold text-lg border-t pt-2">
+                <span>Total:</span>
+                <span>R$ {((formData.modality === 'INFANTIL' ? 50 : 80) - couponDiscount).toFixed(2)}</span>
               </div>
             </div>
           </div>

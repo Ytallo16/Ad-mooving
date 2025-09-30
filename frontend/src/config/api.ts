@@ -28,18 +28,27 @@ export const apiRequest = async (
     headers: { ...defaultOptions.headers, ...(options.headers || {}) },
   };
 
-  // Sempre prioriza produção; em falha/5xx/timeout, tenta local
+  // Para desenvolvimento, tenta localhost primeiro, depois produção
+  const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const primaryUrl = isDev ? API_CONFIG.FALLBACK_BASE_URL : API_CONFIG.PRIMARY_BASE_URL;
+  const fallbackUrl = isDev ? API_CONFIG.PRIMARY_BASE_URL : API_CONFIG.FALLBACK_BASE_URL;
+  
+  console.log(`Tentando ${primaryUrl}${endpoint}`);
+  
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
   try {
-    const res = await fetch(`${API_CONFIG.PRIMARY_BASE_URL}${endpoint}`, { ...mergedOptions, signal: controller.signal });
+    const res = await fetch(`${primaryUrl}${endpoint}`, { ...mergedOptions, signal: controller.signal });
     clearTimeout(timeout);
+    console.log(`Resposta de ${primaryUrl}: ${res.status}`);
     if (!res.ok && res.status >= 500) {
-      return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
+      console.log(`Tentando fallback ${fallbackUrl}${endpoint}`);
+      return fetch(`${fallbackUrl}${endpoint}`, mergedOptions);
     }
     return res;
-  } catch (_) {
+  } catch (error) {
     clearTimeout(timeout);
-    return fetch(`${API_CONFIG.FALLBACK_BASE_URL}${endpoint}`, mergedOptions);
+    console.log(`Erro em ${primaryUrl}, tentando ${fallbackUrl}:`, error);
+    return fetch(`${fallbackUrl}${endpoint}`, mergedOptions);
   }
 };

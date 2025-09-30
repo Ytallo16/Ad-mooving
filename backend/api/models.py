@@ -141,13 +141,25 @@ class RaceRegistration(models.Model):
     )
     
     # Campos para controle de emails enviados
-    registration_email_sent = models.BooleanField(
-        default=False, 
-        verbose_name="Email de confirmação de inscrição enviado"
-    )
     payment_email_sent = models.BooleanField(
         default=False, 
         verbose_name="Email de confirmação de pagamento enviado"
+    )
+    
+    # Cupom aplicado (se houver)
+    coupon_code = models.CharField(
+        max_length=50,
+        blank=True,
+        null=True,
+        verbose_name="Código do Cupom Aplicado"
+    )
+    coupon_discount = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Valor do Desconto (R$)",
+        help_text="Valor fixo de desconto aplicado em reais"
     )
     
     # Campos de auditoria
@@ -177,3 +189,4 @@ class RaceRegistration(models.Model):
             today = timezone.now().date()
             return today.year - self.birth_date.year - ((today.month, today.day) < (self.birth_date.month, self.birth_date.day))
         return None
+
