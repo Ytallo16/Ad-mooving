@@ -6,6 +6,7 @@ import { CheckCircle, Home } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
+import { API_CONFIG } from "@/config/api";
 
 const PagamentoSucesso = () => {
   const [searchParams] = useSearchParams();
@@ -21,8 +22,8 @@ const PagamentoSucesso = () => {
       }
 
       try {
-        const primary = 'https://api.admoving.demo.addirceu.com.br';
-        const fallback = 'http://127.0.0.1:8000';
+        const primary = API_CONFIG.PRIMARY_BASE_URL;
+        const fallback = API_CONFIG.FALLBACK_BASE_URL;
         let base = primary;
         try {
           await fetch(primary + '/api/health/', { method: 'GET', signal: AbortSignal.timeout(3000) });
