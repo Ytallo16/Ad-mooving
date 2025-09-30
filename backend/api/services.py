@@ -71,7 +71,7 @@ def send_payment_confirmation_email(registration):
         'registration': registration,
         'race_info': race_info,
         'payment_date': local_payment_dt.strftime('%d/%m/%Y às %H:%M'),
-        'contact_email': config('CONTACT_EMAIL', default='contato@ad-mooving.com'),
+        'contact_email': config('CONTACT_EMAIL', default='admoving@addirceu.com.br'),
         'contact_whatsapp': config('CONTACT_WHATSAPP', default='+55 86 9410-8906'),
         'email_type': 'payment'
     }
