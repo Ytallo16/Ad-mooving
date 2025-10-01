@@ -21,5 +21,10 @@ urlpatterns = [
     path('payment/prices/', views.race_prices, name='race_prices'),
     path('payment/validate-coupon/', views.validate_coupon, name='validate_coupon'),
     
+    # Novos endpoints para pagamento com AbacatePay (PIX)
+    path('payment/pix/create/', views.create_pix_payment, name='create_pix_payment'),
+    path('payment/pix/simulate/', views.simulate_pix_payment, name='simulate_pix_payment'),
+    path('payment/pix/check-status/', views.check_pix_status, name='check_pix_status'),
+    
     path('', include(router.urls)),  # Inclui as URLs do router
 ] 

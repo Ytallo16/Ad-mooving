@@ -16,7 +16,10 @@ from .services import (
     verify_stripe_checkout_session,
     process_stripe_webhook_event,
     get_race_prices,
-    validate_coupon_code
+    validate_coupon_code,
+    create_abacatepay_pix,
+    simulate_abacatepay_payment,
+    check_abacatepay_payment_status
 )
 
 # Create your views here.
@@ -893,4 +896,260 @@ def validate_coupon(request):
             'valid': False,
             'discount_amount': 0,
             'message': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+# ============== AbacatePay Endpoints ==============
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Criar QR Code PIX via AbacatePay',
+    description='Cria um QR Code PIX para pagamento da inscrição',
+    request={
+        'type': 'object',
+        'properties': {
+            'registration_id': {'type': 'integer', 'description': 'ID da inscrição'},
+            'coupon_code': {'type': 'string', 'description': 'Código do cupom (opcional)'},
+        },
+        'required': ['registration_id']
+    },
+    responses={
+        200: {
+            'description': 'QR Code PIX criado com sucesso',
+            'examples': [
+                {
+                    'application/json': {
+                        'success': True,
+                        'pix_id': 'pix_char_123456',
+                        'br_code': '00020126...',
+                        'br_code_base64': 'data:image/png;base64,...',
+                        'amount': 50.00,
+                        'expires_at': '2025-03-25T21:50:20.772Z',
+                        'status': 'PENDING'
+                    }
+                }
+            ]
+        },
+        400: {'description': 'Dados inválidos'},
+        404: {'description': 'Inscrição não encontrada'},
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def create_pix_payment(request):
+    """
+    Cria um QR Code PIX via AbacatePay para pagamento da inscrição
+    """
+    try:
+        registration_id = request.data.get('registration_id')
+        coupon_code = request.data.get('coupon_code')
+        
+        if not registration_id:
+            return Response({
+                'success': False,
+                'error': 'registration_id é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Buscar a inscrição
+        try:
+            registration = RaceRegistration.objects.get(id=registration_id)
+        except RaceRegistration.DoesNotExist:
+            return Response({
+                'success': False,
+                'error': 'Inscrição não encontrada'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        # Verificar se já não está pago
+        if registration.payment_status == 'PAID':
+            return Response({
+                'success': False,
+                'error': 'Esta inscrição já foi paga'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Criar QR Code PIX
+        result = create_abacatepay_pix(registration, coupon_code=coupon_code)
+        
+        if result['success']:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Simular pagamento PIX (dev)',
+    description='Simula o pagamento de um PIX - apenas para desenvolvimento/teste',
+    request={
+        'type': 'object',
+        'properties': {
+            'pix_id': {'type': 'string', 'description': 'ID do PIX no AbacatePay'},
+        },
+        'required': ['pix_id']
+    },
+    responses={
+        200: {
+            'description': 'Pagamento simulado com sucesso',
+            'examples': [
+                {
+                    'application/json': {
+                        'success': True,
+                        'status': 'PAID',
+                        'pix_id': 'pix_char_123456'
+                    }
+                }
+            ]
+        },
+        400: {'description': 'Dados inválidos'},
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def simulate_pix_payment(request):
+    """
+    Simula o pagamento de um PIX (apenas para desenvolvimento/teste)
+    """
+    try:
+        pix_id = request.data.get('pix_id')
+        
+        if not pix_id:
+            return Response({
+                'success': False,
+                'error': 'pix_id é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Simular pagamento
+        result = simulate_abacatepay_payment(pix_id)
+        
+        if result['success'] and result['status'] == 'PAID':
+            # Atualizar a inscrição
+            try:
+                registration = RaceRegistration.objects.get(abacatepay_pix_id=pix_id)
+                registration.payment_status = 'PAID'
+                registration.payment_date = timezone.now()
+                
+                # Gerar número de inscrição se ainda não existe
+                if not registration.registration_number:
+                    from .services import generate_unique_registration_number
+                    registration.registration_number = generate_unique_registration_number()
+                
+                registration.save(update_fields=['payment_status', 'payment_date', 'registration_number'])
+                
+                # Enviar email de confirmação
+                if not registration.payment_email_sent:
+                    send_payment_confirmation_email(registration)
+                
+            except RaceRegistration.DoesNotExist:
+                pass
+        
+        if result['success']:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+            
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['pagamento'],
+    summary='Verificar status de pagamento PIX',
+    description='Verifica o status de um pagamento PIX no AbacatePay',
+    parameters=[
+        {
+            'name': 'pix_id',
+            'in': 'query',
+            'description': 'ID do PIX no AbacatePay',
+            'required': True,
+            'type': 'string'
+        }
+    ],
+    responses={
+        200: {
+            'description': 'Status verificado com sucesso',
+            'examples': [
+                {
+                    'application/json': {
+                        'success': True,
+                        'status': 'PAID',
+                        'expires_at': '2025-03-25T21:50:20.772Z',
+                        'registration_updated': True
+                    }
+                }
+            ]
+        },
+        400: {'description': 'Parâmetros inválidos'},
+    }
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def check_pix_status(request):
+    """
+    Verifica o status de um pagamento PIX
+    """
+    try:
+        pix_id = request.query_params.get('pix_id')
+        
+        if not pix_id:
+            return Response({
+                'success': False,
+                'error': 'pix_id é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Verificar status
+        result = check_abacatepay_payment_status(pix_id)
+        
+        if not result['success']:
+            return Response(result, status=status.HTTP_400_BAD_REQUEST)
+        
+        registration_updated = False
+        
+        # Se o pagamento foi concluído, atualizar a inscrição
+        if result['status'] == 'PAID':
+            try:
+                registration = RaceRegistration.objects.get(abacatepay_pix_id=pix_id)
+                
+                if registration.payment_status != 'PAID':
+                    registration.payment_status = 'PAID'
+                    registration.payment_date = timezone.now()
+                    
+                    # Gerar número de inscrição único se ainda não existe
+                    if not registration.registration_number:
+                        from .services import generate_unique_registration_number
+                        registration.registration_number = generate_unique_registration_number()
+                    
+                    registration.save(update_fields=[
+                        'payment_status', 
+                        'payment_date', 
+                        'registration_number'
+                    ])
+                    
+                    # Enviar email de confirmação se ainda não enviado
+                    if not registration.payment_email_sent:
+                        send_payment_confirmation_email(registration)
+                    
+                    registration_updated = True
+                    
+            except RaceRegistration.DoesNotExist:
+                pass
+        
+        return Response({
+            'success': True,
+            'status': result['status'],
+            'expires_at': result.get('expires_at'),
+            'registration_updated': registration_updated
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

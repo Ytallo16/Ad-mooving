@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CheckCircle, Home } from "lucide-react";
@@ -12,39 +12,49 @@ const PagamentoSucesso = () => {
   const [searchParams] = useSearchParams();
   const [isVerifying, setIsVerifying] = useState(true);
   const [paymentVerified, setPaymentVerified] = useState(false);
+  const location = useLocation();
+  const paidVia = (location.state as any)?.paidVia;
   const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
     const verifyPayment = async () => {
-      if (!sessionId) {
+      // Fluxo Stripe: verifica via session_id
+      if (sessionId) {
+        try {
+          const primary = API_CONFIG.PRIMARY_BASE_URL;
+          const fallback = API_CONFIG.FALLBACK_BASE_URL;
+          let base = primary;
+          try {
+            await fetch(primary + '/api/health/', { method: 'GET', signal: AbortSignal.timeout(3000) });
+          } catch {
+            base = fallback;
+          }
+          const response = await fetch(`${base}/api/payment/verify-status/?session_id=${sessionId}`);
+          const data = await response.json();
+          if (data.success && data.payment_status === 'paid') {
+            setPaymentVerified(true);
+          }
+        } catch (error) {
+          console.error('Erro ao verificar pagamento (Stripe):', error);
+        } finally {
+          setIsVerifying(false);
+        }
+        return;
+      }
+
+      // Fluxo PIX: chegou por navegação interna após sucesso
+      if (paidVia === 'pix') {
+        setPaymentVerified(true);
         setIsVerifying(false);
         return;
       }
 
-      try {
-        const primary = API_CONFIG.PRIMARY_BASE_URL;
-        const fallback = API_CONFIG.FALLBACK_BASE_URL;
-        let base = primary;
-        try {
-          await fetch(primary + '/api/health/', { method: 'GET', signal: AbortSignal.timeout(3000) });
-        } catch {
-          base = fallback;
-        }
-        const response = await fetch(`${base}/api/payment/verify-status/?session_id=${sessionId}`);
-        const data = await response.json();
-        
-        if (data.success && data.payment_status === 'paid') {
-          setPaymentVerified(true);
-        }
-      } catch (error) {
-        console.error('Erro ao verificar pagamento:', error);
-      } finally {
-        setIsVerifying(false);
-      }
+      // Sem session_id e sem flag de PIX: não verificado
+      setIsVerifying(false);
     };
 
     verifyPayment();
-  }, [sessionId]);
+  }, [sessionId, paidVia]);
 
   if (isVerifying) {
     return (

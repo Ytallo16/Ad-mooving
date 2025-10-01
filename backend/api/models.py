@@ -117,6 +117,14 @@ class RaceRegistration(models.Model):
         null=True,
         verbose_name="ID da Sessão de Checkout do Stripe"
     )
+    
+    # Campos para integração com AbacatePay
+    abacatepay_pix_id = models.CharField(
+        max_length=255,
+        blank=True,
+        null=True,
+        verbose_name="ID do PIX no AbacatePay"
+    )
     payment_amount = models.DecimalField(
         max_digits=10,
         decimal_places=2,

@@ -8,9 +8,18 @@ from email.header import Header
 from email.utils import formataddr
 import stripe
 import random
+import requests
 
 # Configurar Stripe com a chave secreta
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+# Configuração AbacatePay
+ABACATEPAY_API_KEY = config('ABACATEPAY_API_KEY', default='abc_dev_B56yaqbnxKKqUat1hM1qTX4y')
+ABACATEPAY_BASE_URL = config('ABACATEPAY_BASE_URL', default='https://api.abacatepay.com/v1')
+ABACATEPAY_HEADERS = {
+    "Authorization": f"Bearer {ABACATEPAY_API_KEY}",
+    "Content-Type": "application/json",
+}
 
 # Cupons de desconto configurados no código
 AVAILABLE_COUPONS = {
@@ -504,3 +513,208 @@ def get_race_prices():
             'description': 'Inscrição modalidade adulto'
         }
     }
+
+
+# ============== AbacatePay Integration ==============
+
+def create_abacatepay_pix(registration, coupon_code: str | None = None):
+    """
+    Cria um QR Code PIX usando a API AbacatePay
+    """
+    try:
+        # Determinar o valor baseado na modalidade
+        if registration.modality == 'INFANTIL':
+            amount = 5000  # R$ 50,00 em centavos
+            description = f"Inscrição Infantil - Corrida Ad-moving - {registration.full_name}"
+        else:
+            amount = 8000  # R$ 80,00 em centavos
+            description = f"Inscrição Adulto - Corrida Ad-moving - {registration.full_name}"
+        
+        # Aplicar desconto do cupom se fornecido
+        if coupon_code:
+            print(f"DEBUG ABACATE CUPOM: Cupom recebido: {coupon_code}")
+            try:
+                is_valid, message, discount_amount = validate_coupon_code(coupon_code, registration.modality)
+                print(f"DEBUG ABACATE CUPOM: Validação - válido={is_valid}, mensagem={message}, desconto={discount_amount}")
+                
+                if is_valid and discount_amount > 0:
+                    coupon_discount = int(discount_amount * 100)  # Converter para centavos
+                    amount = max(amount - coupon_discount, 0)  # Não permitir valor negativo
+                    print(f"DEBUG ABACATE CUPOM: Valor com desconto: R$ {amount/100:.2f}")
+                    
+                    # Salvar informações do cupom na inscrição
+                    try:
+                        registration.coupon_code = coupon_code.strip().upper()
+                        registration.coupon_discount = discount_amount
+                        registration.save(update_fields=['coupon_code', 'coupon_discount'])
+                        print(f"DEBUG ABACATE CUPOM: Cupom salvo na inscrição")
+                    except Exception as ex:
+                        print(f"DEBUG ABACATE CUPOM: Não foi possível salvar cupom: {ex}")
+                        pass
+                    
+                    description += f" (Desconto: R$ {discount_amount:.2f})"
+            except Exception as e:
+                print(f"Erro ao aplicar cupom {coupon_code}: {e}")
+                import traceback
+                traceback.print_exc()
+        
+        # Preparar payload para AbacatePay
+        payload = {
+            "amount": amount,  # em centavos
+            "expiresIn": 3600,  # 1 hora
+            "description": description,
+            "customer": {
+                "name": registration.full_name,
+                "cellphone": registration.phone,
+                "email": registration.email,
+                "taxId": registration.cpf or ""
+            },
+            "metadata": {
+                "externalId": f"registration-{registration.id}",
+                "registration_id": str(registration.id),
+                "modality": registration.modality
+            }
+        }
+        
+        # Fazer requisição para criar QR Code
+        url = f"{ABACATEPAY_BASE_URL}/pixQrCode/create"
+        print(f"DEBUG ABACATE: Criando PIX QR Code - URL: {url}")
+        print(f"DEBUG ABACATE: Payload: {payload}")
+        
+        response = requests.post(
+            url,
+            json=payload,
+            headers=ABACATEPAY_HEADERS,
+            timeout=10
+        )
+        
+        print(f"DEBUG ABACATE: Status da resposta: {response.status_code}")
+        print(f"DEBUG ABACATE: Resposta: {response.text}")
+        
+        if response.status_code >= 400:
+            return {
+                'success': False,
+                'error': f'Erro AbacatePay: {response.text}'
+            }
+        
+        result = response.json()
+        
+        if result.get('error'):
+            return {
+                'success': False,
+                'error': f'Erro AbacatePay: {result.get("error")}'
+            }
+        
+        data = result.get('data', {})
+        
+        # Salvar dados do PIX na inscrição
+        registration.abacatepay_pix_id = data.get('id')
+        registration.payment_amount = amount / 100  # Converter centavos para reais
+        registration.save(update_fields=['abacatepay_pix_id', 'payment_amount'])
+        
+        return {
+            'success': True,
+            'pix_id': data.get('id'),
+            'br_code': data.get('brCode'),
+            'br_code_base64': data.get('brCodeBase64'),
+            'amount': amount / 100,
+            'expires_at': data.get('expiresAt'),
+            'status': data.get('status')
+        }
+        
+    except requests.exceptions.RequestException as e:
+        print(f"Erro de conexão com AbacatePay: {e}")
+        return {
+            'success': False,
+            'error': f'Erro de conexão: {str(e)}'
+        }
+    except Exception as e:
+        print(f"Erro geral ao criar PIX AbacatePay: {e}")
+        import traceback
+        traceback.print_exc()
+        return {
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }
+
+
+def simulate_abacatepay_payment(pix_id: str):
+    """
+    Simula o pagamento de um PIX (apenas em dev/teste)
+    """
+    try:
+        url = f"{ABACATEPAY_BASE_URL}/pixQrCode/simulate-payment"
+        params = {"id": pix_id}
+        body = {"metadata": {}}
+        
+        print(f"DEBUG ABACATE: Simulando pagamento - PIX ID: {pix_id}")
+        
+        response = requests.post(
+            url,
+            params=params,
+            json=body,
+            headers=ABACATEPAY_HEADERS,
+            timeout=10
+        )
+        
+        print(f"DEBUG ABACATE: Status simulação: {response.status_code}")
+        
+        if response.status_code >= 400:
+            return {
+                'success': False,
+                'error': f'Erro ao simular pagamento: {response.text}'
+            }
+        
+        result = response.json()
+        data = result.get('data', {})
+        
+        return {
+            'success': True,
+            'status': data.get('status'),
+            'pix_id': data.get('id')
+        }
+        
+    except Exception as e:
+        print(f"Erro ao simular pagamento: {e}")
+        return {
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }
+
+
+def check_abacatepay_payment_status(pix_id: str):
+    """
+    Verifica o status de um pagamento PIX
+    """
+    try:
+        url = f"{ABACATEPAY_BASE_URL}/pixQrCode/check"
+        params = {"id": pix_id}
+        
+        response = requests.get(
+            url,
+            params=params,
+            headers=ABACATEPAY_HEADERS,
+            timeout=10
+        )
+        
+        if response.status_code >= 400:
+            return {
+                'success': False,
+                'error': f'Erro ao verificar status: {response.text}'
+            }
+        
+        result = response.json()
+        data = result.get('data', {})
+        
+        return {
+            'success': True,
+            'status': data.get('status'),
+            'expires_at': data.get('expiresAt')
+        }
+        
+    except Exception as e:
+        print(f"Erro ao verificar status: {e}")
+        return {
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }
