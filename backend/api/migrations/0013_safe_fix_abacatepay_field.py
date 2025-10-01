@@ -3,12 +3,13 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
+    # IMPORTANTE: esta migração ignora a 0012 e depende da 0011
     dependencies = [
         ("api", "0011_add_registration_number"),
     ]
 
     operations = [
-        # Garantir que a coluna antiga (caso ainda exista em algum ambiente) seja removida sem quebrar
+        # Remover coluna antiga se existir (idempotente)
         migrations.RunSQL(
             sql=(
                 "ALTER TABLE api_raceregistration "
@@ -17,7 +18,7 @@ class Migration(migrations.Migration):
             reverse_sql=migrations.RunSQL.noop,
         ),
 
-        # Garantir que a coluna nova exista (idempotente)
+        # Garantir colunas novas (idempotente)
         migrations.RunSQL(
             sql=(
                 "ALTER TABLE api_raceregistration "
@@ -25,8 +26,6 @@ class Migration(migrations.Migration):
             ),
             reverse_sql=migrations.RunSQL.noop,
         ),
-
-        # Adicionar campos de cupom se não existirem
         migrations.RunSQL(
             sql=(
                 "ALTER TABLE api_raceregistration "
@@ -34,7 +33,6 @@ class Migration(migrations.Migration):
             ),
             reverse_sql=migrations.RunSQL.noop,
         ),
-
         migrations.RunSQL(
             sql=(
                 "ALTER TABLE api_raceregistration "
