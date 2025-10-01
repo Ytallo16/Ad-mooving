@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
-import { CreditCard, Smartphone } from "lucide-react";
+import { CreditCard, Smartphone, Copy, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "@/config/api";
@@ -24,6 +24,10 @@ const Inscricoes = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<'card' | 'pix' | null>(null);
   const [registrationData, setRegistrationData] = useState<any>(null);
+  const [pixData, setPixData] = useState<any>(null);
+  const [showPixModal, setShowPixModal] = useState(false);
+  const [pixStatus, setPixStatus] = useState<'pending' | 'checking' | 'paid' | 'expired'>('pending');
+  const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponMessage, setCouponMessage] = useState("");
@@ -425,11 +429,129 @@ const Inscricoes = () => {
         });
       }
     } else if (selectedPaymentMethod === 'pix') {
-      // Placeholder para PIX
+      // Criar PIX QR Code
+      try {
+        const regId = registrationData?.id;
+        if (!regId) {
+          toast({
+            title: "Erro no pagamento",
+            description: "Inscrição não encontrada. Tente novamente.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const body: any = { registration_id: regId };
+        if (couponCode.trim()) {
+          body.coupon_code = couponCode.trim().toUpperCase();
+        }
+
+        console.log('DEBUG FRONTEND PIX: Criando PIX com', body);
+        const resp = await apiRequest(`/api/payment/pix/create/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await resp.json();
+        console.log('DEBUG FRONTEND PIX: Resposta create-pix', resp.status, data);
+
+        if (resp.ok && data?.success) {
+          // Fechar modal de seleção e abrir modal do PIX
+          setShowPaymentModal(false);
+          setPixData(data);
+          setShowPixModal(true);
+          setPixStatus('pending');
+          
+          // Iniciar polling para verificar status
+          startPixStatusPolling(data.pix_id);
+        } else {
+          toast({
+            title: "Erro ao criar PIX",
+            description: data?.error || "Não foi possível criar o QR Code PIX.",
+            variant: "destructive"
+          });
+        }
+      } catch (error) {
+        console.error('Erro ao criar PIX:', error);
+        toast({
+          title: "Erro no pagamento",
+          description: "Falha ao criar PIX.",
+          variant: "destructive"
+        });
+      }
+    }
+  };
+
+  const startPixStatusPolling = (pixId: string) => {
+    // Limpar polling anterior se existir
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+    }
+
+    // Verificar status a cada 3 segundos
+    const interval = setInterval(async () => {
+      try {
+        console.log('DEBUG PIX: Verificando status do PIX', pixId);
+        const resp = await apiRequest(`/api/payment/pix/check-status/?pix_id=${pixId}`);
+        const data = await resp.json();
+
+        console.log('DEBUG PIX: Status recebido', data);
+
+        if (resp.ok && data?.success) {
+          if (data.status === 'PAID') {
+            setPixStatus('paid');
+            clearInterval(interval);
+            setPollingInterval(null);
+
+            // Fechar modal antes de navegar (experiência natural)
+            setShowPixModal(false);
+
+            toast({
+              title: "Pagamento confirmado! 🎉",
+              description: "Seu pagamento foi confirmado com sucesso!",
+            });
+
+            // Navegação natural via React Router, indicando origem PIX
+            navigate('/pagamento/sucesso', { replace: true, state: { paidVia: 'pix' } });
+          }
+        } else if (!resp.ok) {
+          // Em caso de erro no check, considerar fluxo de erro
+          clearInterval(interval);
+          setPollingInterval(null);
+          setShowPixModal(false);
+          toast({
+            title: "Pagamento não confirmado",
+            description: "Não foi possível verificar o pagamento do PIX.",
+            variant: "destructive"
+          });
+          navigate('/pagamento/cancelado', { replace: true });
+        }
+      } catch (error) {
+        console.error('Erro ao verificar status do PIX:', error);
+      }
+    }, 3000);
+
+    setPollingInterval(interval);
+  };
+
+  const handleClosePixModal = () => {
+    // Limpar polling
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+      setPollingInterval(null);
+    }
+    setShowPixModal(false);
+    setPixData(null);
+    setPixStatus('pending');
+  };
+
+  const copyPixCode = () => {
+    if (pixData?.br_code) {
+      navigator.clipboard.writeText(pixData.br_code);
       toast({
-        title: "PIX em breve! 📱",
-        description: "A opção de pagamento via PIX estará disponível em breve. Por enquanto, use cartão de crédito.",
-        variant: "destructive"
+        title: "Código copiado!",
+        description: "O código PIX foi copiado para a área de transferência.",
       });
     }
   };
@@ -841,7 +963,11 @@ const Inscricoes = () => {
 
       {/* Modal de Seleção de Pagamento */}
       <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent
+          className="sm:max-w-md"
+          onInteractOutside={(e) => e.preventDefault()}
+          onEscapeKeyDown={(e) => e.preventDefault()}
+        >
           <DialogHeader>
             <DialogTitle className="text-center text-xl font-teko">Escolha sua forma de pagamento</DialogTitle>
             <DialogDescription className="text-center">
@@ -908,7 +1034,7 @@ const Inscricoes = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">PIX</h3>
-                  <p className="text-sm text-gray-600">Pagamento instantâneo (em breve)</p>
+                  <p className="text-sm text-gray-600">Pagamento instantâneo</p>
                 </div>
                 <div className={`w-4 h-4 rounded-full border-2 ${
                   selectedPaymentMethod === 'pix' 
@@ -957,6 +1083,117 @@ const Inscricoes = () => {
               className="w-full sm:w-auto bg-race-primary hover:bg-race-primary/90"
             >
               {selectedPaymentMethod === 'card' ? 'Pagar com Cartão' : 'Continuar com PIX'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Pagamento PIX */}
+      <Dialog open={showPixModal} onOpenChange={handleClosePixModal}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-teko">Pagamento via PIX</DialogTitle>
+            <DialogDescription className="text-center">
+              {pixStatus === 'paid' ? 'Pagamento confirmado!' : 'Escaneie o QR Code ou copie o código para pagar'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {pixStatus === 'paid' ? (
+              <div className="flex flex-col items-center space-y-4">
+                <div className="rounded-full bg-green-100 p-4">
+                  <CheckCircle2 className="h-16 w-16 text-green-600" />
+                </div>
+                <div className="text-center">
+                  <h3 className="text-xl font-semibold text-green-600">Pagamento Confirmado!</h3>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Seu pagamento foi processado com sucesso. Você será redirecionado em instantes.
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* QR Code */}
+                {pixData?.br_code_base64 && (
+                  <div className="flex justify-center">
+                    <img 
+                      src={pixData.br_code_base64} 
+                      alt="QR Code PIX" 
+                      className="w-64 h-64 border-2 border-gray-200 rounded-lg"
+                    />
+                  </div>
+                )}
+
+                {/* Status */}
+                <div className="flex items-center justify-center space-x-2 text-sm text-gray-600">
+                  {pixStatus === 'pending' ? (
+                    <>
+                      <Clock className="h-4 w-4 animate-pulse" />
+                      <span>Aguardando pagamento...</span>
+                    </>
+                  ) : pixStatus === 'checking' ? (
+                    <>
+                      <div className="h-4 w-4 border-2 border-gray-300 border-t-race-primary rounded-full animate-spin" />
+                      <span>Verificando pagamento...</span>
+                    </>
+                  ) : null}
+                </div>
+
+                {/* Código PIX para copiar */}
+                {pixData?.br_code && (
+                  <div className="space-y-2">
+                    <Label className="text-sm font-medium">Código PIX (Copia e Cola)</Label>
+                    <div className="flex gap-2">
+                      <Input 
+                        value={pixData.br_code} 
+                        readOnly 
+                        className="font-mono text-xs"
+                      />
+                      <Button
+                        type="button"
+                        onClick={copyPixCode}
+                        className="bg-race-primary hover:bg-race-primary/90"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Valor */}
+                <div className="bg-gray-50 p-4 rounded-lg">
+                  <div className="flex justify-between items-center">
+                    <span className="text-sm text-gray-600">Valor a pagar:</span>
+                    <span className="text-2xl font-bold text-race-primary">
+                      R$ {pixData?.amount?.toFixed(2) || '0,00'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Instruções */}
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+                  <h4 className="font-semibold text-blue-900 text-sm">Como pagar:</h4>
+                  <ol className="text-xs text-blue-800 space-y-1 list-decimal list-inside">
+                    <li>Abra o app do seu banco</li>
+                    <li>Escolha pagar via PIX</li>
+                    <li>Escaneie o QR Code ou cole o código</li>
+                    <li>Confirme o pagamento</li>
+                  </ol>
+                  <p className="text-xs text-blue-700 mt-2">
+                    ⏱️ O pagamento será confirmado automaticamente em alguns segundos.
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={handleClosePixModal}
+              className="w-full"
+            >
+              {pixStatus === 'paid' ? 'Fechar' : 'Cancelar'}
             </Button>
           </DialogFooter>
         </DialogContent>
