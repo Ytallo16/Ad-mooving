@@ -3,6 +3,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 from django.utils import timezone
 from django.utils.encoding import force_str, force_bytes
+from django.db import transaction, IntegrityError
 from decouple import config
 from email.header import Header
 from email.utils import formataddr
@@ -89,6 +90,22 @@ def generate_unique_registration_number():
     # Se não conseguir gerar um número único, usar timestamp
     return str(int(timezone.now().timestamp()))[-5:].zfill(5)
 
+
+def _assign_registration_number_with_retry(registration) -> None:
+    """Atribui registration_number com retry defensivo contra colisão."""
+    max_retries = 3
+    for _ in range(max_retries):
+        registration.registration_number = generate_unique_registration_number()
+        try:
+            registration.save(update_fields=['registration_number'])
+            return
+        except IntegrityError:
+            # colisão rara: tentar outro número
+            continue
+    # última tentativa fora do loop; se falhar, propaga
+    registration.registration_number = generate_unique_registration_number()
+    registration.save(update_fields=['registration_number'])
+
 ## Removido: envio de email de confirmação de inscrição (apenas email de pagamento é mantido)
 
 def send_payment_confirmation_email(registration):
@@ -97,8 +114,7 @@ def send_payment_confirmation_email(registration):
     """
     # Gera número de inscrição único se ainda não existe
     if not registration.registration_number:
-        registration.registration_number = generate_unique_registration_number()
-        registration.save(update_fields=['registration_number'])
+        _assign_registration_number_with_retry(registration)
     
     # Assunto simples, sem emojis
     subject_text = 'Pagamento confirmado – Corrida Ad-moving'
@@ -186,6 +202,45 @@ def send_payment_confirmation_email(registration):
         import traceback
         traceback.print_exc()
         return False
+
+
+def mark_registration_paid_atomic(registration_id: int, *, amount_reais: float | None = None, payment_intent_id: str | None = None) -> bool:
+    """
+    Marca inscrição como paga de forma transacional e idempotente.
+    - Usa select_for_update para evitar condição de corrida
+    - Gera registration_number com retry em caso de colisão
+    - Envia email uma única vez
+    Retorna True se mudou o estado para PAID nesta chamada; False se já estava PAID.
+    """
+    from .models import RaceRegistration
+    with transaction.atomic():
+        registration = (
+            RaceRegistration.objects.select_for_update()
+            .get(id=registration_id)
+        )
+
+        if registration.payment_status == 'PAID':
+            return False
+
+        registration.payment_status = 'PAID'
+        registration.payment_date = timezone.now()
+        if payment_intent_id:
+            registration.stripe_payment_intent_id = payment_intent_id
+        if amount_reais is not None:
+            try:
+                registration.payment_amount = float(amount_reais)
+            except Exception:
+                pass
+
+        if not registration.registration_number:
+            _assign_registration_number_with_retry(registration)
+        else:
+            registration.save(update_fields=['payment_status', 'payment_date', 'stripe_payment_intent_id', 'payment_amount'])
+
+    # Enviar email fora do lock duro; ainda assim idempotente pelo flag
+    if not registration.payment_email_sent:
+        send_payment_confirmation_email(registration)
+    return True
 
 
 def create_stripe_checkout_session(registration, base_url: str | None = None, coupon_code: str | None = None):

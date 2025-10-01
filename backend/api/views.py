@@ -19,7 +19,8 @@ from .services import (
     validate_coupon_code,
     create_abacatepay_pix,
     simulate_abacatepay_payment,
-    check_abacatepay_payment_status
+    check_abacatepay_payment_status,
+    mark_registration_paid_atomic
 )
 
 # Create your views here.
@@ -1027,23 +1028,10 @@ def simulate_pix_payment(request):
         result = simulate_abacatepay_payment(pix_id)
         
         if result['success'] and result['status'] == 'PAID':
-            # Atualizar a inscrição
+            # Atualizar a inscrição de forma transacional e idempotente
             try:
                 registration = RaceRegistration.objects.get(abacatepay_pix_id=pix_id)
-                registration.payment_status = 'PAID'
-                registration.payment_date = timezone.now()
-                
-                # Gerar número de inscrição se ainda não existe
-                if not registration.registration_number:
-                    from .services import generate_unique_registration_number
-                    registration.registration_number = generate_unique_registration_number()
-                
-                registration.save(update_fields=['payment_status', 'payment_date', 'registration_number'])
-                
-                # Enviar email de confirmação
-                if not registration.payment_email_sent:
-                    send_payment_confirmation_email(registration)
-                
+                mark_registration_paid_atomic(registration.id)
             except RaceRegistration.DoesNotExist:
                 pass
         
@@ -1116,28 +1104,8 @@ def check_pix_status(request):
         if result['status'] == 'PAID':
             try:
                 registration = RaceRegistration.objects.get(abacatepay_pix_id=pix_id)
-                
-                if registration.payment_status != 'PAID':
-                    registration.payment_status = 'PAID'
-                    registration.payment_date = timezone.now()
-                    
-                    # Gerar número de inscrição único se ainda não existe
-                    if not registration.registration_number:
-                        from .services import generate_unique_registration_number
-                        registration.registration_number = generate_unique_registration_number()
-                    
-                    registration.save(update_fields=[
-                        'payment_status', 
-                        'payment_date', 
-                        'registration_number'
-                    ])
-                    
-                    # Enviar email de confirmação se ainda não enviado
-                    if not registration.payment_email_sent:
-                        send_payment_confirmation_email(registration)
-                    
-                    registration_updated = True
-                    
+                changed = mark_registration_paid_atomic(registration.id)
+                registration_updated = changed or registration_updated
             except RaceRegistration.DoesNotExist:
                 pass
         
