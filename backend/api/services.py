@@ -195,27 +195,40 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
         # Aplicar desconto do cupom se fornecido
         coupon_discount = 0
         if coupon_code:
+            print(f"DEBUG CUPOM: Cupom recebido: {coupon_code}")
+            print(f"DEBUG CUPOM: Modalidade: {registration.modality}")
+            print(f"DEBUG CUPOM: Valor original: R$ {amount/100:.2f}")
             try:
                 is_valid, message, discount_amount = validate_coupon_code(coupon_code, registration.modality)
+                print(f"DEBUG CUPOM: Validação - válido={is_valid}, mensagem={message}, desconto={discount_amount}")
                 
                 if is_valid and discount_amount > 0:
                     coupon_discount = int(discount_amount * 100)  # Converter para centavos
                     amount = max(amount - coupon_discount, 0)  # Não permitir valor negativo
+                    print(f"DEBUG CUPOM: Valor com desconto: R$ {amount/100:.2f}")
                     
                     # Salvar informações do cupom na inscrição (se o modelo tiver esses campos)
                     try:
                         registration.coupon_code = coupon_code.strip().upper()
                         registration.coupon_discount = discount_amount
                         registration.save(update_fields=['coupon_code', 'coupon_discount'])
-                    except Exception:
+                        print(f"DEBUG CUPOM: Cupom salvo na inscrição")
+                    except Exception as ex:
                         # Campos não existem no modelo, continuar sem salvar
+                        print(f"DEBUG CUPOM: Não foi possível salvar cupom: {ex}")
                         pass
                     
                     description += f" (Desconto: R$ {discount_amount:.2f})"
+                else:
+                    print(f"DEBUG CUPOM: Cupom não aplicado - válido={is_valid}")
                     
             except Exception as e:
                 print(f"Erro ao aplicar cupom {coupon_code}: {e}")
+                import traceback
+                traceback.print_exc()
                 # Continuar sem o cupom em caso de erro
+        else:
+            print("DEBUG CUPOM: Nenhum cupom fornecido")
         
         # URLs de redirecionamento pós-checkout
         # Regra:

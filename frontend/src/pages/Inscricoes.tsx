@@ -30,6 +30,7 @@ const Inscricoes = () => {
   const [isCouponValid, setIsCouponValid] = useState(false);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [couponTimeout, setCouponTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     // Dados do atleta/criança
     full_name: "",
@@ -138,7 +139,7 @@ const Inscricoes = () => {
       
       if (result.valid) {
         setCouponDiscount(result.discount_amount);
-        setCouponMessage(`Cupom válido! Desconto de R$ ${result.discount_amount.toFixed(2)}`);
+        setCouponMessage('Cupom aplicado com sucesso!');
         setIsCouponValid(true);
       } else {
         setCouponDiscount(0);
@@ -179,23 +180,16 @@ const Inscricoes = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
     
     if (!formData.athlete_declaration) {
-      toast({
-        title: "Erro na inscrição",
-        description: "Você deve marcar a declaração de responsabilidade para prosseguir.",
-        variant: "destructive"
-      });
+      setFormErrors(prev => ({ ...prev, athlete_declaration: 'Você deve marcar a declaração de responsabilidade.' }));
       return;
     }
 
     const age = calculateAge(formData.birth_date);
     if ((formData.course === 'RUN_5K' || formData.course === 'WALK_3K') && age < 12) {
-      toast({
-        title: "Erro na inscrição",
-        description: "O atleta deve ter pelo menos 12 anos para se inscrever.",
-        variant: "destructive"
-      });
+      setFormErrors(prev => ({ ...prev, birth_date: 'Para 5KM/3KM o atleta deve ter ao menos 12 anos.' }));
       return;
     }
 
@@ -208,13 +202,31 @@ const Inscricoes = () => {
       const sanitizedCpf = (formData.cpf || '').toString().replace(/\D/g, '').slice(0, 11);
       const sanitizedResponsibleCpf = (formData.responsible_cpf || '').toString().replace(/\D/g, '').slice(0, 11);
 
-      // Validação básica no cliente (somente quando não for KIDS)
-      if (formData.course !== 'KIDS' && sanitizedCpf.length !== 11) {
-        toast({
-          title: "CPF inválido",
-          description: "Informe um CPF com 11 dígitos.",
-          variant: "destructive",
-        });
+      // Validações básicas no cliente
+      const clientErrors: Record<string, string> = {};
+      if (!formData.full_name?.trim()) clientErrors.full_name = 'Informe seu nome completo.';
+      if (formData.course !== 'KIDS' && sanitizedCpf.length !== 11) clientErrors.cpf = 'CPF deve ter 11 dígitos.';
+      if (formData.course !== 'KIDS' && (!formData.email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.email))) clientErrors.email = 'Informe um email válido.';
+      if (formData.course !== 'KIDS') {
+        const phoneDigits = (formData.phone || '').replace(/\D/g, '');
+        if (phoneDigits.length < 10 || phoneDigits.length > 11) clientErrors.phone = 'Telefone deve ter 10 ou 11 dígitos.';
+      }
+      if (!formData.birth_date) clientErrors.birth_date = 'Informe sua data de nascimento.';
+      if (!formData.gender) clientErrors.gender = 'Selecione o sexo.';
+      if (!formData.course) clientErrors.course = 'Selecione o percurso.';
+      if (!formData.shirt_size) clientErrors.shirt_size = 'Selecione o tamanho da camisa.';
+      if (formData.course === 'KIDS') {
+        if (!formData.responsible_full_name?.trim()) clientErrors.responsible_full_name = 'Informe o nome do responsável.';
+        if (!(formData.responsible_cpf || '').toString().replace(/\D/g, '').slice(0, 11)) clientErrors.responsible_cpf = 'Informe o CPF do responsável.';
+        if (!formData.responsible_email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(formData.responsible_email)) clientErrors.responsible_email = 'Informe um email válido do responsável.';
+        const respPhoneDigits = (formData.responsible_phone || '').replace(/\D/g, '');
+        if (respPhoneDigits.length < 10 || respPhoneDigits.length > 11) clientErrors.responsible_phone = 'Telefone deve ter 10 ou 11 dígitos.';
+      }
+      if (Object.keys(clientErrors).length) {
+        setFormErrors(clientErrors);
+        const firstKey = Object.keys(clientErrors)[0];
+        const el = document.getElementById(firstKey);
+        if (el?.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
         setIsLoading(false);
         return;
       }
@@ -227,10 +239,15 @@ const Inscricoes = () => {
         // Para KIDS, email/phone podem ser do responsável
         email: formData.course === 'KIDS' && formData.responsible_email ? formData.responsible_email : formData.email,
         phone: formData.course === 'KIDS' && formData.responsible_phone ? formData.responsible_phone : formData.phone,
-        // Incluir cupom se válido
-        coupon_code: isCouponValid && couponCode.trim() ? couponCode.trim() : undefined,
       };
+      
+      // Enviar SEMPRE o cupom digitado (backend valida e aplica desconto)
+      if (couponCode.trim()) {
+        payload.coupon_code = couponCode.trim().toUpperCase();
+      }
+      
       console.log('Payload sanitizado:', payload);
+      console.log('DEBUG FRONTEND: Cupom válido?', isCouponValid, 'Código:', couponCode);
 
       const response = await apiRequest(`/api/race-registrations/`, {
         method: 'POST',
@@ -284,21 +301,30 @@ const Inscricoes = () => {
         const errorData = parsedJson || rawText || 'Erro desconhecido';
         console.error('Erro da API:', errorData);
         
-        let errorMessage = "Erro ao processar inscrição. Tente novamente.";
-        
-        if (errorData && typeof errorData === 'object' && errorData.cpf && errorData.cpf[0]) {
-          errorMessage = "CPF já cadastrado ou inválido.";
-        } else if (errorData && typeof errorData === 'object' && errorData.non_field_errors) {
-          errorMessage = errorData.non_field_errors[0];
-        } else if (errorData && typeof errorData === 'object' && errorData.detail) {
-          errorMessage = errorData.detail;
+        let errorMessage = "Corrija os campos destacados e tente novamente.";
+        const aggregatedErrors: Record<string, string> = {};
+        if (errorData && typeof errorData === 'object') {
+          Object.entries(errorData as Record<string, any>).forEach(([key, val]) => {
+            if (Array.isArray(val) && val.length) aggregatedErrors[key] = String(val[0]);
+            else if (typeof val === 'string') aggregatedErrors[key] = val;
+          });
+          if ((errorData as any).non_field_errors?.length) {
+            aggregatedErrors['non_field_errors'] = (errorData as any).non_field_errors[0];
+          }
+          if ((errorData as any).detail) {
+            aggregatedErrors['detail'] = (errorData as any).detail;
+          }
         }
-        
-        toast({
-          title: "Erro na inscrição",
-          description: errorMessage,
-          variant: "destructive"
-        });
+        if (Object.keys(aggregatedErrors).length) {
+          setFormErrors(aggregatedErrors);
+          const firstKey = Object.keys(aggregatedErrors)[0];
+          const el = document.getElementById(firstKey);
+          if (el?.scrollIntoView) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Não mostrar toast para erros de validação de campos (já exibidos inline)
+        } else {
+          // Erros globais: manter toast
+          toast({ title: "Erro na inscrição", description: errorMessage, variant: "destructive" });
+        }
       }
     } catch (error) {
       console.error('Erro de conexão:', error);
@@ -331,21 +357,70 @@ const Inscricoes = () => {
     });
   };
 
+  // Campo de cupom no formulário principal
+  // Renderizamos antes do botão "Finalizar Inscrição"
+
   const handlePaymentMethodSelect = (method: 'card' | 'pix') => {
     setSelectedPaymentMethod(method);
   };
 
-  const handlePaymentConfirm = () => {
+  const handlePaymentConfirm = async () => {
     if (!selectedPaymentMethod) return;
 
     if (selectedPaymentMethod === 'card') {
-      // Redirecionar para Stripe
-      if (registrationData?.payment?.checkout_url) {
-        window.location.href = registrationData.payment.checkout_url;
-      } else {
+      try {
+        // Criar (ou recriar) sessão de checkout no momento da confirmação, passando o cupom
+        const regId = registrationData?.id;
+        if (!regId) {
+          toast({
+            title: "Erro no pagamento",
+            description: "Inscrição não encontrada. Tente novamente.",
+            variant: "destructive"
+          });
+          return;
+        }
+
+        const body: any = { registration_id: regId };
+        if (couponCode.trim()) {
+          body.coupon_code = couponCode.trim().toUpperCase();
+        }
+
+        console.log('DEBUG FRONTEND: Criando sessão com', body);
+        const resp = await apiRequest(`/api/payment/create-session/`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(body),
+        });
+
+        const data = await resp.json();
+        console.log('DEBUG FRONTEND: Resposta create-session', resp.status, data);
+
+        if (resp.ok && data?.success && data?.checkout_url) {
+          window.location.href = data.checkout_url;
+          return;
+        }
+
+        // Fallback: usar URL previamente retornada (sem desconto) se existir
+        if (registrationData?.payment?.checkout_url) {
+          window.location.href = registrationData.payment.checkout_url;
+          return;
+        }
+
         toast({
           title: "Erro no pagamento",
-          description: "URL de pagamento não encontrada. Entre em contato conosco.",
+          description: data?.error || "Não foi possível iniciar o checkout.",
+          variant: "destructive"
+        });
+      } catch (error) {
+        console.error('Erro ao criar sessão de pagamento:', error);
+        // Fallback
+        if (registrationData?.payment?.checkout_url) {
+          window.location.href = registrationData.payment.checkout_url;
+          return;
+        }
+        toast({
+          title: "Erro no pagamento",
+          description: "Falha ao iniciar checkout.",
           variant: "destructive"
         });
       }
@@ -525,6 +600,7 @@ const Inscricoes = () => {
                           required
                           className="border-race-primary-light/30 focus:border-race-primary"
                         />
+                        {formErrors.full_name && <p className="text-sm text-red-600">{formErrors.full_name}</p>}
                       </div>
                       {formData.course !== 'KIDS' && (
                         <div className="space-y-2">
@@ -540,6 +616,7 @@ const Inscricoes = () => {
                             maxLength={14}
                             className="border-race-primary-light/30 focus:border-race-primary"
                           />
+                          {formErrors.cpf && <p className="text-sm text-red-600">{formErrors.cpf}</p>}
                         </div>
                       )}
                     </div>
@@ -557,6 +634,7 @@ const Inscricoes = () => {
                             required
                             className="border-race-primary-light/30 focus:border-race-primary"
                           />
+                          {formErrors.email && <p className="text-sm text-red-600">{formErrors.email}</p>}
                         </div>
                         
                         <div className="space-y-2">
@@ -572,6 +650,7 @@ const Inscricoes = () => {
                             maxLength={15}
                             className="border-race-primary-light/30 focus:border-race-primary"
                           />
+                          {formErrors.phone && <p className="text-sm text-red-600">{formErrors.phone}</p>}
                         </div>
                       </div>
                     )}
@@ -587,6 +666,7 @@ const Inscricoes = () => {
                           maxDate={new Date().toISOString().split('T')[0]}
                           minDate="1920-01-01"
                         />
+                        {formErrors.birth_date && <p className="text-sm text-red-600">{formErrors.birth_date}</p>}
                     
                       </div>
                       
@@ -601,6 +681,7 @@ const Inscricoes = () => {
                             <SelectItem value="F">Feminino</SelectItem>
                           </SelectContent>
                         </Select>
+                        {formErrors.gender && <p className="text-sm text-red-600">{formErrors.gender}</p>}
                       </div>
                     </div>
 
@@ -617,6 +698,7 @@ const Inscricoes = () => {
                             <SelectItem value="WALK_3K">2,5KM (Caminhada)</SelectItem>
                           </SelectContent>
                         </Select>
+                        {formErrors.course && <p className="text-sm text-red-600">{formErrors.course}</p>}
                       </div>
                       
                       <div className="space-y-2">
@@ -633,6 +715,7 @@ const Inscricoes = () => {
                             ))}
                           </SelectContent>
                         </Select>
+                        {formErrors.shirt_size && <p className="text-sm text-red-600">{formErrors.shirt_size}</p>}
                         <p className="text-xs text-muted-foreground">{formData.course==='KIDS' ? 'Tamanhos infantis 4, 6, 8, 10 anos' : 'Tamanhos adulto: Tradicional PP a XXG'}</p>
                       </div>
                     </div>
@@ -643,7 +726,8 @@ const Inscricoes = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="responsible_full_name">Nome do Responsável *</Label>
-                            <Input id="responsible_full_name" value={formData.responsible_full_name} onChange={(e)=>handleInputChange('responsible_full_name', e.target.value)} required={formData.course==='KIDS'} />
+                          <Input id="responsible_full_name" value={formData.responsible_full_name} onChange={(e)=>handleInputChange('responsible_full_name', e.target.value)} required={formData.course==='KIDS'} />
+                          {formErrors.responsible_full_name && <p className="text-sm text-red-600">{formErrors.responsible_full_name}</p>}
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_cpf">CPF do Responsável *</Label>
@@ -656,14 +740,17 @@ const Inscricoes = () => {
                               placeholder="000.000.000-00"
                               required={formData.course==='KIDS'}
                             />
+                            {formErrors.responsible_cpf && <p className="text-sm text-red-600">{formErrors.responsible_cpf}</p>}
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_email">Email do Responsável *</Label>
                             <Input id="responsible_email" type="email" value={formData.responsible_email} onChange={(e)=>handleInputChange('responsible_email', e.target.value)} required={formData.course==='KIDS'} />
+                            {formErrors.responsible_email && <p className="text-sm text-red-600">{formErrors.responsible_email}</p>}
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_phone">Telefone do Responsável *</Label>
                             <Input id="responsible_phone" value={formatPhone(formData.responsible_phone)} onChange={(e)=>handleInputChange('responsible_phone', e.target.value.replace(/\D/g,''))} placeholder="(11) 99999-9999" required={formData.course==='KIDS'} />
+                            {formErrors.responsible_phone && <p className="text-sm text-red-600">{formErrors.responsible_phone}</p>}
                           </div>
                         </div>
                       </div>
@@ -692,6 +779,45 @@ const Inscricoes = () => {
                           capacidade atlética e que treinei adequadamente para o evento. Declaro ainda que estou ciente dos 
                           riscos inerentes à prática esportiva e isento os organizadores de qualquer responsabilidade.
                         </p>
+                      </div>
+                    </div>
+
+                    {/* Cupom de Desconto (no formulário principal) */}
+                    <div className="space-y-2">
+                      <Label htmlFor="coupon">Cupom de Desconto (opcional)</Label>
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <Input
+                            id="coupon"
+                            type="text"
+                            placeholder="Digite o código do cupom"
+                            value={couponCode}
+                            onChange={(e) => handleCouponChange(e.target.value)}
+                            className="border-race-primary-light/30 focus:border-race-primary flex-1"
+                            onKeyPress={(e) => {
+                              if (e.key === 'Enter') {
+                                e.preventDefault();
+                                handleApplyCoupon();
+                              }
+                            }}
+                          />
+                          <Button
+                            type="button"
+                            onClick={handleApplyCoupon}
+                            disabled={!couponCode.trim() || isValidatingCoupon}
+                            className="bg-race-primary hover:bg-race-primary/90 px-4"
+                          >
+                            {isValidatingCoupon ? "..." : "Aplicar"}
+                          </Button>
+                        </div>
+                        {isValidatingCoupon && (
+                          <p className="text-sm text-gray-500">Validando cupom...</p>
+                        )}
+                        {couponMessage && (
+                          <p className={`text-sm ${isCouponValid ? 'text-green-600' : 'text-red-600'}`}>
+                            {couponMessage}
+                          </p>
+                        )}
                       </div>
                     </div>
 
@@ -724,44 +850,7 @@ const Inscricoes = () => {
           </DialogHeader>
           
           <div className="space-y-4 py-4">
-            {/* Campo de Cupom de Desconto */}
-            <div className="space-y-2">
-              <Label htmlFor="coupon">Cupom de Desconto (opcional)</Label>
-              <div className="space-y-2">
-                <div className="flex gap-2">
-                  <Input
-                    id="coupon"
-                    type="text"
-                    placeholder="Digite o código do cupom"
-                    value={couponCode}
-                    onChange={(e) => handleCouponChange(e.target.value)}
-                    className="border-race-primary-light/30 focus:border-race-primary flex-1"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        e.preventDefault();
-                        handleApplyCoupon();
-                      }
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    onClick={handleApplyCoupon}
-                    disabled={!couponCode.trim() || isValidatingCoupon}
-                    className="bg-race-primary hover:bg-race-primary/90 px-4"
-                  >
-                    {isValidatingCoupon ? "..." : "Aplicar"}
-                  </Button>
-                </div>
-                {isValidatingCoupon && (
-                  <p className="text-sm text-gray-500">Validando cupom...</p>
-                )}
-                {couponMessage && (
-                  <p className={`text-sm ${isCouponValid ? 'text-green-600' : 'text-red-600'}`}>
-                    {couponMessage}
-                  </p>
-                )}
-              </div>
-            </div>
+            {/* Campo de Cupom de Desconto movido para o formulário principal */}
 
             <div className="border-t pt-4">
               <p className="text-sm text-gray-600 mb-4">Escolha sua forma de pagamento:</p>
