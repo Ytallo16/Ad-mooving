@@ -84,7 +84,18 @@ pull_images() {
 start_containers() {
     log "Iniciando containers..."
     ${COMPOSE_CMD} up -d --build
-    log "✅ Containers iniciados!"
+    
+    # Aguardar container estar pronto
+    log "Aguardando container estar pronto..."
+    sleep 15
+    
+    # Executar migrações no banco externo
+    log "Executando migrações no banco externo..."
+    ${COMPOSE_CMD} exec -T api python manage.py migrate --noinput || {
+        error "Falha ao executar migrações no banco externo"
+    }
+    
+    log "✅ Containers iniciados e migrações executadas no banco externo!"
 }
 
 # Função para mostrar logs
