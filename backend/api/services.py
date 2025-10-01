@@ -217,21 +217,32 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
                 print(f"Erro ao aplicar cupom {coupon_code}: {e}")
                 # Continuar sem o cupom em caso de erro
         
-        # URLs: prioridade desejada -> 1) produção fixa, 2) localhost (se detectado), 3) PUBLIC_BASE_URL/env
-        prod_base = 'https://admoving.demo.addirceu.com.br'
-        local_base = None
-        if base_url and ('localhost' in base_url or '127.0.0.1' in base_url):
-            local_base = base_url.rstrip('/')
-        env_base = (config('PUBLIC_BASE_URL', default='') or '').rstrip('/') or None
+        # URLs de redirecionamento pós-checkout
+        # Regra:
+        #  - Produção: usar domínio do site
+        #  - Local: redirecionar para o frontend (por padrão :5173), não para o backend :8000
+        prod_frontend_base = 'https://admoving.demo.addirceu.com.br'
+        # Permite sobrescrever via env
+        frontend_env_base = (config('FRONTEND_BASE_URL', default='') or '').rstrip('/') or None
+        public_env_base = (config('PUBLIC_BASE_URL', default='') or '').rstrip('/') or None
 
-        base = prod_base
-        if local_base:
-            base = local_base
-        elif not base:
-            base = env_base or prod_base
+        frontend_base = prod_frontend_base
 
-        success_url = config('STRIPE_SUCCESS_URL', default=f'{base}/pagamento/sucesso')
-        cancel_url = config('STRIPE_CANCEL_URL', default=f'{base}/pagamento/cancelado')
+        # Se fornecido FRONTEND_BASE_URL, priorizar
+        if frontend_env_base:
+            frontend_base = frontend_env_base
+        else:
+            # Se request veio de localhost/127.0.0.1 (geralmente backend :8000), mapear para :5173
+            if base_url and ('localhost' in base_url or '127.0.0.1' in base_url):
+                # Tentar inferir protocolo para manter coerência
+                scheme = 'https' if base_url.startswith('https') else 'http'
+                frontend_base = f"{scheme}://localhost:8080"
+            elif public_env_base:
+                # Caso tenha PUBLIC_BASE_URL para site público, usar
+                frontend_base = public_env_base
+
+        success_url = config('STRIPE_SUCCESS_URL', default=f'{frontend_base}/pagamento/sucesso')
+        cancel_url = config('STRIPE_CANCEL_URL', default=f'{frontend_base}/pagamento/cancelado')
 
         # Métodos de pagamento: cartão sempre, Pix opcional
         enable_pix = getattr(settings, 'STRIPE_ENABLE_PIX', True)
