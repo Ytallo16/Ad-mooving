@@ -255,7 +255,21 @@ class RaceRegistrationViewSet(ModelViewSet):
                     host = ''
                 scheme = 'https' if request.is_secure() else 'http'
                 derived_base = f"{scheme}://{host}" if host else None
-                coupon_code = request.data.get('coupon_code')  # Pegar cupom dos dados da requisição
+                # Pegar cupom dos dados da requisição com fallback para chaves alternativas e query params
+                coupon_code = (
+                    request.data.get('coupon_code')
+                    or request.data.get('coupon')
+                    or request.data.get('cupom')
+                    or request.query_params.get('coupon_code')
+                    or request.query_params.get('coupon')
+                    or request.query_params.get('cupom')
+                )
+                try:
+                    keys_list = list(getattr(request, 'data', {}).keys()) if hasattr(request, 'data') else []
+                except Exception:
+                    keys_list = []
+                print(f"DEBUG VIEW: Keys em request.data: {keys_list}")
+                print(f"DEBUG VIEW: Cupom recebido na view: '{coupon_code}' (tipo: {type(coupon_code)})")
                 payment_result = create_stripe_checkout_session(instance, base_url=derived_base, coupon_code=coupon_code)
                 print(f"DEBUG: Resultado do pagamento: {payment_result}")
                 
@@ -525,6 +539,7 @@ def race_statistics(request):
         'type': 'object',
         'properties': {
             'registration_id': {'type': 'integer', 'description': 'ID da inscrição'},
+            'coupon_code': {'type': 'string', 'description': 'Código do cupom (opcional)'},
         },
         'required': ['registration_id']
     },
@@ -554,6 +569,7 @@ def create_payment_session(request):
     """
     try:
         registration_id = request.data.get('registration_id')
+        coupon_code = request.data.get('coupon_code')
         
         if not registration_id:
             return Response({
@@ -578,7 +594,7 @@ def create_payment_session(request):
             }, status=status.HTTP_400_BAD_REQUEST)
         
         # Criar sessão de checkout
-        result = create_stripe_checkout_session(registration)
+        result = create_stripe_checkout_session(registration, coupon_code=coupon_code)
         
         if result['success']:
             return Response(result, status=status.HTTP_200_OK)

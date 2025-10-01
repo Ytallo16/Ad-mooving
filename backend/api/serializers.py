@@ -28,10 +28,10 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
             'shirt_size', 'shirt_size_display', 'available_shirt_sizes',
             'responsible_full_name', 'responsible_cpf', 'responsible_email', 'responsible_phone',
             'athlete_declaration', 'payment_status', 'payment_status_display',
-            'payment_email_sent', 'age', 
+            'payment_email_sent', 'coupon_code', 'coupon_discount', 'age', 
             'created_at', 'updated_at'
         ]
-        read_only_fields = ['id', 'age', 'payment_email_sent', 'created_at', 'updated_at']
+        read_only_fields = ['id', 'age', 'payment_email_sent', 'coupon_code', 'coupon_discount', 'created_at', 'updated_at']
     
     def get_available_shirt_sizes(self, obj):
         """
