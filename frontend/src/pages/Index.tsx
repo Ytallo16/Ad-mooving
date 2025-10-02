@@ -578,7 +578,7 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Acompanhamento dos pais</span>
+                    <span className="text-gray-700 font-medium">Acompanhado por responsável legal</span>
                   </div>
                 </div>
                 <Link to="/inscricoes?course=KIDS">
@@ -725,15 +725,15 @@ const Index = () => {
                 <p className="text-gray-600 text-sm">Premiação de participação</p>
               </div>
 
-              {/* Ecobag */}
+              {/* Sacochila */}
               <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-6 text-center border border-emerald-200 hover:shadow-lg transition-all duration-300">
                 <div className="w-16 h-16 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l-1 10a2 2 0 01-2 2H8a2 2 0 01-2-2L5 9z" />
                   </svg>
                 </div>
-                <h4 className="text-xl font-bold text-emerald-600 mb-2 font-teko">Ecobag</h4>
-                <p className="text-gray-600 text-sm">Itens do kit na sacola</p>
+                <h4 className="text-xl font-bold text-emerald-600 mb-2 font-teko">Sacochila</h4>
+                <p className="text-gray-600 text-sm">Itens do kit na sacochila</p>
               </div>
 
               {/* Troféus para vencedores das categorias */}

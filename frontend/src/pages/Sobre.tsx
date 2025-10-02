@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
 import LeafletMap, { pontosInteresse as defaultPontos } from "@/components/LeafletMap";
+import backTitulo from "../assets/back_titulo.png";
 
 const Sobre = () => {
   const [pontoSelecionado, setPontoSelecionado] = useState<number | null>(null);
@@ -11,13 +13,28 @@ const Sobre = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <Navbar />
       {/* Header estilo Patrocinadores */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative px-4 py-20 mx-auto max-w-7xl sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl font-teko">Sobre o Evento</h1>
-          <p className="max-w-2xl mx-auto text-xl text-blue-100 mt-4 font-29lt">
-            Corrida de 5 km com largada e chegada no Teresina Shopping. 
-          </p>
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 min-h-[360px]">
+        <div className="absolute inset-0 bg-black/5" />
+        <div
+          className="absolute inset-0 opacity-50"
+          style={{
+            backgroundImage: `url(${backTitulo})`,
+            backgroundRepeat: "repeat",
+            backgroundPosition: "0 0",
+          }}
+        />
+        <div className="relative px-4 pt-40 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className="text-center"
+          >
+            <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl font-teko">Sobre o Evento</h1>
+            <p className="max-w-2xl mx-auto text-xl text-blue-100 mt-4 font-29lt">
+              Corrida de 5 km com largada e chegada no Teresina Shopping. 
+            </p>
+          </motion.div>
         </div>
       </div>
 
@@ -159,7 +176,7 @@ const Sobre = () => {
                 <li>Número de peito</li>
                 <li>Chip de cronometragem</li>
                 <li>Medalha (pós-prova)</li>
-                <li>Ecobag</li>
+                <li>Sacochila</li>
                 <li>Pódio e backdrop para fotos</li>
               </ul>
             </div>
@@ -171,12 +188,12 @@ const Sobre = () => {
               <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-8 font-teko">Regras e Orientações</h3>
               {(() => {
                 const itens = [
-                  'Chegue 30 min antes da largada para credenciamento e ajustes.',
+                  'Chegue 30 min antes da largada.',
                   'Uso obrigatório do número de peito visível na parte frontal.',
                   'Mantenha-se no percurso sinalizado e siga o staff.',
                   'Descarte resíduos apenas nas áreas indicadas.',
                   'Caminhar é permitido; priorize sua segurança e a de todos.',
-                  'Menores somente acompanhados por responsável legal.',
+                  'Corrida Kids apenas acompanhada por responsável legal.',
                 ];
                 const colA = itens.filter((_, i) => i % 2 === 0);
                 const colB = itens.filter((_, i) => i % 2 === 1);

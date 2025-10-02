@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
 import { Card, CardContent } from "@/components/ui/card";
 import { Instagram, MessageCircle } from "lucide-react";
+import backTitulo from "../assets/back_titulo.png";
 
 // Ícone personalizado do WhatsApp
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -92,9 +93,17 @@ const Patrocinadores = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <Navbar />
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700">
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative px-4 py-20 mx-auto max-w-7xl sm:px-6 lg:px-8">
+      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 min-h-[360px]">
+        <div className="absolute inset-0 bg-black/5" />
+        <div
+          className="absolute inset-0 opacity-50"
+          style={{
+            backgroundImage: `url(${backTitulo})`,
+            backgroundRepeat: "repeat",
+            backgroundPosition: "0 0",
+          }}
+        />
+        <div className="relative px-4 pt-40 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
