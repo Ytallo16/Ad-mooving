@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_spectacular',
+    'django_ratelimit',
     
     # Local apps
     'api',
@@ -60,12 +61,14 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',  # CORS middleware deve vir primeiro
     'django.middleware.security.SecurityMiddleware',
+    'api.middleware.RateLimitMiddleware',  # Rate limiting personalizado
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'api.middleware.SecurityHeadersMiddleware',  # Headers de segurança
 ]
 
 ROOT_URLCONF = 'backend.urls'
@@ -263,4 +266,30 @@ STRIPE_WEBHOOK_SECRET = config('STRIPE_WEBHOOK_SECRET', default='')
 STRIPE_ENABLE_PIX = config('STRIPE_ENABLE_PIX', default=True, cast=bool)
 STRIPE_CONNECT_ACCOUNT_ID = config('STRIPE_CONNECT_ACCOUNT_ID', default='')  # Se usar Stripe Connect
 STRIPE_APPLICATION_FEE_AMOUNT = config('STRIPE_APPLICATION_FEE_AMOUNT', default=0, cast=int)  # em centavos
+
+# Redis Cache Configuration for Rate Limiting
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': config('REDIS_URL', default='redis://127.0.0.1:6379/1'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        },
+        'KEY_PREFIX': 'admooving',
+        'TIMEOUT': 300,  # 5 minutos
+    }
+}
+
+# Rate Limiting Configuration
+RATELIMIT_USE_CACHE = 'default'
+RATELIMIT_VIEW = 'api.views.rate_limit_exceeded'
+
+# Rate Limiting Rules
+RATE_LIMITS = {
+    'registration': '10/h',      # 10 inscrições por hora por IP
+    'payment': '5/m',            # 5 tentativas de pagamento por minuto
+    'webhook': '100/h',          # 100 webhooks por hora
+    'api_general': '1000/h',     # 1000 requisições gerais por hora
+    'admin': '500/h',            # 500 requisições admin por hora
+}
 

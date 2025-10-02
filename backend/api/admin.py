@@ -46,8 +46,6 @@ class RaceRegistrationAdmin(admin.ModelAdmin):
         """Exibe informações especiais da camisa"""
         if obj.modality == 'INFANTIL':
             return f"Infantil - {obj.get_shirt_size_display()}"
-        elif obj.gender == 'F':
-            return f"{obj.get_shirt_size_display()} (Babylook)"
         else:
             return obj.get_shirt_size_display()
     shirt_info.short_description = 'Camisa'
