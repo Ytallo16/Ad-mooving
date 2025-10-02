@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
-import { CreditCard, Smartphone, Copy, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { CreditCard, Smartphone, Copy, CheckCircle2, Clock, AlertCircle, Download } from "lucide-react";
 
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "@/config/api";
@@ -693,6 +693,17 @@ const Inscricoes = () => {
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Modalidades:</span>
                     <span className="text-sm text-muted-foreground">Infantil e Adulto</span>
+                  </div>
+                  <div className="pt-3">
+                    <a
+                      href="/REGULAMENTO%20OFICIAL%20%E2%80%93%20ADMoving.pdf"
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-3 py-2 rounded-md border border-race-primary text-race-primary hover:bg-race-primary/10 transition-colors text-xs font-medium"
+                    >
+                      <Download className="w-4 h-4" /> Baixar Regulamento (PDF)
+                    </a>
                   </div>
                 </CardContent>
               </Card>
