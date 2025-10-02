@@ -30,11 +30,25 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
       - DB_HOST=${DB_HOST:-db}
       - DB_PORT=${DB_PORT:-5432}
+      - REDIS_URL=redis://redis:6379/1
     ports:
       - "8000:8000"
     restart: unless-stopped
     depends_on:
       - db
+      - redis
+
+  # Redis para cache e rate limiting
+  redis:
+    image: redis:7-alpine
+    container_name: admooving_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - default
 
   # Frontend Vite em modo desenvolvimento
   frontend:
@@ -81,6 +95,9 @@ volumes:
     
   # node_modules para evitar conflitos entre host e container
   frontend_node_modules:
+    driver: local
+  # Dados do Redis
+  redis_data:
     driver: local
   pg_data_dev:
     driver: local
