@@ -557,7 +557,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-3xl font-bold text-orange-600 mb-4 font-teko">Kids</h3>
-                <p className="text-gray-600 mb-6 text-lg">Para crianças até 12 anos</p>
+                <p className="text-gray-600 mb-6 text-lg">Para crianças de 3 a 10 anos</p>
                 <div className="mb-8">
                   <span className="text-5xl font-bold text-orange-600">R$ 50,00</span>
                 </div>

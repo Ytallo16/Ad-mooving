@@ -177,7 +177,6 @@ const Sobre = () => {
                 <li>Chip de cronometragem</li>
                 <li>Medalha (pós-prova)</li>
                 <li>Sacochila</li>
-                <li>Pódio e backdrop para fotos</li>
               </ul>
             </div>
           </section>
