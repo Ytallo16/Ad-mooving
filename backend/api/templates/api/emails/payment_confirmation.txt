@@ -24,7 +24,7 @@ CPF: {{ registration.cpf }}
 Email: {{ registration.email }}
 Telefone: {{ registration.phone }}
 Modalidade: {{ course_display }}
-Tamanho da Camisa: {% if registration.modality == 'INFANTIL' %}{{ registration.get_shirt_size_display }}{% elif registration.gender == 'F' %}{{ registration.get_shirt_size_display }} (Babylook){% else %}{{ registration.get_shirt_size_display }}{% endif %}
+Tamanho da Camisa: {% if registration.modality == 'INFANTIL' %}{{ registration.get_shirt_size_display }}{% else %}{{ registration.get_shirt_size_display }}{% endif %}
 
 PRÓXIMOS PASSOS
 ===============

@@ -7,6 +7,8 @@ from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from drf_spectacular.utils import extend_schema, OpenApiExample
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 
 from .models import RaceRegistration
 from .serializers import RaceRegistrationSerializer
@@ -120,6 +122,19 @@ def health_check(request):
     }, status=status.HTTP_200_OK)
 
 
+@api_view(['GET', 'POST'])
+def rate_limit_exceeded(request, exception=None):
+    """
+    View chamada quando o rate limit é excedido
+    """
+    return Response({
+        'error': 'Rate limit exceeded',
+        'message': 'Muitas requisições. Tente novamente em alguns minutos.',
+        'retry_after': 60,
+        'status_code': 429
+    }, status=status.HTTP_429_TOO_MANY_REQUESTS)
+
+
 class RaceRegistrationViewSet(ModelViewSet):
     """
     ViewSet para gerenciar inscrições de corrida
@@ -149,6 +164,7 @@ class RaceRegistrationViewSet(ModelViewSet):
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
     
+    @method_decorator(ratelimit(key='ip', rate='10/h', method='POST'))
     @extend_schema(
         tags=['corrida'],
         summary='Criar inscrição de corrida',
@@ -158,6 +174,7 @@ class RaceRegistrationViewSet(ModelViewSet):
             201: RaceRegistrationSerializer,
             400: {'description': 'Dados inválidos'},
             401: {'description': 'Não autorizado'},
+            429: {'description': 'Rate limit exceeded'},
         },
         examples=[
             OpenApiExample(
@@ -177,7 +194,7 @@ class RaceRegistrationViewSet(ModelViewSet):
                 status_codes=['201']
             ),
             OpenApiExample(
-                'Exemplo de inscrição - Adulto Feminino (Babylook)',
+                'Exemplo de inscrição - Adulto Feminino',
                 value={
                     'full_name': 'Maria Santos',
                     'cpf': '98765432100',
@@ -391,6 +408,7 @@ class RaceRegistrationViewSet(ModelViewSet):
         404: {'description': 'Inscrição não encontrada'},
     }
 )
+@ratelimit(key='ip', rate='100/h', method='POST')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def payment_webhook(request):
@@ -487,6 +505,7 @@ def payment_webhook(request):
         }
     }
 )
+@ratelimit(key='ip', rate='100/h', method='GET')
 @api_view(['GET'])
 def race_statistics(request):
     """
@@ -565,6 +584,7 @@ def race_statistics(request):
         404: {'description': 'Inscrição não encontrada'},
     }
 )
+@ratelimit(key='ip', rate='5/m', method='POST')
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def create_payment_session(request):
@@ -644,6 +664,7 @@ def create_payment_session(request):
         404: {'description': 'Sessão não encontrada'},
     }
 )
+@ratelimit(key='ip', rate='30/m', method='GET')
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def verify_payment_status(request):

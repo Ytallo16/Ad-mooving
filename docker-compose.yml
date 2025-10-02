@@ -10,6 +10,7 @@ services:
       - ./backend/.env
     environment:
       - DEBUG=${DEBUG:-False}
+      - REDIS_URL=redis://redis:6379/1
     volumes:
       - api_static:/app/staticfiles
     ports:
@@ -17,6 +18,19 @@ services:
     restart: unless-stopped
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - redis
+    networks:
+      - admooving_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: admooving_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
     networks:
       - admooving_network
 
@@ -40,6 +54,8 @@ services:
 
 volumes:
   api_static:
+    driver: local
+  redis_data:
     driver: local
 
 networks:

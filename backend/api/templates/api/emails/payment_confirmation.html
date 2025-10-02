@@ -117,7 +117,7 @@
             </tr>
             <tr>
                 <th>Tamanho da Camisa</th>
-                <td>{% if registration.modality == 'INFANTIL' %}{{ registration.get_shirt_size_display }}{% elif registration.gender == 'F' %}{{ registration.get_shirt_size_display }} (Babylook){% else %}{{ registration.get_shirt_size_display }}{% endif %}</td>
+                <td>{% if registration.modality == 'INFANTIL' %}{{ registration.get_shirt_size_display }}{% else %}{{ registration.get_shirt_size_display }}{% endif %}</td>
             </tr>
         </table>
 
