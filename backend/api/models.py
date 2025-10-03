@@ -197,4 +197,15 @@ class RaceRegistration(models.Model):
             today = timezone.now().date()
             return today.year - self.birth_date.year - ((today.month, today.day) < (self.birth_date.month, self.birth_date.day))
         return None
+    
+    def get_shirt_size_display(self):
+        """Retorna o tamanho da camisa formatado"""
+        if self.modality == 'INFANTIL':
+            # Para modalidade infantil, usar as opções de idade
+            infant_choices = dict(self.INFANT_SHIRT_SIZE_CHOICES)
+            return infant_choices.get(self.shirt_size, self.shirt_size)
+        else:
+            # Para modalidade adulto, usar as opções normais
+            adult_choices = dict(self.SHIRT_SIZE_CHOICES)
+            return adult_choices.get(self.shirt_size, self.shirt_size)
 
