@@ -23,9 +23,6 @@ DETALHES DA INSCRIÇÃO
 DADOS DA CRIANÇA
 -----------------
 Nome da Criança: {{ registration.full_name }}
-CPF da Criança: {{ registration.cpf }}
-Email da Criança: {{ registration.email }}
-Telefone da Criança: {{ registration.phone }}
 Data de Nascimento: {{ registration.birth_date|date:"d/m/Y" }}
 Sexo: {{ registration.get_gender_display }}
 Tamanho da Camisa: {{ registration.get_shirt_size_display }}
