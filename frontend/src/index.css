@@ -20,10 +20,11 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 252 45% 15%;
 
-    --primary: 280 46% 42%; /* #6930a7 */
+    /* Primary brand purple -> #461a77 (HSL approx 268 64% 28%) */
+    --primary: 268 64% 28%;
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 285 42% 48%; /* #6341af */
+    --secondary: 268 54% 36%;
     --secondary-foreground: 0 0% 98%;
 
     --muted: 278 20% 96%;
@@ -37,22 +38,22 @@ All colors MUST be HSL.
 
     --border: 278 20% 92%;
     --input: 278 20% 92%;
-    --ring: 280 46% 42%;
+    --ring: 268 64% 28%;
 
     --radius: 0.5rem;
 
     /* Race theme colors - Purple/Violet palette */
-    --race-primary: 280 46% 42%; /* #6930a7 */
-    --race-primary-dark: 280 50% 35%;
-    --race-primary-light: 280 40% 65%;
-    --race-secondary: 285 42% 48%; /* #6341af */
-    --race-secondary-dark: 285 50% 38%;
-    --race-secondary-light: 285 35% 70%;
+    --race-primary: 268 64% 28%; /* #461a77 */
+    --race-primary-dark: 268 64% 22%;
+    --race-primary-light: 268 50% 60%;
+    --race-secondary: 268 54% 36%;
+    --race-secondary-dark: 268 54% 28%;
+    --race-secondary-light: 268 45% 68%;
     --race-accent: 260 50% 55%;
     --race-accent-light: 260 40% 75%;
     --race-neutral: 278 15% 50%;
     --race-neutral-light: 278 10% 85%;
-    --race-gradient: linear-gradient(135deg, hsl(280 46% 42%) 0%, hsl(285 42% 48%) 100%);
+    --race-gradient: linear-gradient(135deg, hsl(268 64% 28%) 0%, hsl(268 54% 36%) 100%);
 
     --sidebar-background: 0 0% 98%;
 
@@ -98,15 +99,15 @@ All colors MUST be HSL.
 
     --border: 252 40% 15%;
     --input: 252 40% 15%;
-    --ring: 280 46% 52%;
+    --ring: 268 64% 48%;
 
-    /* Race theme colors for dark mode */
-    --race-primary: 280 46% 52%;
-    --race-primary-dark: 280 50% 35%;
-    --race-primary-light: 280 40% 75%;
-    --race-secondary: 285 42% 58%;
-    --race-secondary-dark: 285 50% 38%;
-    --race-secondary-light: 285 35% 80%;
+    /* Race theme colors for dark mode (derived from #461a77) */
+    --race-primary: 268 64% 48%;
+    --race-primary-dark: 268 64% 34%;
+    --race-primary-light: 268 50% 72%;
+    --race-secondary: 268 54% 56%;
+    --race-secondary-dark: 268 54% 40%;
+    --race-secondary-light: 268 45% 78%;
     --race-accent: 260 50% 65%;
     --race-accent-light: 260 40% 85%;
     --race-neutral: 278 15% 60%;

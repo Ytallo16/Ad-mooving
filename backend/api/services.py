@@ -181,7 +181,7 @@ def send_payment_confirmation_email(registration):
         'contact_whatsapp': config('CONTACT_WHATSAPP', default='+55 86 92001-2341'),
         'email_type': 'payment'
     }
-    
+      
     # Renderiza o template HTML
     html_message = render_to_string('api/emails/payment_confirmation.html', context)
     

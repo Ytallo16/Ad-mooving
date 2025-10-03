@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Instagram } from "lucide-react";
+import { Instagram, Medal, Trophy, Cpu, Shirt, Hash } from "lucide-react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -16,6 +16,7 @@ import img259 from "../assets/ADDIRCEU-259.webp";
 import img196 from "../assets/ADDIRCEU-196.webp";
 import img319 from "../assets/ADDIRCEU-319.webp";
 import backInicial from "../assets/back_inicial.png";
+import backCell from "../assets/cell_back.png";
 
 const Index = () => {
   // Função para calcular o tempo restante
@@ -105,15 +106,22 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden h-[400px] md:h-[550px]">
+      <section className="relative overflow-hidden h-[400px] md:h-[550px] mt-16 md:mt-20">
+        {/* Background para desktop */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in"
+          className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in"
           style={{ backgroundImage: `url(${backInicial})`, backgroundSize: '100% 450px' }}
+        >
+        </div>
+        {/* Background para mobile */}
+        <div 
+          className="block md:hidden absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in"
+          style={{ backgroundImage: `url(${backCell})`, backgroundSize: 'cover' }}
         >
         </div>
         
         {/* Button at bottom of hero */}
-        <div className="absolute bottom-16 md:bottom-28 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute bottom-10 md:bottom-24 left-1/2 transform -translate-x-1/2 z-10">
           <Link to="/inscricoes">
             <Button 
               size="lg" 
@@ -125,7 +133,7 @@ const Index = () => {
         </div>
         
         {/* Cronômetro acima do botão */}
-        <div className="absolute bottom-40 md:bottom-60 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
+        <div className="absolute bottom-32 md:bottom-48 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
           <div className="inline-block" key={`${timeLeft.days}-${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}>
             <div className="flex gap-2 md:gap-8 text-white justify-center">
               <div className="text-center">
@@ -205,8 +213,10 @@ const Index = () => {
             >
               <div className="text-center">
                 <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  {/* Ícone de prancheta com lista (clipboard-list) */}
+                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 4h6a2 2 0 012 2v12a2 2 0 01-2 2H9a2 2 0 01-2-2V6a2 2 0 012-2z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 8h6M9 12h6M9 16h6" />
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-3 font-teko">Cronograma</h3>
@@ -553,8 +563,14 @@ const Index = () => {
               </div>
               <div className="text-center">
                 <div className="w-24 h-24 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1.5a1.5 1.5 0 011.5 1.5v.5a1.5 1.5 0 01-1.5 1.5H9m0 0v-4m6 0h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  {/* Ícone infantil: carinha de ursinho */}
+                  <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="8" cy="8" r="3" fill="currentColor"/>
+                    <circle cx="16" cy="8" r="3" fill="currentColor"/>
+                    <circle cx="12" cy="13" r="6" fill="currentColor"/>
+                    <circle cx="10" cy="12.5" r="1" fill="#3f3f46"/>
+                    <circle cx="14" cy="12.5" r="1" fill="#3f3f46"/>
+                    <path d="M10 15.5c.8.8 3.2.8 4 0" stroke="#3f3f46" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </svg>
                 </div>
                 <h3 className="text-3xl font-bold text-orange-600 mb-4 font-teko">Kids</h3>
@@ -594,8 +610,9 @@ const Index = () => {
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-8 md:p-10 border-2 border-emerald-200 hover:border-emerald-300 transition-all duration-300 hover:shadow-xl group">
               <div className="text-center">
                 <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7a4 4 0 11-8 0 4 4 0 018 0zM5 21v-2a4 4 0 014-4h6a4 4 0 014 4v2" />
+                  {/* Ícone caminhada: pegadas */}
+                  <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M7.5 2C5.6 2 4 3.6 4 5.5c0 1.2.6 2.4 1.4 3.8.5.9 1.1 1.8 1.7 2.7.2.3.6.3.8 0 .6-.9 1.2-1.8 1.7-2.7C10.4 7.9 11 6.7 11 5.5 11 3.6 9.4 2 7.5 2zM6 13c-1.7 0-3 1.3-3 3 0 1.4.9 2.6 2.2 3 .9.3 1.8.7 2.8 1 .2.1.4-.1.4-.3v-5.7C8.4 13.4 7.2 13 6 13zm10.5-11C14.6 2 13 3.6 13 5.5c0 1.2.6 2.4 1.4 3.8.5.9 1.1 1.8 1.7 2.7.2.3.6.3.8 0 .6-.9 1.2-1.8 1.7-2.7.8-1.4 1.4-2.6 1.4-3.8 0-1.9-1.6-3.5-3.5-3.5zM18 13c-1.2 0-2.4.4-3 1v5.7c0 .2.2.4.4.3 1-.3 1.9-.7 2.8-1 1.3-.4 2.2-1.6 2.2-3 0-1.7-1.3-3-3-3z"/>
                   </svg>
                 </div>
                 <h3 className="text-3xl font-bold text-emerald-700 mb-4 font-teko">Caminhada</h3>
@@ -685,43 +702,35 @@ const Index = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Camiseta */}
               <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-6 text-center border border-race-primary/20 hover:shadow-lg transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                  </svg>
-                </div>
+         <div className="w-16 h-16 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+           <Shirt className="w-8 h-8 text-white" />
+         </div>
                 <h4 className="text-xl font-bold text-race-primary mb-2 font-teko">Camiseta oficial</h4>
                 <p className="text-gray-600 text-sm">Modelo do evento</p>
               </div>
 
-              {/* Medalha */}
+              {/* Número de peito */}
               <div className="bg-gradient-to-br from-race-secondary/5 to-race-secondary/10 rounded-2xl p-6 text-center border border-race-secondary/20 hover:shadow-lg transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-race-secondary to-race-primary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                </div>
+         <div className="w-16 h-16 bg-gradient-to-br from-race-secondary to-race-primary rounded-full flex items-center justify-center mx-auto mb-4">
+           <Hash className="w-8 h-8 text-white" />
+         </div>
                 <h4 className="text-xl font-bold text-race-secondary mb-2 font-teko">Número de peito</h4>
                 <p className="text-gray-600 text-sm">Identificação oficial</p>
               </div>
 
-              {/* Número */}
+              {/* Chip de cronometragem */}
               <div className="bg-gradient-to-br from-green-50 to-green-100 rounded-2xl p-6 text-center border border-green-200 hover:shadow-lg transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
-                  </svg>
-                </div>
+         <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+           <Cpu className="w-8 h-8 text-white" />
+         </div>
                 <h4 className="text-xl font-bold text-green-600 mb-2 font-teko">Chip de cronometragem</h4>
                 <p className="text-gray-600 text-sm">Tempo oficial</p>
               </div>
               {/* Medalha pós-prova */}
               <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-2xl p-6 text-center border border-indigo-200 hover:shadow-lg transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
-                  </svg>
-                </div>
+         <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-4">
+           <Medal className="w-8 h-8 text-white" />
+         </div>
                 <h4 className="text-xl font-bold text-indigo-600 mb-2 font-teko">Medalha (pós-prova)</h4>
                 <p className="text-gray-600 text-sm">Premiação de participação</p>
               </div>
@@ -739,11 +748,9 @@ const Index = () => {
 
               {/* Troféus para vencedores das categorias */}
               <div className="bg-gradient-to-br from-pink-50 to-purple-100 rounded-2xl p-6 text-center border border-pink-200 hover:shadow-lg transition-all duration-300">
-                <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 21h8m-4-4v4m8-16h-3a5 5 0 01-10 0H2v2a5 5 0 005 5h10a5 5 0 005-5V5z" />
-                  </svg>
-                </div>
+         <div className="w-16 h-16 bg-gradient-to-br from-pink-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
+           <Trophy className="w-8 h-8 text-white" />
+         </div>
                 <h4 className="text-xl font-bold text-pink-700 mb-2 font-teko">Troféus para vencedores</h4>
                 <p className="text-gray-600 text-sm">Premiação para campeões por categoria</p>
               </div>
