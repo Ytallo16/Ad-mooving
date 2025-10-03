@@ -19,12 +19,33 @@ Guarde este número. Você precisará dele no dia da corrida.
 {% endif %}
 DETALHES DA INSCRIÇÃO
 =====================
+{% if registration.modality == 'INFANTIL' %}
+DADOS DA CRIANÇA
+-----------------
+Nome da Criança: {{ registration.full_name }}
+CPF da Criança: {{ registration.cpf }}
+Email da Criança: {{ registration.email }}
+Telefone da Criança: {{ registration.phone }}
+Data de Nascimento: {{ registration.birth_date|date:"d/m/Y" }}
+Sexo: {{ registration.get_gender_display }}
+Tamanho da Camisa: {{ registration.get_shirt_size_display }}
+
+DADOS DO RESPONSÁVEL
+--------------------
+Nome do Responsável: {{ registration.responsible_full_name }}
+CPF do Responsável: {{ registration.responsible_cpf }}
+Email do Responsável: {{ registration.responsible_email }}
+Telefone do Responsável: {{ registration.responsible_phone }}
+{% else %}
 Nome: {{ registration.full_name }}
 CPF: {{ registration.cpf }}
 Email: {{ registration.email }}
 Telefone: {{ registration.phone }}
-Modalidade: {{ course_display }}
+Data de Nascimento: {{ registration.birth_date|date:"d/m/Y" }}
+Sexo: {{ registration.get_gender_display }}
 Tamanho da Camisa: {{ registration.get_shirt_size_display }}
+{% endif %}
+Modalidade: {{ course_display }}
 
 PRÓXIMOS PASSOS
 ===============

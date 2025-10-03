@@ -95,6 +95,62 @@
 
         <h3>Detalhes da Inscrição</h3>
         <table class="details-table">
+            {% if registration.modality == 'INFANTIL' %}
+            <!-- Dados da Criança -->
+            <tr>
+                <th colspan="2" style="background-color: #e3f2fd; font-weight: bold; text-align: center;">DADOS DA CRIANÇA</th>
+            </tr>
+            <tr>
+                <th>Nome da Criança</th>
+                <td>{{ registration.full_name }}</td>
+            </tr>
+            <tr>
+                <th>CPF da Criança</th>
+                <td>{{ registration.cpf }}</td>
+            </tr>
+            <tr>
+                <th>Email da Criança</th>
+                <td>{{ registration.email }}</td>
+            </tr>
+            <tr>
+                <th>Telefone da Criança</th>
+                <td>{{ registration.phone }}</td>
+            </tr>
+            <tr>
+                <th>Data de Nascimento</th>
+                <td>{{ registration.birth_date|date:"d/m/Y" }}</td>
+            </tr>
+            <tr>
+                <th>Sexo</th>
+                <td>{{ registration.get_gender_display }}</td>
+            </tr>
+            <tr>
+                <th>Tamanho da Camisa</th>
+                <td>{{ registration.get_shirt_size_display }}</td>
+            </tr>
+            
+            <!-- Dados do Responsável -->
+            <tr>
+                <th colspan="2" style="background-color: #f3e5f5; font-weight: bold; text-align: center;">DADOS DO RESPONSÁVEL</th>
+            </tr>
+            <tr>
+                <th>Nome do Responsável</th>
+                <td>{{ registration.responsible_full_name }}</td>
+            </tr>
+            <tr>
+                <th>CPF do Responsável</th>
+                <td>{{ registration.responsible_cpf }}</td>
+            </tr>
+            <tr>
+                <th>Email do Responsável</th>
+                <td>{{ registration.responsible_email }}</td>
+            </tr>
+            <tr>
+                <th>Telefone do Responsável</th>
+                <td>{{ registration.responsible_phone }}</td>
+            </tr>
+            {% else %}
+            <!-- Dados do Adulto -->
             <tr>
                 <th>Nome Completo</th>
                 <td>{{ registration.full_name }}</td>
@@ -112,12 +168,21 @@
                 <td>{{ registration.phone }}</td>
             </tr>
             <tr>
-                <th>Modalidade</th>
-                <td>{{ course_display }}</td>
+                <th>Data de Nascimento</th>
+                <td>{{ registration.birth_date|date:"d/m/Y" }}</td>
+            </tr>
+            <tr>
+                <th>Sexo</th>
+                <td>{{ registration.get_gender_display }}</td>
             </tr>
             <tr>
                 <th>Tamanho da Camisa</th>
                 <td>{{ registration.get_shirt_size_display }}</td>
+            </tr>
+            {% endif %}
+            <tr>
+                <th>Modalidade</th>
+                <td>{{ course_display }}</td>
             </tr>
         </table>
 
