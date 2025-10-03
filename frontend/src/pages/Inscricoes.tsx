@@ -28,6 +28,7 @@ const Inscricoes = () => {
   const [showPixModal, setShowPixModal] = useState(false);
   const [pixStatus, setPixStatus] = useState<'pending' | 'checking' | 'paid' | 'expired'>('pending');
   const [pollingInterval, setPollingInterval] = useState<NodeJS.Timeout | null>(null);
+  const [showFreeModal, setShowFreeModal] = useState(false);
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponMessage, setCouponMessage] = useState("");
@@ -275,6 +276,33 @@ const Inscricoes = () => {
         const result = parsedJson;
         console.log('Resultado da API:', result);
         
+        // Se backend marcou como auto pago (cupom 100%), pular pagamento e mostrar modal de gratuidade
+        if (result?.payment?.auto_paid) {
+          setRegistrationData(result);
+          setShowFreeModal(true);
+          // Resetar formulário
+          setFormData({
+            full_name: "",
+            cpf: "",
+            email: "",
+            phone: "",
+            birth_date: "",
+            gender: "",
+            course: "RUN_5K",
+            modality: "ADULTO",
+            shirt_size: "",
+            responsible_full_name: "",
+            responsible_cpf: "",
+            responsible_email: "",
+            responsible_phone: "",
+            athlete_declaration: false
+          });
+          setCouponCode("");
+          setCouponDiscount(0);
+          setIsCouponValid(false);
+          return;
+        }
+
         // Salvar dados da inscrição e mostrar modal de pagamento
         setRegistrationData(result);
         setShowPaymentModal(true);
@@ -398,6 +426,15 @@ const Inscricoes = () => {
 
         const data = await resp.json();
         console.log('DEBUG FRONTEND: Resposta create-session', resp.status, data);
+
+        if (resp.ok && data?.success && data?.auto_paid) {
+          toast({
+            title: "Inscrição confirmada! 🎉",
+            description: "Cupom de gratuidade aplicado. Seu pagamento foi confirmado automaticamente.",
+          });
+          navigate('/pagamento/sucesso', { replace: true, state: { paidVia: 'coupon' } });
+          return;
+        }
 
         if (resp.ok && data?.success && data?.checkout_url) {
           window.location.href = data.checkout_url;
@@ -560,6 +597,11 @@ const Inscricoes = () => {
     setShowPaymentModal(false);
     setSelectedPaymentMethod(null);
     setRegistrationData(null);
+  };
+
+  const handleCloseFreeModal = () => {
+    setShowFreeModal(false);
+    navigate('/', { replace: true });
   };
 
   // Restringe digitacao a apenas numeros (permite teclas de controle)
@@ -1206,6 +1248,26 @@ const Inscricoes = () => {
             >
               {pixStatus === 'paid' ? 'Fechar' : 'Cancelar'}
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Inscrição Gratuita */}
+      <Dialog open={showFreeModal} onOpenChange={setShowFreeModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl font-teko">Inscrição gratuita registrada</DialogTitle>
+            <DialogDescription className="text-center">
+              Seu cupom de 100% foi aplicado e sua inscrição foi confirmada automaticamente.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-green-50 border border-green-200 text-green-900 rounded-lg p-4">
+              ✅ Você receberá um email de confirmação com os detalhes da inscrição.
+            </div>
+          </div>
+          <DialogFooter>
+            <Button onClick={handleCloseFreeModal} className="w-full">Ok</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

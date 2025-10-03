@@ -15,6 +15,7 @@ const motion = {
 import img259 from "../assets/ADDIRCEU-259.webp";
 import img196 from "../assets/ADDIRCEU-196.webp";
 import img319 from "../assets/ADDIRCEU-319.webp";
+import backInicial from "../assets/back_inicial.png";
 
 const Index = () => {
   // Função para calcular o tempo restante
@@ -107,16 +108,16 @@ const Index = () => {
       <section className="relative overflow-hidden h-[400px] md:h-[550px]">
         <div 
           className="absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in"
-          style={{ backgroundImage: `url("/Fundo (4).png")`, backgroundSize: 'cover' }}
+          style={{ backgroundImage: `url(${backInicial})`, backgroundSize: '100% 450px' }}
         >
         </div>
         
         {/* Button at bottom of hero */}
-        <div className="absolute bottom-4 md:bottom-8 left-1/2 transform -translate-x-1/2 z-10">
+        <div className="absolute bottom-16 md:bottom-28 left-1/2 transform -translate-x-1/2 z-10">
           <Link to="/inscricoes">
             <Button 
               size="lg" 
-              className="bg-race-primary hover:bg-race-primary-dark text-white text-sm md:text-lg px-4 md:px-8 py-2 md:py-4 shadow-lg"
+              className="bg-race-primary hover:bg-race-primary-dark text-white text-sm md:text-lg px-4 md:px-8 py-2 md:py-4 shadow-lg motion-safe:animate-bounce"
             >
               Inscreva-se
             </Button>
@@ -124,7 +125,7 @@ const Index = () => {
         </div>
         
         {/* Cronômetro acima do botão */}
-        <div className="absolute bottom-24 md:bottom-40 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
+        <div className="absolute bottom-40 md:bottom-60 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
           <div className="inline-block" key={`${timeLeft.days}-${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}>
             <div className="flex gap-2 md:gap-8 text-white justify-center">
               <div className="text-center">

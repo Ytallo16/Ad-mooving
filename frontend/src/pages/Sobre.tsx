@@ -4,7 +4,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
 import LeafletMap, { pontosInteresse as defaultPontos } from "@/components/LeafletMap";
-import backTitulo from "../assets/back_titulo.png";
+import backTitulo from "../assets/back_com_efeito.png";
 
 const Sobre = () => {
   const [pontoSelecionado, setPontoSelecionado] = useState<number | null>(null);
@@ -13,17 +13,17 @@ const Sobre = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <Navbar />
       {/* Header estilo Patrocinadores */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 min-h-[360px]">
-        <div className="absolute inset-0 bg-black/5" />
+      <div className="relative overflow-hidden h-[360px]">
         <div
-          className="absolute inset-0 opacity-50"
+          className="absolute inset-0"
           style={{
             backgroundImage: `url(${backTitulo})`,
-            backgroundRepeat: "repeat",
-            backgroundPosition: "0 0",
+            backgroundRepeat: "repeat-x",
+            backgroundSize: "2283px 300px",
+            backgroundPosition: "-10px 60px",
           }}
         />
-        <div className="relative px-4 pt-40 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="relative h-full px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -94,7 +94,7 @@ const Sobre = () => {
                     { hora: '05:20h', desc: 'Concentração' },
                     { hora: '05:40h', desc: 'Aquecimento' },
                     { hora: '06h', desc: 'Largada' },
-                    { hora: '07:30h-09:30h', desc: 'Cerimônia de premiação' },
+                    { hora: '07:30h', desc: 'Cerimônia de premiação' },
                   ].map((item) => (
                     <li key={item.hora} className="relative">
                       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">

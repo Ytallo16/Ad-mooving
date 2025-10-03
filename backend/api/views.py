@@ -297,11 +297,17 @@ class RaceRegistrationViewSet(ModelViewSet):
                 if payment_result['success']:
                     # Retorna os dados da inscrição + dados do pagamento
                     response_data = serializer.data
-                    response_data['payment'] = {
-                        'checkout_url': payment_result['checkout_url'],
-                        'session_id': payment_result['session_id'],
-                        'amount': payment_result['amount']
-                    }
+                    if payment_result.get('auto_paid'):
+                        response_data['payment'] = {
+                            'auto_paid': True,
+                            'amount': 0.0
+                        }
+                    else:
+                        response_data['payment'] = {
+                            'checkout_url': payment_result['checkout_url'],
+                            'session_id': payment_result['session_id'],
+                            'amount': payment_result['amount']
+                        }
                     
                     print(f"DEBUG: Resposta final: {response_data}")
                     headers = self.get_success_headers(serializer.data)

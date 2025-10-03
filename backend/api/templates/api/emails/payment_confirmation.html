@@ -117,7 +117,7 @@
             </tr>
             <tr>
                 <th>Tamanho da Camisa</th>
-                <td>{% if registration.modality == 'INFANTIL' %}{{ registration.get_shirt_size_display }}{% else %}{{ registration.get_shirt_size_display }}{% endif %}</td>
+                <td>{{ registration.get_shirt_size_display }}</td>
             </tr>
         </table>
 
@@ -131,9 +131,11 @@
 
         <h3>Kit do atleta</h3>
         <ul>
-            <li>Camiseta da corrida</li>
+            <li>Camiseta oficial</li>
             <li>Número de peito</li>
-            <li>Instruções do evento</li>
+            <li>Chip de cronometragem</li>
+            <li>Medalha (pós-prova)</li>
+            <li>Sacochila</li>
         </ul>
 
         <h3>Detalhes da Corrida</h3>

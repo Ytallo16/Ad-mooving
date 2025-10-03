@@ -31,6 +31,15 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
+    # Cupom de inscrição 100% grátis (auto-confirma sem pagamento)
+    'GRATIS': {
+        # discount_amount será calculado dinamicamente conforme modalidade
+        'description': 'Inscrição gratuita (100%)',
+        'valid_for_kids': True,
+        'valid_for_adult': True,
+        'is_active': True,
+        'free': True,
+    },
     # Adicione mais cupons aqui conforme necessário
     # 'PROMO20': {
     #     'discount_amount': 10.00,
@@ -57,14 +66,27 @@ def validate_coupon_code(coupon_code, modality=None):
     
     if not coupon.get('is_active', False):
         return False, "Cupom inativo", 0
-    
+
     # Verificar modalidade
     if modality:
         if modality == 'INFANTIL' and not coupon.get('valid_for_kids', True):
             return False, "Cupom não válido para modalidade Kids", 0
         elif modality == 'ADULTO' and not coupon.get('valid_for_adult', True):
             return False, "Cupom não válido para modalidade Adulto", 0
-    
+
+    # Cupom de gratuidade total: calcula desconto igual ao valor da modalidade
+    if coupon.get('free'):
+        try:
+            prices = get_race_prices()
+            if modality in prices:
+                return True, "Cupom válido", float(prices[modality]['amount_brl'])
+            # Se modalidade não fornecida, usar o maior valor entre as modalidades
+            max_amount = max(float(v['amount_brl']) for v in prices.values())
+            return True, "Cupom válido", max_amount
+        except Exception:
+            # Fallback conservador
+            return True, "Cupom válido", 9999.0
+
     return True, "Cupom válido", coupon['discount_amount']
 
 
@@ -156,7 +178,7 @@ def send_payment_confirmation_email(registration):
         'payment_date': local_payment_dt.strftime('%d/%m/%Y às %H:%M'),
         'course_display': course_display,
         'contact_email': config('CONTACT_EMAIL', default='admoving@addirceu.com.br'),
-        'contact_whatsapp': config('CONTACT_WHATSAPP', default='+55 86 9410-8906'),
+        'contact_whatsapp': config('CONTACT_WHATSAPP', default='+55 86 92001-2341'),
         'email_type': 'payment'
     }
     
@@ -294,6 +316,22 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
         else:
             print("DEBUG CUPOM: Nenhum cupom fornecido")
         
+        # Se valor final for zero, marcar como pago e retornar fluxo de auto-confirmação
+        if amount == 0:
+            try:
+                # Garantir persistência do valor/infos no registro
+                registration.payment_amount = 0
+                registration.save(update_fields=['payment_amount'])
+            except Exception:
+                pass
+            # Marca como pago de forma idempotente
+            mark_registration_paid_atomic(registration.id, amount_reais=0.0)
+            return {
+                'success': True,
+                'auto_paid': True,
+                'amount': 0.0
+            }
+
         # URLs de redirecionamento pós-checkout
         # Regra:
         #  - Produção: usar domínio do site
@@ -613,6 +651,20 @@ def create_abacatepay_pix(registration, coupon_code: str | None = None):
                 import traceback
                 traceback.print_exc()
         
+        # Se valor final for zero, marcar como pago e retornar fluxo de auto-confirmação
+        if amount == 0:
+            try:
+                registration.payment_amount = 0
+                registration.save(update_fields=['payment_amount'])
+            except Exception:
+                pass
+            mark_registration_paid_atomic(registration.id, amount_reais=0.0)
+            return {
+                'success': True,
+                'auto_paid': True,
+                'amount': 0.0
+            }
+
         # Preparar payload para AbacatePay
         payload = {
             "amount": amount,  # em centavos

@@ -24,7 +24,7 @@ CPF: {{ registration.cpf }}
 Email: {{ registration.email }}
 Telefone: {{ registration.phone }}
 Modalidade: {{ course_display }}
-Tamanho da Camisa: {% if registration.modality == 'INFANTIL' %}{{ registration.get_shirt_size_display }}{% else %}{{ registration.get_shirt_size_display }}{% endif %}
+Tamanho da Camisa: {{ registration.get_shirt_size_display }}
 
 PRÓXIMOS PASSOS
 ===============
@@ -35,9 +35,11 @@ PRÓXIMOS PASSOS
 
 KIT DO ATLETA
 =============
-- Camiseta da corrida
+- Camiseta oficial
 - Número de peito
-- Instruções do evento
+- Chip de cronometragem
+- Medalha (pós-prova)
+- Sacochila
 
 DETALHES DA CORRIDA
 ===================

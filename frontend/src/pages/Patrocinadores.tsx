@@ -4,7 +4,7 @@ import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
 import { Card, CardContent } from "@/components/ui/card";
 import { Instagram, MessageCircle } from "lucide-react";
-import backTitulo from "../assets/back_titulo.png";
+import backTitulo from "../assets/back_com_efeito.png";
 
 // Ícone personalizado do WhatsApp
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -14,9 +14,12 @@ const WhatsAppIcon = ({ className }: { className?: string }) => (
 );
 import logoCleiton from "@/assets/logo_cleiton_cell.webp";
 import backgroundCleiton from "@/assets/background_cleiton_cell.webp";
+import cleitonBackground from "@/assets/cleiton_cel.png";
 import rapidexLogo from "@/assets/rapidex.svg";
-import backgroundRapidex from "@/assets/RAPIDEXLOGO.webp";
+import rapidexBackground from "@/assets/rapidex.png";
 import ebenezerLogo from "@/assets/ebenezer_logo.webp";
+import ebenezerBackground from "@/assets/ebenezer.png";
+import coisaDeCrenteBackground from "@/assets/coisa_de_crente.png";
 
 interface Patrocinador {
   id: number;
@@ -26,8 +29,10 @@ interface Patrocinador {
   instagram?: string; // @usuario
   whatsapp?: string; // número em formato local
   backgroundImage?: string; // imagem de fundo
+  backgroundFit?: 'cover' | 'contain'; // ajuste de escala
   logoBgClass?: string; // classe para fundo do logo
   logoImgClass?: string; // classe para ajustar tamanho/contraste do logo
+  overlayClass?: string; // classe para ajustar a opacidade do overlay do header
 }
 
 const patrocinadores: Patrocinador[] = [
@@ -38,9 +43,11 @@ const patrocinadores: Patrocinador[] = [
     descricao: "Especialista em assistência técnica de celulares e smartphones.",
     instagram: "cleitoncellprimeoficial",
     whatsapp: "(86) 8826-1642",
-    backgroundImage: backgroundCleiton,
+    backgroundImage: cleitonBackground,
+    backgroundFit: 'contain',
     logoBgClass: "bg-black p-3",
-    logoImgClass: "w-24 h-24 scale-110"
+    logoImgClass: "w-24 h-24 scale-110",
+    overlayClass: "bg-black/0"
   },
   {
     id: 2,
@@ -51,7 +58,8 @@ const patrocinadores: Patrocinador[] = [
     whatsapp: "(86) 99984-50005",
     logoImgClass: "w-24 h-24 scale-110",
     logoBgClass: "bg-black/80 p-3",
-    backgroundImage: backgroundRapidex
+    backgroundImage: rapidexBackground,
+    backgroundFit: 'contain'
   },
   {
     id: 3,
@@ -61,7 +69,22 @@ const patrocinadores: Patrocinador[] = [
     instagram: "livrariaebenezer01",
     whatsapp: "(86) 9919-4554",
     logoImgClass: "w-24 h-24 scale-110",
-    logoBgClass: "bg-white p-3"
+    logoBgClass: "bg-white p-3",
+    backgroundImage: ebenezerBackground,
+    backgroundFit: 'contain'
+  },
+  {
+    id: 4,
+    nome: "Coisa de Crente",
+    logo: coisaDeCrenteBackground,
+    descricao: "Loja de artigos cristãos.",
+    instagram: "coisadecrentestore",
+    whatsapp: "(86) 9966-6330",
+    logoImgClass: "w-24 h-24 scale-110",
+    logoBgClass: "bg-white p-3",
+    backgroundImage: coisaDeCrenteBackground,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
   }
 ];
 
@@ -93,17 +116,17 @@ const Patrocinadores = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
       <Navbar />
       {/* Header */}
-      <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-700 min-h-[360px]">
-        <div className="absolute inset-0 bg-black/5" />
+      <div className="relative overflow-hidden h-[360px]">
         <div
-          className="absolute inset-0 opacity-50"
+          className="absolute inset-0"
           style={{
             backgroundImage: `url(${backTitulo})`,
-            backgroundRepeat: "repeat",
-            backgroundPosition: "0 0",
+            backgroundRepeat: "repeat-x",
+            backgroundSize: "2283px 300px",
+            backgroundPosition: "-10px 60px",
           }}
         />
-        <div className="relative px-4 pt-40 pb-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="relative h-full px-4 mx-auto max-w-7xl sm:px-6 lg:px-8 flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -118,49 +141,37 @@ const Patrocinadores = () => {
 
       
 
-      {/* Filtros removidos: listagem simples */}
+      {/* Área de Patrocinadores com imagem de fundo */}
+      <div className="relative">
+        
 
-      {/* Lista de Patrocinadores */}
-      <motion.div
-        variants={containerVariants}
-        initial="hidden"
-        animate="visible"
-        className="px-4 pb-16 mx-auto max-w-6xl sm:px-6 lg:px-8"
-      >
+        {/* Lista de Patrocinadores */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="relative px-4 pb-16 mx-auto max-w-6xl sm:px-6 lg:px-8"
+        >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {listaFinal.map((p) => (
             <div key={p.id} className="h-full">
-              <Card className="h-[320px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 bg-white flex flex-col">
+              <Card className="h-[360px] overflow-hidden shadow-sm hover:shadow-lg transition-all duration-200 border border-gray-200 bg-white flex flex-col">
                 <div 
-                  className={`h-32 p-5 flex items-center ${p.backgroundImage ? 'relative' : 'bg-[linear-gradient(135deg,#0b1e3a,#0a2348)]'}`}
+                  className={`h-40 p-5 flex items-center ${p.backgroundImage ? 'relative' : 'bg-[linear-gradient(135deg,#0b1e3a,#0a2348)]'}`}
                   style={p.backgroundImage ? { 
                     backgroundImage: `url(${p.backgroundImage})`,
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center'
+                    backgroundSize: p.backgroundFit === 'contain' ? 'contain' : 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: p.backgroundFit === 'contain' ? 'no-repeat' : 'no-repeat'
                   } : {}}
                 >
                   {p.backgroundImage && (
-                    <div className="absolute inset-0 bg-black/40 rounded-t-lg"></div>
+                    <div className={`absolute inset-0 ${p.overlayClass ?? 'bg-black/0'} rounded-t-lg`}></div>
                   )}
-                  <div className="flex items-center gap-4 relative z-10">
-                    <div className={`${p.logoBgClass ?? (p.backgroundImage ? 'bg-white/90 p-2' : 'bg-white/20 p-2')} rounded-lg backdrop-blur-sm`}>
-                      {p.logo.includes('http') || p.logo.includes('.') ? (
-                        <img 
-                          src={p.logo} 
-                          alt={`Logo ${p.nome}`}
-                          className={`${p.logoImgClass ?? 'w-10 h-10'} object-contain`}
-                        />
-                      ) : (
-                        <span className={`${p.logoImgClass ?? 'w-10 h-10'} flex items-center justify-center text-6xl`}>{p.logo}</span>
-                      )}
-                    </div>
-                    <div>
-                      <h3 className={`text-xl font-bold ${p.backgroundImage ? 'text-white' : 'text-white'}`}>{p.nome}</h3>
-                      <p className={`text-sm ${p.backgroundImage ? 'text-gray-200' : 'text-blue-100'}`}>Patrocinador oficial</p>
-                    </div>
-                  </div>
+                  {/* Cabeçalho sem conteúdo: apenas background */}
                 </div>
                 <CardContent className="p-6 space-y-2 flex-1 flex flex-col">
+                  <h3 className="text-xl font-semibold text-gray-900">{p.nome}</h3>
                   <p className="text-gray-700 leading-relaxed">{p.descricao}</p>
 
                   {(p.instagram || p.whatsapp) && (
@@ -196,7 +207,8 @@ const Patrocinadores = () => {
             </div>
           ))}
         </div>
-      </motion.div>
+        </motion.div>
+      </div>
 
       {/* CTA Section removida para simplificar a página */}
       
