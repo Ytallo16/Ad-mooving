@@ -33,8 +33,8 @@ ALLOWED_HOSTS = [
     "localhost",
     "127.0.0.1",
     "0.0.0.0",  # Para Docker
-    "api.admoving.demo.addirceu.com.br",  # Domínio da API
-    "admoving.demo.addirceu.com.br",  # Domínio principal (caso precise)
+    "api.admoving.addirceu.com.br",  # Domínio da API
+    "admoving.addirceu.com.br",  # Domínio principal (caso precise)
 ]
 
 
@@ -181,7 +181,7 @@ SPECTACULAR_SETTINGS = {
     ],
     'CONTACT': {
         'name': 'Ad-mooving Team',
-        'email': 'contato@ad-mooving.com',
+        'email': 'admoving@addirceu.com.br',
     },
     'LICENSE': {
         'name': 'MIT License',
@@ -215,8 +215,8 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     
     # Domínio de produção
-    "https://admoving.demo.addirceu.com.br",  # Site principal
-    "https://api.admoving.demo.addirceu.com.br",  # API (caso precise)
+    "https://admoving.addirceu.com.br",  # Site principal
+    "https://api.admoving.addirceu.com.br",  # API (caso precise)
 ]
 
 CORS_ALLOW_CREDENTIALS = True

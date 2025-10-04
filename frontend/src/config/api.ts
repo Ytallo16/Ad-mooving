@@ -1,5 +1,5 @@
 // Configuração da API com fallback em runtime
-const PRIMARY_BASE_URL = 'https://api.admoving.demo.addirceu.com.br';
+const PRIMARY_BASE_URL = 'https://api.admoving.addirceu.com.br';
 const FALLBACK_BASE_URL = 'http://127.0.0.1:8000';
 
 export const API_CONFIG = {

@@ -336,7 +336,7 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
         # Regra:
         #  - Produção: usar domínio do site
         #  - Local: redirecionar para o frontend (por padrão :5173), não para o backend :8000
-        prod_frontend_base = 'https://admoving.demo.addirceu.com.br'
+        prod_frontend_base = 'https://admoving.addirceu.com.br'
         # Permite sobrescrever via env
         frontend_env_base = (config('FRONTEND_BASE_URL', default='') or '').rstrip('/') or None
         public_env_base = (config('PUBLIC_BASE_URL', default='') or '').rstrip('/') or None

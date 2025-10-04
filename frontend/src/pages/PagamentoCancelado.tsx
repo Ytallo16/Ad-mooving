@@ -71,7 +71,7 @@ const PagamentoCancelado = () => {
                 <div className="space-y-2 text-sm text-gray-700">
                   <p>Entre em contato conosco:</p>
                   <p><strong>WhatsApp:</strong> +55 86 9410-8906</p>
-                  <p><strong>Email:</strong> contato@ad-mooving.com</p>
+                  <p><strong>Email:</strong> admoving@addirceu.com.br</p>
                   <p>Horário de atendimento: 8h às 18h</p>
                 </div>
               </div>
