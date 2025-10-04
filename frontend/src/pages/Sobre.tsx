@@ -3,11 +3,11 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InstagramFloat from "@/components/InstagramFloat";
-import LeafletMap, { pontosInteresse as defaultPontos } from "@/components/LeafletMap";
+// import LeafletMap, { pontosInteresse as defaultPontos } from "@/components/LeafletMap";
 import backTitulo from "../assets/back_com_efeito.png";
 
 const Sobre = () => {
-  const [pontoSelecionado, setPontoSelecionado] = useState<number | null>(null);
+  // const [pontoSelecionado, setPontoSelecionado] = useState<number | null>(null);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
@@ -41,7 +41,8 @@ const Sobre = () => {
       <section className="py-12">
         <div className="container mx-auto px-4">
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Mapa comentado temporariamente */}
+          {/* <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-1">
               <div className="bg-white rounded-2xl border border-gray-200 p-6">
                 <h3 className="text-xl font-bold text-race-primary mb-4 font-teko">Pontos do Percurso</h3>
@@ -81,7 +82,7 @@ const Sobre = () => {
                 />
               </div>
             </div>
-          </div>
+          </div> */}
 
           {/* Seções grandes e espaçosas */}
           {/* Cronograma - faixa ampla revisada (alinhamento simétrico) */}
