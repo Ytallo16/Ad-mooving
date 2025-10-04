@@ -683,6 +683,11 @@ const Inscricoes = () => {
             <h1 className="text-5xl font-bold text-race-primary mb-6 bg-gradient-to-r from-race-primary to-race-secondary bg-clip-text text-transparent">
               Inscrições ADMOVING
             </h1>
+            <div className="mb-6">
+              <span className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-full text-lg font-bold shadow-lg animate-pulse">
+                1º LOTE - Valores Promocionais
+              </span>
+            </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Preencha o formulário abaixo para se inscrever na corrida e fazer parte desta experiência única
             </p>

@@ -106,7 +106,7 @@ const Index = () => {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative overflow-hidden h-[400px] md:h-[550px] mt-16 md:mt-20">
+      <section className="relative overflow-hidden h-[400px] md:h-[550px] mt-16 md:mt-0">
         {/* Background para desktop */}
         <div 
           className="hidden md:block absolute inset-0 bg-cover bg-center bg-no-repeat animate-fade-in"
@@ -120,20 +120,9 @@ const Index = () => {
         >
         </div>
         
-        {/* Button at bottom of hero */}
-        <div className="absolute bottom-10 md:bottom-24 left-1/2 transform -translate-x-1/2 z-10">
-          <Link to="/inscricoes">
-            <Button 
-              size="lg" 
-              className="bg-race-primary hover:bg-race-primary-dark text-white text-sm md:text-lg px-4 md:px-8 py-2 md:py-4 shadow-lg motion-safe:animate-bounce"
-            >
-              Inscreva-se
-            </Button>
-          </Link>
-        </div>
         
-        {/* Cronômetro acima do botão */}
-        <div className="absolute bottom-32 md:bottom-48 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
+        {/* Cronômetro */}
+        <div className="absolute bottom-20 md:bottom-44 left-1/2 transform -translate-x-1/2 z-10 text-center px-4">
           <div className="inline-block" key={`${timeLeft.days}-${timeLeft.hours}-${timeLeft.minutes}-${timeLeft.seconds}`}>
             <div className="flex gap-2 md:gap-8 text-white justify-center">
               <div className="text-center">
@@ -514,7 +503,12 @@ const Index = () => {
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
             {/* 5km Corrida */}
-            <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-8 md:p-10 border-2 border-race-primary/20 hover:border-race-primary/40 transition-all duration-300 hover:shadow-xl group">
+            <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-8 md:p-10 border-2 border-race-primary/20 hover:border-race-primary/40 transition-all duration-300 hover:shadow-xl group relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-race-primary to-race-secondary text-white px-4 py-1 rounded-full text-sm font-bold">
+                  1º LOTE
+                </span>
+              </div>
               <div className="text-center">
                 <div className="w-24 h-24 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
                   <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -607,7 +601,12 @@ const Index = () => {
             </div>
 
             {/* Caminhada */}
-            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-8 md:p-10 border-2 border-emerald-200 hover:border-emerald-300 transition-all duration-300 hover:shadow-xl group">
+            <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-8 md:p-10 border-2 border-emerald-200 hover:border-emerald-300 transition-all duration-300 hover:shadow-xl group relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-1 rounded-full text-sm font-bold">
+                  1º LOTE
+                </span>
+              </div>
               <div className="text-center">
                 <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
                   {/* Ícone caminhada: pegadas */}

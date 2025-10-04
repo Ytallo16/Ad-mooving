@@ -32,7 +32,7 @@ AVAILABLE_COUPONS = {
         'is_active': True,
     },
     # Cupom de inscrição 100% grátis (auto-confirma sem pagamento)
-    'GRATIS': {
+    'K7M9P2X4': {
         # discount_amount será calculado dinamicamente conforme modalidade
         'description': 'Inscrição gratuita (100%)',
         'valid_for_kids': True,
