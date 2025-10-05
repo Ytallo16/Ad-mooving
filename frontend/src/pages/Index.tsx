@@ -17,6 +17,7 @@ import img196 from "../assets/ADDIRCEU-196.webp";
 import img319 from "../assets/ADDIRCEU-319.webp";
 import backInicial from "../assets/back_inicial.png";
 import backCell from "../assets/cell_back.png";
+import kitFull from "@/assets/kit_full.png";
 
 const Index = () => {
   // Função para calcular o tempo restante
@@ -531,7 +532,7 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Medalha de participação</span>
+                    <span className="text-gray-700 font-medium">Medalha</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -589,7 +590,7 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Acompanhado por responsável legal</span>
+                    <span className="text-gray-700 font-medium">Percurso monitorado</span>
                   </div>
                 </div>
                 <Link to="/inscricoes?course=KIDS">
@@ -630,7 +631,7 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Medalha de participação</span>
+                    <span className="text-gray-700 font-medium">Medalha</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
@@ -665,13 +666,13 @@ const Index = () => {
             <div className="mb-12">
               <div className="relative bg-gradient-to-br from-race-primary/5 to-race-secondary/5 rounded-3xl p-8 md:p-12 shadow-2xl">
                 <div className="text-center mb-8">
-                  <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-2 font-teko">Camiseta Oficial</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold text-race-primary mb-2 font-teko">Kit Oficial</h3>
                 </div>
                 
                 <div className="relative max-w-md mx-auto">
                   <img 
-                    src="/kit.jpeg" 
-                    alt="Kit do Corredor ADMOVING - Camiseta Oficial" 
+                    src={kitFull} 
+                    alt="Kit do Atleta ADMOVING - 2ª Edição" 
                     className="w-full h-auto rounded-2xl shadow-xl transform hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
                       (e.currentTarget as HTMLImageElement).style.display = 'none';
@@ -686,9 +687,7 @@ const Index = () => {
                       
                     </div>
                   </div>
-                  <div className="absolute -top-4 -right-4 bg-gradient-to-r from-race-primary to-race-secondary text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">
-                    OFICIAL
-                  </div>
+                  {/* Badge removido a pedido: selo "OFICIAL" no canto superior direito */}
                 </div>
                 
                 <div className="mt-8 text-center">
