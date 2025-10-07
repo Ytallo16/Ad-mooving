@@ -1074,7 +1074,7 @@ const Inscricoes = () => {
             </div>
 
             {/* Opção PIX */}
-            <div 
+            {/* <div 
               className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                 selectedPaymentMethod === 'pix' 
                   ? 'border-race-primary bg-race-primary/5' 
@@ -1104,7 +1104,7 @@ const Inscricoes = () => {
                   )}
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
 
           {/* Resumo do Valor */}
