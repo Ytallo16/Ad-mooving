@@ -727,7 +727,7 @@ const Inscricoes = () => {
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Data:</span>
-                    <span className="text-sm text-muted-foreground">14 de Dezembro, 2024</span>
+                    <span className="text-sm text-muted-foreground">14 de Dezembro, 2025</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Horário:</span>
@@ -1074,7 +1074,7 @@ const Inscricoes = () => {
             </div>
 
             {/* Opção PIX */}
-            {/* <div 
+            <div 
               className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                 selectedPaymentMethod === 'pix' 
                   ? 'border-race-primary bg-race-primary/5' 
@@ -1104,7 +1104,7 @@ const Inscricoes = () => {
                   )}
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
 
           {/* Resumo do Valor */}
