@@ -17,7 +17,7 @@ import img196 from "../assets/ADDIRCEU-196.webp";
 import img319 from "../assets/ADDIRCEU-319.webp";
 import backInicial from "../assets/back_inicial.png";
 import backCell from "../assets/cell_back.png";
-import kitFull from "@/assets/kit_full.png";
+import kitFull from "@/assets/KIT DO ATLETA OFICIAL.png";
 
 const Index = () => {
   // Função para calcular o tempo restante
