@@ -97,6 +97,7 @@ const Inscricoes = () => {
         { value: '6', label: '6 anos' },
         { value: '8', label: '8 anos' },
         { value: '10', label: '10 anos' },
+        { value: '12', label: '12 anos' },
       ];
     }
     return [
@@ -873,7 +874,7 @@ const Inscricoes = () => {
                             <SelectValue placeholder="Selecione o percurso" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="KIDS">Kids(3 a 10 anos)</SelectItem>
+                            <SelectItem value="KIDS">Kids(3 a 12 anos)</SelectItem>
                             <SelectItem value="RUN_5K">5KM (Corrida)</SelectItem>
                             <SelectItem value="WALK_3K">2,5KM (Caminhada)</SelectItem>
                           </SelectContent>
@@ -896,7 +897,7 @@ const Inscricoes = () => {
                           </SelectContent>
                         </Select>
                         {formErrors.shirt_size && <p className="text-sm text-red-600">{formErrors.shirt_size}</p>}
-                        <p className="text-xs text-muted-foreground">{formData.course==='KIDS' ? 'Tamanhos infantis 4, 6, 8, 10 anos' : 'Tamanhos adulto: Tradicional PP a XXG'}</p>
+                        <p className="text-xs text-muted-foreground">{formData.course==='KIDS' ? 'Tamanhos infantis 4, 6, 8, 10, 12 anos' : 'Tamanhos adulto: Tradicional PP a XXG'}</p>
                       </div>
                     </div>
 

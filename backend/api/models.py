@@ -37,6 +37,7 @@ class RaceRegistration(models.Model):
         ('6', '6 anos'),
         ('8', '8 anos'),
         ('10', '10 anos'),
+        ('12', '12 anos'),
     ]
     
     PAYMENT_STATUS_CHOICES = [

@@ -42,12 +42,12 @@ const InstagramFloat = () => {
         <div>
           <p className="text-xs text-gray-600 leading-none">Nos acompanhe</p>
           <a 
-            href="https://www.instagram.com/addirceu" 
+            href="https://www.instagram.com/admoving" 
             target="_blank" 
             rel="noopener noreferrer" 
             className="text-sm font-semibold text-gray-900 leading-tight hover:underline"
           >
-            @addirceu
+            @admoving
           </a>
         </div>
       </div>

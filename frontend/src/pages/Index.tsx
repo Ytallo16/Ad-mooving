@@ -98,7 +98,7 @@ const Index = () => {
   const googleMapsUrl = `https://www.google.com/maps?q=${encodeURIComponent('Parque Potycabana, Teresina - PI')}`;
 
   // Instagram da igreja (fixo)
-  const instagramUrl = 'https://www.instagram.com/addirceu';
+  const instagramUrl = 'https://www.instagram.com/admoving';
 
   // Removido: geração de arquivo ICS. Usaremos apenas o link do Google Agenda.
 
@@ -569,7 +569,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-3xl font-bold text-orange-600 mb-4 font-teko">Kids</h3>
-                <p className="text-gray-600 mb-6 text-lg">Para crianças de 3 a 10 anos</p>
+                <p className="text-gray-600 mb-6 text-lg">Para crianças de 3 a 12 anos</p>
                 <div className="mb-8">
                   <span className="text-5xl font-bold text-orange-600">R$ 50,00</span>
                 </div>
