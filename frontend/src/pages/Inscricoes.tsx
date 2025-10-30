@@ -237,7 +237,7 @@ const Inscricoes = () => {
         return;
       }
 
-      const payload = {
+      const payload: any = {
         ...formData,
         cpf: sanitizedCpf || undefined,
         responsible_cpf: formData.course === 'KIDS' ? sanitizedResponsibleCpf || undefined : undefined,

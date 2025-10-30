@@ -191,7 +191,7 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
         # Validar tamanho da camisa baseado na modalidade/percurso
         shirt_size = data.get('shirt_size')
         if modality == 'INFANTIL' or course == 'KIDS':
-            valid_sizes = ['4', '6', '8', '10']
+            valid_sizes = ['4', '6', '8', '10', '12']
             if shirt_size not in valid_sizes:
                 raise serializers.ValidationError(
                     f"Para modalidade infantil, o tamanho deve ser: {', '.join(valid_sizes)}"
