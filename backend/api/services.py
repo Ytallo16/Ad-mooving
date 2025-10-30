@@ -673,6 +673,19 @@ def create_abacatepay_pix(registration, coupon_code: str | None = None):
             }
 
         # Preparar payload para AbacatePay
+        # Determinar CPF a ser utilizado (responsável para KIDS, atleta para demais)
+        raw_tax_id = (
+            getattr(registration, 'responsible_cpf', None) if registration.modality == 'INFANTIL' else registration.cpf
+        ) or ""
+        sanitized_tax_id = ''.join(ch for ch in str(raw_tax_id) if ch.isdigit())[:11]
+
+        # Validar CPF antes de chamar AbacatePay
+        if len(sanitized_tax_id) != 11:
+            return {
+                'success': False,
+                'error': 'CPF inválido para pagamento. Verifique os dados da inscrição.'
+            }
+
         payload = {
             "amount": amount,  # em centavos
             "expiresIn": 3600,  # 1 hora
@@ -681,7 +694,7 @@ def create_abacatepay_pix(registration, coupon_code: str | None = None):
                 "name": registration.full_name,
                 "cellphone": registration.phone,
                 "email": registration.email,
-                "taxId": registration.cpf or ""
+                "taxId": sanitized_tax_id
             },
             "metadata": {
                 "externalId": f"registration-{registration.id}",

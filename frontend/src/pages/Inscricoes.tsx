@@ -239,7 +239,7 @@ const Inscricoes = () => {
 
       const payload: any = {
         ...formData,
-        cpf: sanitizedCpf || undefined,
+        cpf: formData.course === 'KIDS' ? (sanitizedResponsibleCpf || undefined) : (sanitizedCpf || undefined),
         responsible_cpf: formData.course === 'KIDS' ? sanitizedResponsibleCpf || undefined : undefined,
         modality: formData.course === 'KIDS' ? 'INFANTIL' : 'ADULTO',
         // Para KIDS, email/phone podem ser do responsável
@@ -641,6 +641,23 @@ const Inscricoes = () => {
     }
     return cleanValue.substring(0, 11).replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
   };
+
+  // Valores para exibição no modal de pagamento
+  const getRegistrationPrice = () => {
+    if (registrationData) {
+      if (typeof registrationData?.payment?.amount === 'number') {
+        return registrationData.payment.amount;
+      }
+      const isKids = registrationData?.course === 'KIDS' || registrationData?.modality === 'INFANTIL';
+      return isKids ? 50 : 80;
+    }
+    const isKidsFallback = formData.modality === 'INFANTIL' || formData.course === 'KIDS';
+    return isKidsFallback ? 50 : 80;
+  };
+
+  const basePrice = getRegistrationPrice();
+  const showDiscount = !registrationData && isCouponValid && couponDiscount > 0;
+  const finalPrice = showDiscount ? Math.max(basePrice - couponDiscount, 0) : basePrice;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-race-primary-light/40 via-race-primary-light/10 to-white relative overflow-hidden">
@@ -1113,9 +1130,9 @@ const Inscricoes = () => {
             <div className="space-y-2">
               <div className="flex justify-between text-sm">
                 <span>Valor da inscrição:</span>
-                <span>R$ {formData.modality === 'INFANTIL' ? '50,00' : '80,00'}</span>
+                <span>R$ {basePrice.toFixed(2)}</span>
               </div>
-              {isCouponValid && couponDiscount > 0 && (
+              {showDiscount && (
                 <div className="flex justify-between text-sm text-green-600">
                   <span>Desconto do cupom:</span>
                   <span>- R$ {couponDiscount.toFixed(2)}</span>
@@ -1123,7 +1140,7 @@ const Inscricoes = () => {
               )}
               <div className="flex justify-between font-semibold text-lg border-t pt-2">
                 <span>Total:</span>
-                <span>R$ {((formData.modality === 'INFANTIL' ? 50 : 80) - couponDiscount).toFixed(2)}</span>
+                <span>R$ {finalPrice.toFixed(2)}</span>
               </div>
             </div>
           </div>

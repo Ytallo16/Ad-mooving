@@ -11,6 +11,12 @@ services:
     environment:
       - DEBUG=${DEBUG:-False}
       - REDIS_URL=redis://redis:6379/1
+      - DB_ENGINE=postgres
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_NAME=admooving
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
     volumes:
       - api_static:/app/staticfiles
     ports:

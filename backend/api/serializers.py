@@ -183,10 +183,9 @@ class RaceRegistrationSerializer(serializers.ModelSerializer):
         
         # Sincronizar modalidade a partir do percurso
         course = data.get('course') or self.initial_data.get('course')
-        modality = data.get('modality')
-        if course and not modality:
+        if course:
             data['modality'] = 'INFANTIL' if course == 'KIDS' else 'ADULTO'
-            modality = data['modality']
+        modality = data.get('modality')
 
         # Validar tamanho da camisa baseado na modalidade/percurso
         shirt_size = data.get('shirt_size')

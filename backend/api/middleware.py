@@ -18,6 +18,10 @@ class RateLimitMiddleware(MiddlewareMixin):
         """
         Processa a requisição antes de chegar na view
         """
+        # Desativar rate limiting em ambiente de desenvolvimento se configurado
+        if getattr(settings, 'DEBUG', False) or str(getattr(settings, 'RATE_LIMIT_DISABLE', '')).lower() in ('1','true','yes','on'):
+            return None
+
         # Aplicar rate limiting apenas em endpoints da API
         if not request.path.startswith('/api/'):
             return None
