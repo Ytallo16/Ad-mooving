@@ -245,6 +245,12 @@ CORS_ALLOW_HEADERS = [
     'access-control-allow-headers',
 ]
 
+# CSRF: confiar nos domínios de produção
+CSRF_TRUSTED_ORIGINS = [
+    'https://admoving.addirceu.com.br',
+    'https://api.admoving.addirceu.com.br',
+]
+
 # Email settings
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.console.EmailBackend')
 EMAIL_HOST = config('EMAIL_HOST', default='localhost')

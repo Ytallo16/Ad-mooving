@@ -142,6 +142,7 @@ class RaceRegistrationViewSet(ModelViewSet):
     queryset = RaceRegistration.objects.all()
     serializer_class = RaceRegistrationSerializer
     permission_classes = []  # Permite acesso sem autenticação
+    authentication_classes = []  # Desabilita SessionAuth/CSRF para este endpoint público
     
     def get_permissions(self):
         """
