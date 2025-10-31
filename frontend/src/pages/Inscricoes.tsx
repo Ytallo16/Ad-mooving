@@ -703,7 +703,7 @@ const Inscricoes = () => {
             </h1>
             <div className="mb-6">
               <span className="inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white px-6 py-3 rounded-full text-lg font-bold shadow-lg animate-pulse">
-                1º LOTE - Valores Promocionais
+                2º LOTE - Valores Promocionais
               </span>
             </div>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">

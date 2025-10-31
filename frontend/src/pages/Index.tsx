@@ -507,7 +507,7 @@ const Index = () => {
             <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-8 md:p-10 border-2 border-race-primary/20 hover:border-race-primary/40 transition-all duration-300 hover:shadow-xl group relative">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-to-r from-race-primary to-race-secondary text-white px-4 py-1 rounded-full text-sm font-bold">
-                  1º LOTE
+                  2º LOTE
                 </span>
               </div>
               <div className="text-center">
@@ -605,7 +605,7 @@ const Index = () => {
             <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-2xl p-8 md:p-10 border-2 border-emerald-200 hover:border-emerald-300 transition-all duration-300 hover:shadow-xl group relative">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                 <span className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-1 rounded-full text-sm font-bold">
-                  1º LOTE
+                  2º LOTE
                 </span>
               </div>
               <div className="text-center">
