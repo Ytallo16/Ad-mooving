@@ -660,7 +660,7 @@ def create_payment_session(request):
                     'application/json': {
                         'success': True,
                         'payment_status': 'paid',
-                        'amount_total': 5000,
+                        'amount_total': 10000,
                         'customer_email': 'usuario@email.com',
                         'registration_updated': True
                     }
@@ -823,13 +823,13 @@ def stripe_webhook(request):
                 {
                     'application/json': {
                         'INFANTIL': {
-                            'amount': 3000,
-                            'amount_brl': 30.00,
+                            'amount': 6000,
+                            'amount_brl': 60.00,
                             'description': 'Inscrição modalidade infantil'
                         },
                         'ADULTO': {
-                            'amount': 5000,
-                            'amount_brl': 50.00,
+                            'amount': 10000,
+                            'amount_brl': 100.00,
                             'description': 'Inscrição modalidade adulto'
                         }
                     }

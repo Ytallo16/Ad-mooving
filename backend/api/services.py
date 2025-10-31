@@ -31,13 +31,13 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
-    'MARA10': {
-        'discount_amount': 8.00,
-        'description': 'Desconto de R$ 8,00',
-        'valid_for_kids': True,
-        'valid_for_adult': True,
-        'is_active': True,
-    },
+    # 'MARA10': {
+    #     'discount_amount': 8.00,
+    #     'description': 'Desconto de R$ 8,00',
+    #     'valid_for_kids': True,
+    #     'valid_for_adult': True,
+    #     'is_active': False,  # Comentado/Desativado
+    # },
     # Cupom de inscrição 100% grátis (auto-confirma sem pagamento)
     'K7M9P2X4': {
         # discount_amount será calculado dinamicamente conforme modalidade
@@ -279,11 +279,11 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
     try:
         # Determinar o valor baseado na modalidade
         if registration.modality == 'INFANTIL':
-            amount = 5000  # R$ 50,00 em centavos
-            description = f"Inscrição Infantil - Corrida Ad-mooving - {registration.full_name}"
+            amount = 6000  # R$ 60,00 em centavos
+            description = f"Inscrição Infantil - Corrida Ad-moving - {registration.full_name}"
         else:
-            amount = 8000  # R$ 80,00 em centavos  
-            description = f"Inscrição Adulto - Corrida Ad-mooving - {registration.full_name}"
+            amount = 10000  # R$ 100,00 em centavos  
+            description = f"Inscrição Adulto - Corrida Ad-moving - {registration.full_name}"
         
         # Aplicar desconto do cupom se fornecido
         coupon_discount = 0
@@ -415,7 +415,7 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
                     'price_data': {
                         'currency': 'brl',
                         'product_data': {
-                            'name': f'Corrida Ad-mooving - {registration.get_modality_display()}',
+                            'name': f'Corrida Ad-moving - {registration.get_modality_display()}',
                             'description': description,
                         },
                         'unit_amount': amount,
@@ -603,13 +603,13 @@ def get_race_prices():
     """
     return {
         'INFANTIL': {
-            'amount': 5000,  # em centavos
-            'amount_brl': 50.00,  # em reais
+            'amount': 6000,  # em centavos
+            'amount_brl': 60.00,  # em reais
             'description': 'Inscrição modalidade infantil'
         },
         'ADULTO': {
-            'amount': 8000,  # em centavos
-            'amount_brl': 80.00,  # em reais
+            'amount': 10000,  # em centavos
+            'amount_brl': 100.00,  # em reais
             'description': 'Inscrição modalidade adulto'
         }
     }
@@ -624,10 +624,10 @@ def create_abacatepay_pix(registration, coupon_code: str | None = None):
     try:
         # Determinar o valor baseado na modalidade
         if registration.modality == 'INFANTIL':
-            amount = 5000  # R$ 50,00 em centavos
+            amount = 6000  # R$ 60,00 em centavos
             description = f"Inscrição Infantil - Corrida Ad-moving - {registration.full_name}"
         else:
-            amount = 8000  # R$ 80,00 em centavos
+            amount = 10000  # R$ 100,00 em centavos
             description = f"Inscrição Adulto - Corrida Ad-moving - {registration.full_name}"
         
         # Aplicar desconto do cupom se fornecido

@@ -519,7 +519,7 @@ const Index = () => {
                 <h3 className="text-3xl font-bold text-race-primary mb-4 font-teko">Corrida</h3>
                 <p className="text-gray-600 mb-6 text-lg">5 km - Para corredores de todas as idades</p>
                 <div className="mb-8">
-                  <span className="text-5xl font-bold text-race-primary">R$ 80,00</span>
+                  <span className="text-5xl font-bold text-race-primary">R$ 100,00</span>
                 </div>
                 <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
                   <div className="flex items-center justify-center space-x-2">
@@ -571,7 +571,7 @@ const Index = () => {
                 <h3 className="text-3xl font-bold text-orange-600 mb-4 font-teko">Kids</h3>
                 <p className="text-gray-600 mb-6 text-lg">Para crianças de 3 a 12 anos</p>
                 <div className="mb-8">
-                  <span className="text-5xl font-bold text-orange-600">R$ 50,00</span>
+                  <span className="text-5xl font-bold text-orange-600">R$ 60,00</span>
                 </div>
                 <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
                   <div className="flex items-center justify-center space-x-2">
@@ -618,7 +618,7 @@ const Index = () => {
                 <h3 className="text-3xl font-bold text-emerald-700 mb-4 font-teko">Caminhada</h3>
                 <p className="text-gray-600 mb-6 text-lg">2,5 km - Para quem prefere participar no seu ritmo</p>
                 <div className="mb-8">
-                  <span className="text-5xl font-bold text-emerald-700">R$ 80,00</span>
+                  <span className="text-5xl font-bold text-emerald-700">R$ 100,00</span>
                 </div>
                 <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
                   <div className="flex items-center justify-center space-x-2">

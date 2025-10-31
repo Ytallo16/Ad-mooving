@@ -12,8 +12,8 @@ O sistema de pagamento foi integrado com Stripe para processar pagamentos das in
 - **Webhook Secret**: Configurar quando necessário
 
 ### Preços Configurados
-- **Modalidade Infantil**: R$ 30,00
-- **Modalidade Adulto**: R$ 50,00
+- **Modalidade Infantil**: R$ 60,00
+- **Modalidade Adulto**: R$ 100,00
 
 ## 📋 Novos Endpoints da API
 
@@ -26,8 +26,8 @@ O sistema de pagamento foi integrado com Stripe para processar pagamentos das in
     "description": "Inscrição modalidade infantil"
   },
   "ADULTO": {
-    "amount": 5000,
-    "amount_brl": 50.00,
+    "amount": 10000,
+    "amount_brl": 100.00,
     "description": "Inscrição modalidade adulto"
   }
 }
@@ -57,7 +57,7 @@ O sistema de pagamento foi integrado com Stripe para processar pagamentos das in
 {
   "success": true,
   "payment_status": "paid",
-  "amount_total": 5000,
+  "amount_total": 10000,
   "customer_email": "usuario@email.com",
   "registration_updated": true
 }

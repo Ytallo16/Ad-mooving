@@ -328,7 +328,7 @@ class PaymentAPITest(APITestCase):
             'success': True,
             'session': MagicMock(
                 payment_status='paid',
-                amount_total=5000,
+                amount_total=10000,
                 customer_email='joao@email.com'
             )
         }
@@ -340,7 +340,7 @@ class PaymentAPITest(APITestCase):
         
         self.assertTrue(data['success'])
         self.assertEqual(data['payment_status'], 'paid')
-        self.assertEqual(data['amount_total'], 5000)
+        self.assertEqual(data['amount_total'], 10000)
     
     def test_verify_payment_status_missing_session_id(self):
         """Testa verificação sem session_id"""

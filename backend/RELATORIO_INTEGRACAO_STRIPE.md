@@ -9,8 +9,8 @@
 - ✅ **Conexão com Stripe**: Funcionando (Conta: acct_1S5nDgLpnSgfryVH)
 
 ### 💰 **PREÇOS CONFIGURADOS**
-- **Modalidade Infantil**: R$ 30,00
-- **Modalidade Adulto**: R$ 50,00
+- **Modalidade Infantil**: R$ 60,00
+- **Modalidade Adulto**: R$ 100,00
 
 ### 🗄️ **BANCO DE DADOS**
 - ✅ **Modelo RaceRegistration**: Atualizado com campos Stripe
@@ -74,7 +74,7 @@
 
 #### Exemplo de sessão criada:
 - **Session ID**: `cs_test_a1GOmHFUCCMcqQZAlq89vcEa...`
-- **Valor**: R$ 50,00 (Adulto)
+- **Valor**: R$ 100,00 (Adulto)
 - **Status**: PENDING → Aguardando pagamento
 
 ### 🖥️ **SERVIDORES**
