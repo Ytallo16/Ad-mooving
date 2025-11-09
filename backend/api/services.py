@@ -31,6 +31,20 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
+    'RUNTIME10': {
+        'discount_amount': 10.00,
+        'description': 'Desconto de R$ 10,00',
+        'valid_for_kids': True,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
+    'BRUNNO10': {
+        'discount_amount': 10.00,
+        'description': 'Desconto de R$ 10,00',
+        'valid_for_kids': True,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
     # 'MARA10': {
     #     'discount_amount': 8.00,
     #     'description': 'Desconto de R$ 8,00',

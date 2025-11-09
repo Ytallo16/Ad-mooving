@@ -144,6 +144,13 @@ const Index = () => {
               </div>
             </div>
             <div className="text-white/80 text-sm md:text-base mt-2 md:mt-4 font-medium font-29lt">14 de Dezembro de 2025</div>
+            <div className="mt-4 md:mt-6">
+              <Link to="/inscricoes">
+                <Button className="bg-race-primary hover:bg-race-primary-dark text-white font-bold py-3 px-8 md:py-4 md:px-12 text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-white">
+                  Garantir minha inscrição
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>
@@ -578,19 +585,19 @@ const Index = () => {
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Kit infantil especial</span>
+                    <span className="text-gray-700 font-medium">Kit completo</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Medalha personalizada</span>
+                    <span className="text-gray-700 font-medium">Medalha</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
                     <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Percurso monitorado</span>
+                    <span className="text-gray-700 font-medium">Participativa</span>
                   </div>
                 </div>
                 <Link to="/inscricoes?course=KIDS">

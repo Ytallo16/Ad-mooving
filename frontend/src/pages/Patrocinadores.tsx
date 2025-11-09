@@ -20,6 +20,8 @@ import rapidexBackground from "@/assets/rapidex.png";
 import ebenezerLogo from "@/assets/ebenezer_logo.webp";
 import ebenezerBackground from "@/assets/ebenezer.png";
 import coisaDeCrenteBackground from "@/assets/coisa_de_crente.png";
+import dansulLogo from "@/assets/PAtrocinio Dansul.png";
+import balyLogo from "@/assets/Patrocinio Baly.png";
 
 interface Patrocinador {
   id: number;
@@ -83,6 +85,32 @@ const patrocinadores: Patrocinador[] = [
     logoImgClass: "w-24 h-24 scale-110",
     logoBgClass: "bg-white p-3",
     backgroundImage: coisaDeCrenteBackground,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 5,
+    nome: "Dansul Foods",
+    logo: dansulLogo,
+    descricao: "Distribuidora de alimentos de qualidade.",
+    instagram: "dansulfoods",
+    whatsapp: "(86) 9530-4085",
+    logoImgClass: "w-24 h-24 scale-110",
+    logoBgClass: "bg-white p-3",
+    backgroundImage: dansulLogo,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 6,
+    nome: "Baly Hidrate",
+    logo: balyLogo,
+    descricao: "Seu novo isotônico favorito.",
+    instagram: "balyhidrate",
+    whatsapp: "(86) 9530-4085",
+    logoImgClass: "w-24 h-24 scale-110",
+    logoBgClass: "bg-white p-3",
+    backgroundImage: balyLogo,
     backgroundFit: 'contain',
     overlayClass: 'bg-black/0'
   }
