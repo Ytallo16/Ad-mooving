@@ -59,7 +59,7 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
-    'FORMOVIE10': {
+    '4MOV10': {
         'discount_amount': 10.00,
         'description': 'Desconto de R$ 10,00',
         'valid_for_kids': True,

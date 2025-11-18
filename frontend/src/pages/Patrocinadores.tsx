@@ -22,6 +22,12 @@ import ebenezerBackground from "@/assets/ebenezer.png";
 import coisaDeCrenteBackground from "@/assets/coisa_de_crente.png";
 import dansulLogo from "@/assets/PAtrocinio Dansul.png";
 import balyLogo from "@/assets/Patrocinio Baly.png";
+import aguasTeresinaLogo from "@/assets/Aguas de Teresina.png";
+import eliteEventosLogo from "@/assets/elite eventos.png";
+import GeraldinLogo from "@/assets/Geraldin.png";
+import tiagoVasconcelosLogo from "@/assets/Tiago Vasconcelos AD MOVING.png";
+import unifsaLogo from "@/assets/UNIFSA AD MOVING.png";
+import juvenisLogo from "@/assets/Juvenis.png";
 
 interface Patrocinador {
   id: number;
@@ -111,6 +117,70 @@ const patrocinadores: Patrocinador[] = [
     logoImgClass: "w-24 h-24 scale-110",
     logoBgClass: "bg-white p-3",
     backgroundImage: balyLogo,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 7,
+    nome: "Águas de Teresina",
+    logo: aguasTeresinaLogo,
+    descricao: "Concessionária responsável pelo fornecimento de água e saneamento na capital.",
+    instagram: "aguasdeteresina",
+    whatsapp: "0800 223 2000",
+    backgroundImage: aguasTeresinaLogo,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 8,
+    nome: "Elite Eventos",
+    logo: eliteEventosLogo,
+    descricao: "Planejamento e execução de eventos Corporativos e Formaturas",
+    instagram: "eliteeventospi",
+    whatsapp: "(86) 99570-3122",
+    backgroundImage: eliteEventosLogo,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 9,
+    nome: "UNIFSA",
+    logo: unifsaLogo,
+    descricao: "Centro Universitário Santo Agostinho apoiando a educação e o desenvolvimento.",
+    instagram: "unifsa",
+    whatsapp: "(86) 3142-0785",
+    backgroundImage: unifsaLogo,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 10,
+    nome: "Tiago Vasconcelos",
+    logo: tiagoVasconcelosLogo,
+    descricao: "Deputado estadual do Piauí.",
+    instagram: "tiagovasconcelos",
+    backgroundImage: tiagoVasconcelosLogo,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 11,
+    nome: "Geraldin",
+    logo: GeraldinLogo,
+    descricao: "Secretário de Juventudo de Teresina e a mais de 20 anos promovendo projetos sociais e transformadores.",
+    instagram: "geraldojarques",
+    backgroundImage: GeraldinLogo,
+    backgroundFit: 'contain',
+    overlayClass: 'bg-black/0'
+  },
+  {
+    id: 12,
+    nome: "Juvenis",
+    logo: juvenisLogo,
+    descricao: "Transmissão ao vivo, gravação na íntegra e a live mais desejada: magia no ao vivo, amor em tempo real.",
+    instagram: "livesjuvenis",
+    whatsapp: "86988452919",
+    backgroundImage: juvenisLogo,
     backgroundFit: 'contain',
     overlayClass: 'bg-black/0'
   }
