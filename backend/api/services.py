@@ -66,6 +66,27 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
+    'UNIFSA10': {
+        'discount_amount': 10.00,
+        'description': 'Desconto de R$ 10,00',
+        'valid_for_kids': False,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
+    'ADDIRCEU20': {
+        'discount_amount': 20.00,
+        'description': 'Desconto de R$ 20,00',
+        'valid_for_kids': False,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
+    'ADKIDS10': {
+        'discount_amount': 10.00,
+        'description': 'Desconto de R$ 10,00 para inscrições Kids',
+        'valid_for_kids': True,
+        'valid_for_adult': False,
+        'is_active': True,
+    },
     # Cupom de inscrição 100% grátis (auto-confirma sem pagamento)
     'K7M9P2X4': {
         # discount_amount será calculado dinamicamente conforme modalidade
