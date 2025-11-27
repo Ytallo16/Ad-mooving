@@ -52,6 +52,13 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
+     'KAREN10': {
+        'discount_amount': 10.00,
+        'description': 'Desconto de R$ 10,00',
+        'valid_for_kids': True,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
     'I7CORREDOR10': {
         'discount_amount': 10.00,
         'description': 'Desconto de R$ 10,00',
