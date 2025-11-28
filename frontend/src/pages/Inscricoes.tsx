@@ -649,10 +649,10 @@ const Inscricoes = () => {
         return registrationData.payment.amount;
       }
       const isKids = registrationData?.course === 'KIDS' || registrationData?.modality === 'INFANTIL';
-      return isKids ? 60 : 100;
+      return isKids ? 50 : 80;
     }
     const isKidsFallback = formData.modality === 'INFANTIL' || formData.course === 'KIDS';
-    return isKidsFallback ? 60 : 100;
+    return isKidsFallback ? 50 : 80;
   };
 
   const basePrice = getRegistrationPrice();

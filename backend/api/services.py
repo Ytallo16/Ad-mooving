@@ -85,7 +85,7 @@ AVAILABLE_COUPONS = {
         'description': 'Desconto de R$ 20,00',
         'valid_for_kids': False,
         'valid_for_adult': True,
-        'is_active': True,
+        'is_active': False,
     },
     'ADKIDS10': {
         'discount_amount': 10.00,
@@ -335,10 +335,10 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
     try:
         # Determinar o valor baseado na modalidade
         if registration.modality == 'INFANTIL':
-            amount = 6000  # R$ 60,00 em centavos
+            amount = 5000  # R$ 50,00 em centavos
             description = f"Inscrição Infantil - Corrida Ad-moving - {registration.full_name}"
         else:
-            amount = 10000  # R$ 100,00 em centavos  
+            amount = 8000  # R$ 80,00 em centavos  
             description = f"Inscrição Adulto - Corrida Ad-moving - {registration.full_name}"
         
         # Aplicar desconto do cupom se fornecido
@@ -659,13 +659,13 @@ def get_race_prices():
     """
     return {
         'INFANTIL': {
-            'amount': 6000,  # em centavos
-            'amount_brl': 60.00,  # em reais
+            'amount': 5000,  # em centavos
+            'amount_brl': 50.00,  # em reais
             'description': 'Inscrição modalidade infantil'
         },
         'ADULTO': {
-            'amount': 10000,  # em centavos
-            'amount_brl': 100.00,  # em reais
+            'amount': 8000,  # em centavos
+            'amount_brl': 80.00,  # em reais
             'description': 'Inscrição modalidade adulto'
         }
     }
@@ -680,10 +680,10 @@ def create_abacatepay_pix(registration, coupon_code: str | None = None):
     try:
         # Determinar o valor baseado na modalidade
         if registration.modality == 'INFANTIL':
-            amount = 6000  # R$ 60,00 em centavos
+            amount = 5000  # R$ 50,00 em centavos
             description = f"Inscrição Infantil - Corrida Ad-moving - {registration.full_name}"
         else:
-            amount = 10000  # R$ 100,00 em centavos
+            amount = 8000  # R$ 80,00 em centavos
             description = f"Inscrição Adulto - Corrida Ad-moving - {registration.full_name}"
         
         # Aplicar desconto do cupom se fornecido
