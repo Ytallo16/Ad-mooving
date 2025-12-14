@@ -22,7 +22,7 @@ import kitFull from "@/assets/KIT DO ATLETA OFICIAL.png";
 const Index = () => {
   // Função para calcular o tempo restante
   const calculateTimeLeft = () => {
-    const targetDate = new Date('2025-12-14T00:00:00').getTime();
+    const targetDate = new Date('2026-03-01T00:00:00').getTime();
     const now = new Date().getTime();
     const difference = targetDate - now;
 
@@ -90,9 +90,9 @@ const Index = () => {
   const [img2Loaded, setImg2Loaded] = useState(false);
   const [img3Loaded, setImg3Loaded] = useState(false);
 
-  // Link do Google Calendar para o evento (14/12/2025, 06:00-08:00 BRT → 09:00-11:00 UTC)
+  // Link do Google Calendar para o evento (01/03/2026, 06:00-08:00 BRT → 09:00-11:00 UTC)
   // Inclui fuso horário para exibir corretamente no Google Agenda.
-  const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('ADMOVING - Largada às 6h.')}&dates=20251214T090000Z/20251214T110000Z&details=${encodeURIComponent('ADMOVING - Largada às 6h.')} &location=${encodeURIComponent('Parque Potycabana, Teresina - PI')}&ctz=America/Fortaleza`;
+  const googleCalendarUrl = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent('ADMOVING - Largada às 6h.')}&dates=20260301T090000Z/20260301T110000Z&details=${encodeURIComponent('ADMOVING - Largada às 6h.')} &location=${encodeURIComponent('Parque Potycabana, Teresina - PI')}&ctz=America/Fortaleza`;
 
   // Link do Google Maps para o local do evento (Parque Potycabana)
   const googleMapsUrl = `https://www.google.com/maps?q=${encodeURIComponent('Parque Potycabana, Teresina - PI')}`;
@@ -143,7 +143,7 @@ const Index = () => {
                 <div className="text-xs md:text-lg font-semibold text-white/90 mt-1 md:mt-2 font-29lt">Seg</div>
               </div>
             </div>
-            <div className="text-white/80 text-sm md:text-base mt-2 md:mt-4 font-medium font-29lt">14 de Dezembro de 2025</div>
+            <div className="text-white/80 text-sm md:text-base mt-2 md:mt-4 font-medium font-29lt">01 de Março de 2026</div>
             <div className="mt-4 md:mt-6">
               <Link to="/inscricoes">
                 <Button className="bg-race-primary hover:bg-race-primary-dark text-white font-bold py-3 px-8 md:py-4 md:px-12 text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-white">
@@ -197,7 +197,7 @@ const Index = () => {
                   </svg>
                 </div>
                 <h3 className="text-xl font-bold text-race-primary mb-2 font-teko">Data</h3>
-                <p className="text-2xl font-bold text-gray-800 mb-1">14 de Dezembro, 2025</p>
+                <p className="text-2xl font-bold text-gray-800 mb-1">01 de Março, 2026</p>
                 <p className="text-gray-600 font-medium">Domingo</p>
               </div>
             </motion.div>

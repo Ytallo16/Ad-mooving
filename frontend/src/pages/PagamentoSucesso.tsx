@@ -119,7 +119,7 @@ const PagamentoSucesso = () => {
                   <strong>📦 Kit de corrida:</strong> Informações por email
                 </p>
                 <p className="text-sm text-gray-600">
-                  <strong>📅 Data do evento:</strong> 14 de Dezembro de 2025
+                  <strong>📅 Data do evento:</strong> 01 de Março de 2026
                 </p>
               </div>
 

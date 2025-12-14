@@ -745,7 +745,7 @@ const Inscricoes = () => {
                 <CardContent className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Data:</span>
-                    <span className="text-sm text-muted-foreground">14 de Dezembro, 2025</span>
+                    <span className="text-sm text-muted-foreground">01 de Março, 2026</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Horário:</span>
@@ -769,6 +769,26 @@ const Inscricoes = () => {
                     >
                       <Download className="w-4 h-4" /> Baixar Regulamento (PDF)
                     </a>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-race-primary-light bg-white/80 backdrop-blur-sm shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-race-primary">Valores</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Kids (3 a 12 anos):</span>
+                    <span className="text-sm font-bold text-race-primary">R$ 50,00</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Corrida 5KM:</span>
+                    <span className="text-sm font-bold text-race-primary">R$ 80,00</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Caminhada 2,5KM:</span>
+                    <span className="text-sm font-bold text-race-primary">R$ 80,00</span>
                   </div>
                 </CardContent>
               </Card>

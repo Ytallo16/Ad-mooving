@@ -77,10 +77,10 @@ class EmailServiceTest(TestCase):
         # Mock das configurações
         mock_config.side_effect = lambda key, default: {
             'RACE_NAME': 'Corrida Ad-moving 2025',
-            'RACE_DATE': '14 de Dezembro de 2025',
+            'RACE_DATE': '01 de Março de 2026',
             'RACE_LOCATION': 'Local da Corrida',
             'RACE_START_TIME': '06:00h',
-            'KIT_PICKUP_DATE': '13 de Dezembro de 2025',
+            'KIT_PICKUP_DATE': '28 de Fevereiro de 2026',
             'KIT_PICKUP_TIME': '14:00h às 18:00h',
             'KIT_PICKUP_LOCATION': 'Local de Retirada',
             'KIT_PICKUP_DOCS': 'CPF e comprovante de inscrição',
@@ -110,10 +110,10 @@ class EmailServiceTest(TestCase):
         """Testa envio de email com número de inscrição"""
         mock_config.side_effect = lambda key, default: {
             'RACE_NAME': 'Corrida Ad-moving 2025',
-            'RACE_DATE': '14 de Dezembro de 2025',
+            'RACE_DATE': '01 de Março de 2026',
             'RACE_LOCATION': 'Local da Corrida',
             'RACE_START_TIME': '06:00h',
-            'KIT_PICKUP_DATE': '13 de Dezembro de 2025',
+            'KIT_PICKUP_DATE': '28 de Fevereiro de 2026',
             'KIT_PICKUP_TIME': '14:00h às 18:00h',
             'KIT_PICKUP_LOCATION': 'Local de Retirada',
             'KIT_PICKUP_DOCS': 'CPF e comprovante de inscrição',

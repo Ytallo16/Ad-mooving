@@ -208,7 +208,7 @@ def send_payment_confirmation_email(registration):
     # Informações da corrida (configuráveis via .env)
     race_info = {
         'name': config('RACE_NAME', default='Corrida Ad-moving 2025'),
-        'date': config('RACE_DATE', default='14 de Dezembro de 2025'),
+        'date': config('RACE_DATE', default='01 de Março de 2026'),
         'location': config('RACE_LOCATION', default='A ser informado'),
         'start_time': config('RACE_START_TIME', default='06:00h'),
         'kit_pickup': {
