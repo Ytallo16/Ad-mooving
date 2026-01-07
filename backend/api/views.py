@@ -1149,3 +1149,167 @@ def check_pix_status(request):
             'success': False,
             'error': f'Erro interno: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['admin'],
+    summary='Listar inscrições pagas',
+    description='Lista todas as inscrições com status PAID ordenadas alfabeticamente',
+    responses={
+        200: {
+            'description': 'Lista de inscrições pagas',
+            'examples': [
+                {
+                    'application/json': {
+                        'success': True,
+                        'count': 10,
+                        'registrations': [
+                            {
+                                'id': 1,
+                                'full_name': 'João Silva',
+                                'cpf': '123.456.789-00',
+                                'email': 'joao@example.com',
+                                'phone': '(86) 99999-9999',
+                                'course_display': 'Corrida',
+                                'registration_number': '12345',
+                                'payment_date': '2025-12-01T10:30:00Z',
+                                'payment_email_sent': True,
+                                'created_at': '2025-12-01T10:00:00Z'
+                            }
+                        ]
+                    }
+                }
+            ]
+        }
+    }
+)
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def list_paid_registrations(request):
+    """
+    Lista todas as inscrições pagas ordenadas alfabeticamente
+    """
+    try:
+        registrations = RaceRegistration.objects.filter(
+            payment_status='PAID'
+        ).order_by('full_name')
+        
+        data = []
+        for reg in registrations:
+            # Determinar exibição do percurso
+            course_code = reg.course
+            if course_code == 'WALK_3K':
+                course_display = 'Caminhada 3KM'
+            elif course_code == 'RUN_5K':
+                course_display = 'Corrida 5KM'
+            elif course_code == 'KIDS':
+                course_display = 'Kids'
+            else:
+                course_display = reg.get_modality_display()
+            
+            data.append({
+                'id': reg.id,
+                'full_name': reg.full_name,
+                'cpf': reg.cpf or 'N/A',
+                'email': reg.email,
+                'phone': reg.phone,
+                'course_display': course_display,
+                'registration_number': reg.registration_number or 'Pendente',
+                'payment_date': reg.payment_date.isoformat() if reg.payment_date else None,
+                'payment_email_sent': reg.payment_email_sent,
+                'created_at': reg.created_at.isoformat()
+            })
+        
+        return Response({
+            'success': True,
+            'count': len(data),
+            'registrations': data
+        }, status=status.HTTP_200_OK)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro ao buscar inscrições: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['admin'],
+    summary='Reenviar email de confirmação',
+    description='Reenvia o email de confirmação de pagamento para uma inscrição específica',
+    request={
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'registration_id': {
+                    'type': 'integer',
+                    'description': 'ID da inscrição'
+                }
+            },
+            'required': ['registration_id']
+        }
+    },
+    responses={
+        200: {
+            'description': 'Email reenviado com sucesso',
+            'examples': [
+                {
+                    'application/json': {
+                        'success': True,
+                        'message': 'Email reenviado com sucesso'
+                    }
+                }
+            ]
+        },
+        400: {'description': 'Parâmetros inválidos'},
+        404: {'description': 'Inscrição não encontrada'}
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def resend_confirmation_email(request):
+    """
+    Reenvia o email de confirmação de pagamento
+    """
+    try:
+        registration_id = request.data.get('registration_id')
+        
+        if not registration_id:
+            return Response({
+                'success': False,
+                'error': 'registration_id é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        try:
+            registration = RaceRegistration.objects.get(id=registration_id)
+        except RaceRegistration.DoesNotExist:
+            return Response({
+                'success': False,
+                'error': 'Inscrição não encontrada'
+            }, status=status.HTTP_404_NOT_FOUND)
+        
+        if registration.payment_status != 'PAID':
+            return Response({
+                'success': False,
+                'error': 'Apenas inscrições pagas podem receber email de confirmação'
+            }, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Reenviar email
+        success = send_payment_confirmation_email(registration)
+        
+        if success:
+            return Response({
+                'success': True,
+                'message': 'Email reenviado com sucesso'
+            }, status=status.HTTP_200_OK)
+        else:
+            return Response({
+                'success': False,
+                'error': 'Erro ao enviar email'
+            }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

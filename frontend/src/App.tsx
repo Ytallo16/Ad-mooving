@@ -11,6 +11,7 @@ import Sobre from "./pages/Sobre";
 import Pagamento from "./pagamento/index";
 import PagamentoSucesso from "./pages/PagamentoSucesso";
 import PagamentoCancelado from "./pages/PagamentoCancelado";
+import GerenciarEmails from "./pages/GerenciarEmails";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -41,6 +42,7 @@ const App = () => (
           <Route path="/pagamento" element={<Pagamento />} />
           <Route path="/pagamento/sucesso" element={<PagamentoSucesso />} />
           <Route path="/pagamento/cancelado" element={<PagamentoCancelado />} />
+          <Route path="/admin/gerenciar-emails" element={<GerenciarEmails />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

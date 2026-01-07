@@ -26,5 +26,9 @@ urlpatterns = [
     path('payment/pix/simulate/', views.simulate_pix_payment, name='simulate_pix_payment'),
     path('payment/pix/check-status/', views.check_pix_status, name='check_pix_status'),
     
+    # Endpoints administrativos
+    path('admin/paid-registrations/', views.list_paid_registrations, name='list_paid_registrations'),
+    path('admin/resend-email/', views.resend_confirmation_email, name='resend_confirmation_email'),
+    
     path('', include(router.urls)),  # Inclui as URLs do router
 ] 
