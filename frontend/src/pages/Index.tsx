@@ -509,7 +509,7 @@ const Index = () => {
             </p>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-8 max-w-7xl mx-auto">
             {/* 5km Corrida */}
             <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-8 md:p-10 border-2 border-race-primary/20 hover:border-race-primary/40 transition-all duration-300 hover:shadow-xl group relative">
               <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -518,38 +518,84 @@ const Index = () => {
                 </span>
               </div>
               <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-20 h-20 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </div>
-                <h3 className="text-3xl font-bold text-race-primary mb-4 font-teko">Corrida</h3>
-                <p className="text-gray-600 mb-6 text-lg">5 km - Para corredores de todas as idades</p>
-                <div className="mb-8">
-                  <span className="text-5xl font-bold text-race-primary">R$ 80,00</span>
+                <h3 className="text-2xl font-bold text-race-primary mb-3 font-teko">Corrida 5KM</h3>
+                <p className="text-gray-600 mb-4 text-base">Para corredores de todas as idades</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-race-primary">R$ 100,00</span>
                 </div>
-                <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
+                <div className="bg-white rounded-lg p-4 mb-6 space-y-2">
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Kit completo</span>
+                    <span className="text-gray-700 text-sm font-medium">Kit completo</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Medalha</span>
+                    <span className="text-gray-700 text-sm font-medium">Medalha</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Cronometragem oficial</span>
+                    <span className="text-gray-700 text-sm font-medium">Cronometragem</span>
                   </div>
                 </div>
                 <Link to="/inscricoes?course=RUN_5K">
-                  <Button className="w-full bg-race-primary hover:bg-race-primary-dark text-white font-bold py-4 text-lg">
+                  <Button className="w-full bg-race-primary hover:bg-race-primary-dark text-white font-bold py-3 text-base">
+                    Inscrever-se
+                  </Button>
+                </Link>
+              </div>
+            </div>
+
+            {/* 10km Corrida */}
+            <div className="bg-gradient-to-br from-race-primary/5 to-race-primary/10 rounded-2xl p-8 md:p-10 border-2 border-race-primary/20 hover:border-race-primary/40 transition-all duration-300 hover:shadow-xl group relative">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-race-primary to-race-secondary text-white px-4 py-1 rounded-full text-sm font-bold">
+                  2º LOTE
+                </span>
+              </div>
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-race-primary to-race-secondary rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-bold text-race-primary mb-3 font-teko">Corrida 10KM</h3>
+                <p className="text-gray-600 mb-4 text-base">Para corredores experientes</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-race-primary">R$ 100,00</span>
+                </div>
+                <div className="bg-white rounded-lg p-4 mb-6 space-y-2">
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-gray-700 text-sm font-medium">Kit completo</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-gray-700 text-sm font-medium">Medalha</span>
+                  </div>
+                  <div className="flex items-center justify-center space-x-2">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span className="text-gray-700 text-sm font-medium">Cronometragem</span>
+                  </div>
+                </div>
+                <Link to="/inscricoes?course=RUN_10K">
+                  <Button className="w-full bg-race-primary hover:bg-race-primary-dark text-white font-bold py-3 text-base">
                     Inscrever-se
                   </Button>
                 </Link>
@@ -558,15 +604,14 @@ const Index = () => {
 
             {/* Kids */}
             <div className="bg-gradient-to-br from-yellow-50 to-orange-100 rounded-2xl p-8 md:p-10 border-2 border-yellow-200 hover:border-yellow-300 transition-all duration-300 hover:shadow-xl group relative">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-6 py-2 rounded-full text-sm font-bold">
+              <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                <span className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-1 rounded-full text-sm font-bold">
                   INFANTIL
                 </span>
               </div>
               <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  {/* Ícone infantil: carinha de ursinho */}
-                  <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" aria-hidden="true">
+                <div className="w-20 h-20 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" aria-hidden="true">
                     <circle cx="8" cy="8" r="3" fill="currentColor"/>
                     <circle cx="16" cy="8" r="3" fill="currentColor"/>
                     <circle cx="12" cy="13" r="6" fill="currentColor"/>
@@ -575,33 +620,33 @@ const Index = () => {
                     <path d="M10 15.5c.8.8 3.2.8 4 0" stroke="#3f3f46" strokeWidth="1.5" strokeLinecap="round" fill="none"/>
                   </svg>
                 </div>
-                <h3 className="text-3xl font-bold text-orange-600 mb-4 font-teko">Kids</h3>
-                <p className="text-gray-600 mb-6 text-lg">Para crianças de 3 a 12 anos</p>
-                <div className="mb-8">
-                  <span className="text-5xl font-bold text-orange-600">R$ 50,00</span>
+                <h3 className="text-2xl font-bold text-orange-600 mb-3 font-teko">Kids</h3>
+                <p className="text-gray-600 mb-4 text-base">3 a 12 anos</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-orange-600">R$ 70,00</span>
                 </div>
-                <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
+                <div className="bg-white rounded-lg p-4 mb-6 space-y-2">
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Kit completo</span>
+                    <span className="text-gray-700 text-sm font-medium">Kit completo</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Medalha</span>
+                    <span className="text-gray-700 text-sm font-medium">Medalha</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Participativa</span>
+                    <span className="text-gray-700 text-sm font-medium">Participativa</span>
                   </div>
                 </div>
                 <Link to="/inscricoes?course=KIDS">
-                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-4 text-lg">
+                  <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3 text-base">
                     Inscrever-se
                   </Button>
                 </Link>
@@ -616,39 +661,38 @@ const Index = () => {
                 </span>
               </div>
               <div className="text-center">
-                <div className="w-24 h-24 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-8 group-hover:scale-110 transition-transform">
-                  {/* Ícone caminhada: pegadas */}
-                  <svg className="w-12 h-12 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform">
+                  <svg className="w-10 h-10 text-white" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path d="M7.5 2C5.6 2 4 3.6 4 5.5c0 1.2.6 2.4 1.4 3.8.5.9 1.1 1.8 1.7 2.7.2.3.6.3.8 0 .6-.9 1.2-1.8 1.7-2.7C10.4 7.9 11 6.7 11 5.5 11 3.6 9.4 2 7.5 2zM6 13c-1.7 0-3 1.3-3 3 0 1.4.9 2.6 2.2 3 .9.3 1.8.7 2.8 1 .2.1.4-.1.4-.3v-5.7C8.4 13.4 7.2 13 6 13zm10.5-11C14.6 2 13 3.6 13 5.5c0 1.2.6 2.4 1.4 3.8.5.9 1.1 1.8 1.7 2.7.2.3.6.3.8 0 .6-.9 1.2-1.8 1.7-2.7.8-1.4 1.4-2.6 1.4-3.8 0-1.9-1.6-3.5-3.5-3.5zM18 13c-1.2 0-2.4.4-3 1v5.7c0 .2.2.4.4.3 1-.3 1.9-.7 2.8-1 1.3-.4 2.2-1.6 2.2-3 0-1.7-1.3-3-3-3z"/>
                   </svg>
                 </div>
-                <h3 className="text-3xl font-bold text-emerald-700 mb-4 font-teko">Caminhada</h3>
-                <p className="text-gray-600 mb-6 text-lg">2,5 km - Para quem prefere participar no seu ritmo</p>
-                <div className="mb-8">
-                  <span className="text-5xl font-bold text-emerald-700">R$ 80,00</span>
+                <h3 className="text-2xl font-bold text-emerald-700 mb-3 font-teko">Caminhada 2.5KM</h3>
+                <p className="text-gray-600 mb-4 text-base">No seu ritmo</p>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-emerald-700">R$ 100,00</span>
                 </div>
-                <div className="bg-white rounded-lg p-6 mb-8 space-y-3">
+                <div className="bg-white rounded-lg p-4 mb-6 space-y-2">
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Kit completo</span>
+                    <span className="text-gray-700 text-sm font-medium">Kit completo</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Medalha</span>
+                    <span className="text-gray-700 text-sm font-medium">Medalha</span>
                   </div>
                   <div className="flex items-center justify-center space-x-2">
-                    <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span className="text-gray-700 font-medium">Participativa</span>
+                    <span className="text-gray-700 text-sm font-medium">Participativa</span>
                   </div>
                 </div>
                 <Link to="/inscricoes?course=WALK_3K">
-                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-4 text-lg">
+                  <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 text-base">
                     Inscrever-se
                   </Button>
                 </Link>

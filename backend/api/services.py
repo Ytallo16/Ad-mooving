@@ -228,7 +228,9 @@ def send_payment_confirmation_email(registration):
     if course_code == 'WALK_3K':
         course_display = 'Caminhada'
     elif course_code == 'RUN_5K':
-        course_display = 'Corrida'
+        course_display = 'Corrida 5KM'
+    elif course_code == 'RUN_10K':
+        course_display = 'Corrida 10KM'
     elif course_code == 'KIDS':
         course_display = 'Kids'
     else:
@@ -659,13 +661,13 @@ def get_race_prices():
     """
     return {
         'INFANTIL': {
-            'amount': 5000,  # em centavos
-            'amount_brl': 50.00,  # em reais
+            'amount': 7000,  # em centavos
+            'amount_brl': 70.00,  # em reais
             'description': 'Inscrição modalidade infantil'
         },
         'ADULTO': {
-            'amount': 8000,  # em centavos
-            'amount_brl': 80.00,  # em reais
+            'amount': 10000,  # em centavos
+            'amount_brl': 100.00,  # em reais
             'description': 'Inscrição modalidade adulto'
         }
     }
@@ -680,10 +682,10 @@ def create_abacatepay_pix(registration, coupon_code: str | None = None):
     try:
         # Determinar o valor baseado na modalidade
         if registration.modality == 'INFANTIL':
-            amount = 5000  # R$ 50,00 em centavos
+            amount = 7000  # R$ 70,00 em centavos
             description = f"Inscrição Infantil - Corrida Ad-moving - {registration.full_name}"
         else:
-            amount = 8000  # R$ 80,00 em centavos
+            amount = 10000  # R$ 100,00 em centavos
             description = f"Inscrição Adulto - Corrida Ad-moving - {registration.full_name}"
         
         # Aplicar desconto do cupom se fornecido

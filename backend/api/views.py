@@ -1202,6 +1202,8 @@ def list_paid_registrations(request):
                 course_display = 'Caminhada 3KM'
             elif course_code == 'RUN_5K':
                 course_display = 'Corrida 5KM'
+            elif course_code == 'RUN_10K':
+                course_display = 'Corrida 10KM'
             elif course_code == 'KIDS':
                 course_display = 'Kids'
             else:

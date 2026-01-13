@@ -61,7 +61,7 @@ const Inscricoes = () => {
   // Prefill course/modality from URL param on mount
   useEffect(() => {
     const courseParam = (searchParams.get('course') || '').toUpperCase();
-    const allowed = ['KIDS', 'RUN_5K', 'WALK_3K'];
+    const allowed = ['KIDS', 'RUN_5K', 'RUN_10K', 'WALK_3K'];
     if (allowed.includes(courseParam)) {
       setFormData(prev => ({
         ...prev,
@@ -194,8 +194,8 @@ const Inscricoes = () => {
     }
 
     const age = calculateAge(formData.birth_date);
-    if ((formData.course === 'RUN_5K' || formData.course === 'WALK_3K') && age < 12) {
-      setFormErrors(prev => ({ ...prev, birth_date: 'Para 5KM/3KM o atleta deve ter ao menos 12 anos.' }));
+    if ((formData.course === 'RUN_5K' || formData.course === 'RUN_10K' || formData.course === 'WALK_3K') && age < 12) {
+      setFormErrors(prev => ({ ...prev, birth_date: 'Para 5KM/10KM/2,5KM o atleta deve ter ao menos 12 anos.' }));
       return;
     }
 
@@ -363,7 +363,7 @@ const Inscricoes = () => {
       console.error('Erro de conexão:', error);
       toast({
         title: "Erro de conexão",
-        description: "Não foi possível conectar com o servidor. Verifique se o backend está rodando.",
+        description: "Não foi possível concluir sua inscrição, tente novamente ou entre em contato com a organização.",
         variant: "destructive"
       });
     } finally {
@@ -649,10 +649,10 @@ const Inscricoes = () => {
         return registrationData.payment.amount;
       }
       const isKids = registrationData?.course === 'KIDS' || registrationData?.modality === 'INFANTIL';
-      return isKids ? 50 : 80;
+      return isKids ? 70 : 100;
     }
     const isKidsFallback = formData.modality === 'INFANTIL' || formData.course === 'KIDS';
-    return isKidsFallback ? 50 : 80;
+    return isKidsFallback ? 70 : 100;
   };
 
   const basePrice = getRegistrationPrice();
@@ -780,15 +780,19 @@ const Inscricoes = () => {
                 <CardContent className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Kids (3 a 12 anos):</span>
-                    <span className="text-sm font-bold text-race-primary">R$ 50,00</span>
+                    <span className="text-sm font-bold text-race-primary">R$ 70,00</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Corrida 5KM:</span>
-                    <span className="text-sm font-bold text-race-primary">R$ 80,00</span>
+                    <span className="text-sm font-bold text-race-primary">R$ 100,00</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium">Corrida 10KM:</span>
+                    <span className="text-sm font-bold text-race-primary">R$ 100,00</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">Caminhada 2,5KM:</span>
-                    <span className="text-sm font-bold text-race-primary">R$ 80,00</span>
+                    <span className="text-sm font-bold text-race-primary">R$ 100,00</span>
                   </div>
                 </CardContent>
               </Card>
@@ -911,8 +915,9 @@ const Inscricoes = () => {
                             <SelectValue placeholder="Selecione o percurso" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="KIDS">Kids(3 a 12 anos)</SelectItem>
+                            <SelectItem value="KIDS">Kids (3 a 12 anos)</SelectItem>
                             <SelectItem value="RUN_5K">5KM (Corrida)</SelectItem>
+                            <SelectItem value="RUN_10K">10KM (Corrida)</SelectItem>
                             <SelectItem value="WALK_3K">2,5KM (Caminhada)</SelectItem>
                           </SelectContent>
                         </Select>

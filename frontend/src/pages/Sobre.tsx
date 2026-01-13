@@ -32,7 +32,7 @@ const Sobre = () => {
           >
             <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl font-teko">Sobre o Evento</h1>
             <p className="max-w-2xl mx-auto text-xl text-blue-100 mt-4 font-29lt">
-              Corrida de 5 km com largada e chegada no Teresina Shopping. 
+              Corridas de 5 km e 10 km com largada e chegada no Teresina Shopping. 
             </p>
           </motion.div>
         </div>

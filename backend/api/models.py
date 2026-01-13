@@ -19,6 +19,7 @@ class RaceRegistration(models.Model):
     COURSE_CHOICES = [
         ('KIDS', 'Kids'),
         ('RUN_5K', '5KM (Corrida)'),
+        ('RUN_10K', '10KM (Corrida)'),
         ('WALK_3K', '3KM (Caminhada)'),
     ]
     
