@@ -108,7 +108,7 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
-    'MIKE10': {
+    'MICK10': {
         'discount_amount': 10.00,
         'description': 'Desconto de R$ 10,00',
         'valid_for_kids': True,
