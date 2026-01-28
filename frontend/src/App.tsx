@@ -22,6 +22,11 @@ const ScrollToTop = () => {
   useEffect(() => {
     // Reset scroll to top on route change
     window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+
+    // Track PageView on Meta Pixel
+    if (typeof window.fbq === "function") {
+      window.fbq("track", "PageView");
+    }
   }, [location.pathname]);
 
   return null;

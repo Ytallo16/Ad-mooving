@@ -70,8 +70,8 @@ const Inscricoes = () => {
         shirt_size: ''
       }));
     }
-  // run once on mount
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -122,7 +122,7 @@ const Inscricoes = () => {
     setIsValidatingCoupon(true);
     try {
       console.log('Validando cupom:', code.trim(), 'modalidade:', formData.modality);
-      
+
       const response = await apiRequest('/api/payment/validate-coupon/', {
         method: 'POST',
         headers: {
@@ -135,14 +135,14 @@ const Inscricoes = () => {
       });
 
       console.log('Resposta da validação:', response.status, response.ok);
-      
+
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
 
       const result = await response.json();
       console.log('Resultado da validação:', result);
-      
+
       if (result.valid) {
         setCouponDiscount(result.discount_amount);
         setCouponMessage('Cupom aplicado com sucesso!');
@@ -164,12 +164,12 @@ const Inscricoes = () => {
 
   const handleCouponChange = (value: string) => {
     setCouponCode(value);
-    
+
     // Limpar timeout anterior
     if (couponTimeout) {
       clearTimeout(couponTimeout);
     }
-    
+
     // Limpar mensagens quando usuário digita
     if (!value.trim()) {
       setCouponMessage("");
@@ -187,7 +187,7 @@ const Inscricoes = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormErrors({});
-    
+
     if (!formData.athlete_declaration) {
       setFormErrors(prev => ({ ...prev, athlete_declaration: 'Você deve marcar a declaração de responsabilidade.' }));
       return;
@@ -200,7 +200,7 @@ const Inscricoes = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
       console.log('Dados enviados (raw):', formData);
 
@@ -246,12 +246,12 @@ const Inscricoes = () => {
         email: formData.course === 'KIDS' && formData.responsible_email ? formData.responsible_email : formData.email,
         phone: formData.course === 'KIDS' && formData.responsible_phone ? formData.responsible_phone : formData.phone,
       };
-      
+
       // Enviar SEMPRE o cupom digitado (backend valida e aplica desconto)
       if (couponCode.trim()) {
         payload.coupon_code = couponCode.trim().toUpperCase();
       }
-      
+
       console.log('Payload sanitizado:', payload);
       console.log('DEBUG FRONTEND: Cupom válido?', isCouponValid, 'Código:', couponCode);
 
@@ -276,7 +276,7 @@ const Inscricoes = () => {
       if (response.ok && parsedJson) {
         const result = parsedJson;
         console.log('Resultado da API:', result);
-        
+
         // Se backend marcou como auto pago (cupom 100%), pular pagamento e mostrar modal de gratuidade
         if (result?.payment?.auto_paid) {
           setRegistrationData(result);
@@ -307,12 +307,12 @@ const Inscricoes = () => {
         // Salvar dados da inscrição e mostrar modal de pagamento
         setRegistrationData(result);
         setShowPaymentModal(true);
-        
+
         toast({
           title: "Inscrição realizada com sucesso! 🎉",
           description: "Escolha sua forma de pagamento para finalizar.",
         });
-        
+
         // Resetar o formulário
         setFormData({
           full_name: "",
@@ -333,7 +333,7 @@ const Inscricoes = () => {
       } else {
         const errorData = parsedJson || rawText || 'Erro desconhecido';
         console.error('Erro da API:', errorData);
-        
+
         let errorMessage = "Corrija os campos destacados e tente novamente.";
         const aggregatedErrors: Record<string, string> = {};
         if (errorData && typeof errorData === 'object') {
@@ -374,7 +374,7 @@ const Inscricoes = () => {
   const handleInputChange = (field: string, value: string | boolean) => {
     setFormData(prev => {
       const newData: any = { ...prev, [field]: value };
-      
+
       // Sincronizar modalidade a partir do percurso
       if (field === 'course') {
         newData.modality = value === 'KIDS' ? 'INFANTIL' : 'ADULTO';
@@ -399,6 +399,16 @@ const Inscricoes = () => {
 
   const handlePaymentConfirm = async () => {
     if (!selectedPaymentMethod) return;
+
+    // Track InitiateCheckout on Meta Pixel
+    if (typeof window.fbq === "function") {
+      window.fbq("track", "InitiateCheckout", {
+        content_category: "Corrida",
+        content_name: registrationData?.course || "Inscrição",
+        currency: "BRL",
+        value: finalPrice,
+      });
+    }
 
     if (selectedPaymentMethod === 'card') {
       try {
@@ -500,7 +510,7 @@ const Inscricoes = () => {
           setPixData(data);
           setShowPixModal(true);
           setPixStatus('pending');
-          
+
           // Iniciar polling para verificar status
           startPixStatusPolling(data.pix_id);
         } else {
@@ -626,7 +636,7 @@ const Inscricoes = () => {
   const formatCPF = (value: string) => {
     // Remove tudo que não é dígito
     const cleanValue = value.replace(/\D/g, '');
-    
+
     // Aplica a máscara
     if (cleanValue.length <= 11) {
       return cleanValue.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
@@ -669,27 +679,27 @@ const Inscricoes = () => {
         <div className="absolute bottom-20 left-10 w-72 h-72 bg-race-primary/8 rounded-full blur-3xl"></div>
         <div className="absolute bottom-60 right-20 w-64 h-64 bg-race-secondary/12 rounded-full blur-2xl"></div>
       </div>
-      
+
       {/* Elementos decorativos laterais */}
       <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-race-primary/20 to-transparent"></div>
       <div className="absolute right-0 top-0 h-full w-1 bg-gradient-to-b from-transparent via-race-primary/20 to-transparent"></div>
-      
+
       {/* Padrão de círculos flutuantes - reduzido para melhor performance */}
       <div className="absolute left-4 top-1/4 w-3 h-3 bg-race-primary/30 rounded-full animate-pulse-slow"></div>
       <div className="absolute left-8 top-1/2 w-2 h-2 bg-race-secondary/40 rounded-full animate-pulse-slow delay-500"></div>
-      
+
       <div className="absolute right-4 top-1/3 w-3 h-3 bg-race-primary/30 rounded-full animate-pulse-slow delay-300"></div>
       <div className="absolute right-8 top-2/3 w-2 h-2 bg-race-secondary/40 rounded-full animate-pulse-slow delay-800"></div>
-      
+
       {/* Elementos geométricos - reduzidos */}
       <div className="absolute top-32 left-16 w-8 h-8 border-2 border-race-primary/20 rotate-45 animate-pulse-slow"></div>
       <div className="absolute bottom-32 right-24 w-6 h-6 border border-race-primary/15 rounded-full animate-pulse-slow delay-1000"></div>
-      
+
       <Navbar />
-      
-     
-     
-      
+
+
+
+
       <div className="pt-24 pb-12 px-4 relative z-10">
         <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-12">
@@ -737,7 +747,7 @@ const Inscricoes = () => {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="border-race-primary-light bg-white/80 backdrop-blur-sm shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-race-primary">Informações do Evento</CardTitle>
@@ -798,7 +808,7 @@ const Inscricoes = () => {
               </Card>
 
             </div>
-            
+
             {/* Formulário principal */}
             <div className="lg:col-span-2">
               <Card className="shadow-xl border-race-primary-light bg-white/95 backdrop-blur-sm">
@@ -808,12 +818,12 @@ const Inscricoes = () => {
                     Todas as informações são obrigatórias
                   </CardDescription>
                 </CardHeader>
-                
+
                 <CardContent className="p-6">
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="full_name">{formData.course==='KIDS' ? 'Nome completo da criança *' : 'Nome Completo *'}</Label>
+                        <Label htmlFor="full_name">{formData.course === 'KIDS' ? 'Nome completo da criança *' : 'Nome Completo *'}</Label>
                         <Input
                           id="full_name"
                           value={formData.full_name}
@@ -858,7 +868,7 @@ const Inscricoes = () => {
                           />
                           {formErrors.email && <p className="text-sm text-red-600">{formErrors.email}</p>}
                         </div>
-                        
+
                         <div className="space-y-2">
                           <Label htmlFor="phone">Telefone (WhatsApp) *</Label>
                           <Input
@@ -889,9 +899,9 @@ const Inscricoes = () => {
                           minDate="1920-01-01"
                         />
                         {formErrors.birth_date && <p className="text-sm text-red-600">{formErrors.birth_date}</p>}
-                    
+
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="gender">Sexo *</Label>
                         <Select value={formData.gender} onValueChange={(value) => handleInputChange("gender", value)}>
@@ -923,7 +933,7 @@ const Inscricoes = () => {
                         </Select>
                         {formErrors.course && <p className="text-sm text-red-600">{formErrors.course}</p>}
                       </div>
-                      
+
                       <div className="space-y-2">
                         <Label htmlFor="shirt_size">Tamanho da Camisa *</Label>
                         <Select value={formData.shirt_size} onValueChange={(value) => handleInputChange("shirt_size", value)}>
@@ -939,7 +949,7 @@ const Inscricoes = () => {
                           </SelectContent>
                         </Select>
                         {formErrors.shirt_size && <p className="text-sm text-red-600">{formErrors.shirt_size}</p>}
-                        <p className="text-xs text-muted-foreground">{formData.course==='KIDS' ? 'Tamanhos infantis 4, 6, 8, 10, 12 anos' : 'Tamanhos adulto: Tradicional PP a XXG'}</p>
+                        <p className="text-xs text-muted-foreground">{formData.course === 'KIDS' ? 'Tamanhos infantis 4, 6, 8, 10, 12 anos' : 'Tamanhos adulto: Tradicional PP a XXG'}</p>
                       </div>
                     </div>
 
@@ -949,30 +959,30 @@ const Inscricoes = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                           <div className="space-y-2">
                             <Label htmlFor="responsible_full_name">Nome do Responsável *</Label>
-                          <Input id="responsible_full_name" value={formData.responsible_full_name} onChange={(e)=>handleInputChange('responsible_full_name', e.target.value)} required={formData.course==='KIDS'} />
-                          {formErrors.responsible_full_name && <p className="text-sm text-red-600">{formErrors.responsible_full_name}</p>}
+                            <Input id="responsible_full_name" value={formData.responsible_full_name} onChange={(e) => handleInputChange('responsible_full_name', e.target.value)} required={formData.course === 'KIDS'} />
+                            {formErrors.responsible_full_name && <p className="text-sm text-red-600">{formErrors.responsible_full_name}</p>}
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_cpf">CPF do Responsável *</Label>
                             <Input
                               id="responsible_cpf"
                               value={formatCPF(formData.responsible_cpf)}
-                              onChange={(e)=>handleInputChange('responsible_cpf', e.target.value.replace(/\D/g,'').slice(0,11))}
+                              onChange={(e) => handleInputChange('responsible_cpf', e.target.value.replace(/\D/g, '').slice(0, 11))}
                               onKeyDown={allowOnlyDigitsKeyDown}
                               inputMode="numeric"
                               placeholder="000.000.000-00"
-                              required={formData.course==='KIDS'}
+                              required={formData.course === 'KIDS'}
                             />
                             {formErrors.responsible_cpf && <p className="text-sm text-red-600">{formErrors.responsible_cpf}</p>}
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_email">Email do Responsável *</Label>
-                            <Input id="responsible_email" type="email" value={formData.responsible_email} onChange={(e)=>handleInputChange('responsible_email', e.target.value)} required={formData.course==='KIDS'} />
+                            <Input id="responsible_email" type="email" value={formData.responsible_email} onChange={(e) => handleInputChange('responsible_email', e.target.value)} required={formData.course === 'KIDS'} />
                             {formErrors.responsible_email && <p className="text-sm text-red-600">{formErrors.responsible_email}</p>}
                           </div>
                           <div className="space-y-2">
                             <Label htmlFor="responsible_phone">Telefone do Responsável *</Label>
-                            <Input id="responsible_phone" value={formatPhone(formData.responsible_phone)} onChange={(e)=>handleInputChange('responsible_phone', e.target.value.replace(/\D/g,''))} placeholder="(11) 99999-9999" required={formData.course==='KIDS'} />
+                            <Input id="responsible_phone" value={formatPhone(formData.responsible_phone)} onChange={(e) => handleInputChange('responsible_phone', e.target.value.replace(/\D/g, ''))} placeholder="(11) 99999-9999" required={formData.course === 'KIDS'} />
                             {formErrors.responsible_phone && <p className="text-sm text-red-600">{formErrors.responsible_phone}</p>}
                           </div>
                         </div>
@@ -998,8 +1008,8 @@ const Inscricoes = () => {
                           Declaração de Responsabilidade *
                         </Label>
                         <p className="text-xs text-muted-foreground leading-relaxed">
-                          Eu, atleta inscrito, assumo e expressamente declaro que sou conhecedor do meu estado de saúde e 
-                          capacidade atlética e que treinei adequadamente para o evento. Declaro ainda que estou ciente dos 
+                          Eu, atleta inscrito, assumo e expressamente declaro que sou conhecedor do meu estado de saúde e
+                          capacidade atlética e que treinei adequadamente para o evento. Declaro ainda que estou ciente dos
                           riscos inerentes à prática esportiva e isento os organizadores de qualquer responsabilidade.
                         </p>
                       </div>
@@ -1044,8 +1054,8 @@ const Inscricoes = () => {
                       </div>
                     </div>
 
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       disabled={isLoading}
                       className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                     >
@@ -1058,7 +1068,7 @@ const Inscricoes = () => {
           </div>
         </div>
       </div>
-      
+
       <Footer />
       <InstagramFloat />
 
@@ -1075,7 +1085,7 @@ const Inscricoes = () => {
               Selecione como deseja pagar sua inscrição
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             {/* Campo de Cupom de Desconto movido para o formulário principal */}
 
@@ -1084,31 +1094,28 @@ const Inscricoes = () => {
             </div>
 
             {/* Opção Cartão de Crédito */}
-            <div 
-              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                selectedPaymentMethod === 'card' 
-                  ? 'border-race-primary bg-race-primary/5' 
+            <div
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === 'card'
+                  ? 'border-race-primary bg-race-primary/5'
                   : 'border-gray-200 hover:border-race-primary/50'
-              }`}
+                }`}
               onClick={() => handlePaymentMethodSelect('card')}
             >
               <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-full ${
-                  selectedPaymentMethod === 'card' 
-                    ? 'bg-race-primary text-white' 
+                <div className={`p-2 rounded-full ${selectedPaymentMethod === 'card'
+                    ? 'bg-race-primary text-white'
                     : 'bg-gray-100 text-gray-600'
-                }`}>
+                  }`}>
                   <CreditCard className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">Cartão de Crédito</h3>
                   <p className="text-sm text-gray-600">Pague com segurança via Stripe</p>
                 </div>
-                <div className={`w-4 h-4 rounded-full border-2 ${
-                  selectedPaymentMethod === 'card' 
-                    ? 'border-race-primary bg-race-primary' 
+                <div className={`w-4 h-4 rounded-full border-2 ${selectedPaymentMethod === 'card'
+                    ? 'border-race-primary bg-race-primary'
                     : 'border-gray-300'
-                }`}>
+                  }`}>
                   {selectedPaymentMethod === 'card' && (
                     <div className="w-full h-full rounded-full bg-white scale-50"></div>
                   )}
@@ -1117,31 +1124,28 @@ const Inscricoes = () => {
             </div>
 
             {/* Opção PIX */}
-            <div 
-              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                selectedPaymentMethod === 'pix' 
-                  ? 'border-race-primary bg-race-primary/5' 
+            <div
+              className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${selectedPaymentMethod === 'pix'
+                  ? 'border-race-primary bg-race-primary/5'
                   : 'border-gray-200 hover:border-race-primary/50'
-              }`}
+                }`}
               onClick={() => handlePaymentMethodSelect('pix')}
             >
               <div className="flex items-center space-x-3">
-                <div className={`p-2 rounded-full ${
-                  selectedPaymentMethod === 'pix' 
-                    ? 'bg-race-primary text-white' 
+                <div className={`p-2 rounded-full ${selectedPaymentMethod === 'pix'
+                    ? 'bg-race-primary text-white'
                     : 'bg-gray-100 text-gray-600'
-                }`}>
+                  }`}>
                   <Smartphone className="h-5 w-5" />
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold text-gray-900">PIX</h3>
                   <p className="text-sm text-gray-600">Pagamento instantâneo</p>
                 </div>
-                <div className={`w-4 h-4 rounded-full border-2 ${
-                  selectedPaymentMethod === 'pix' 
-                    ? 'border-race-primary bg-race-primary' 
+                <div className={`w-4 h-4 rounded-full border-2 ${selectedPaymentMethod === 'pix'
+                    ? 'border-race-primary bg-race-primary'
                     : 'border-gray-300'
-                }`}>
+                  }`}>
                   {selectedPaymentMethod === 'pix' && (
                     <div className="w-full h-full rounded-full bg-white scale-50"></div>
                   )}
@@ -1171,14 +1175,14 @@ const Inscricoes = () => {
           </div>
 
           <DialogFooter className="flex-col sm:flex-row gap-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handlePaymentCancel}
               className="w-full sm:w-auto"
             >
               Cancelar
             </Button>
-            <Button 
+            <Button
               onClick={handlePaymentConfirm}
               disabled={!selectedPaymentMethod}
               className="w-full sm:w-auto bg-race-primary hover:bg-race-primary/90"
@@ -1198,7 +1202,7 @@ const Inscricoes = () => {
               {pixStatus === 'paid' ? 'Pagamento confirmado!' : 'Escaneie o QR Code ou copie o código para pagar'}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             {pixStatus === 'paid' ? (
               <div className="flex flex-col items-center space-y-4">
@@ -1217,9 +1221,9 @@ const Inscricoes = () => {
                 {/* QR Code */}
                 {pixData?.br_code_base64 && (
                   <div className="flex justify-center">
-                    <img 
-                      src={pixData.br_code_base64} 
-                      alt="QR Code PIX" 
+                    <img
+                      src={pixData.br_code_base64}
+                      alt="QR Code PIX"
                       className="w-64 h-64 border-2 border-gray-200 rounded-lg"
                     />
                   </div>
@@ -1245,9 +1249,9 @@ const Inscricoes = () => {
                   <div className="space-y-2">
                     <Label className="text-sm font-medium">Código PIX (Copia e Cola)</Label>
                     <div className="flex gap-2">
-                      <Input 
-                        value={pixData.br_code} 
-                        readOnly 
+                      <Input
+                        value={pixData.br_code}
+                        readOnly
                         className="font-mono text-xs"
                       />
                       <Button
@@ -1289,8 +1293,8 @@ const Inscricoes = () => {
           </div>
 
           <DialogFooter>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={handleClosePixModal}
               className="w-full"
             >

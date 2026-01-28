@@ -33,6 +33,13 @@ const PagamentoSucesso = () => {
           const data = await response.json();
           if (data.success && data.payment_status === 'paid') {
             setPaymentVerified(true);
+            // Track Purchase on Meta Pixel
+            if (typeof window.fbq === "function") {
+              window.fbq("track", "Purchase", {
+                currency: "BRL",
+                value: data.amount || 100.0,
+              });
+            }
           }
         } catch (error) {
           console.error('Erro ao verificar pagamento (Stripe):', error);
@@ -87,7 +94,7 @@ const PagamentoSucesso = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-green-50">
       <Navbar />
-      
+
       <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
         <div className="container mx-auto max-w-md">
           <Card className="shadow-2xl border-green-200 bg-white/95 backdrop-blur-sm">
@@ -124,8 +131,8 @@ const PagamentoSucesso = () => {
               </div>
 
               {/* Botão único */}
-              <Button 
-                asChild 
+              <Button
+                asChild
                 size="lg"
                 className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-lg py-6"
               >
@@ -147,7 +154,7 @@ const PagamentoSucesso = () => {
           </Card>
         </div>
       </div>
-      
+
       <Footer />
       <InstagramFloat />
     </div>

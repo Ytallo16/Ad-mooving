@@ -122,6 +122,13 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
+    'CORRIDA10': {
+        'discount_amount': 10.00,
+        'description': 'Desconto de R$ 10,00',
+        'valid_for_kids': True,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
     # Cupom de inscrição 100% grátis (auto-confirma sem pagamento)
     'K7M9P2X4': {
         # discount_amount será calculado dinamicamente conforme modalidade
