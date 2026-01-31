@@ -138,14 +138,13 @@ AVAILABLE_COUPONS = {
         'is_active': True,
         'free': True,
     },
-    # Adicione mais cupons aqui conforme necessário
-    # 'PROMO20': {
-    #     'discount_amount': 10.00,
-    #     'description': 'Desconto de R$ 10,00',
-    #     'valid_for_kids': False,
-    #     'valid_for_adult': True,
-    #     'is_active': True,
-    # },
+    'ADDIRCEU20': {
+        'discount_amount': 20.00,
+        'description': 'Desconto de R$ 20,00',
+        'valid_for_kids': False,
+        'valid_for_adult': True,
+        'is_active': True,
+    },
 }
 
 def validate_coupon_code(coupon_code, modality=None):
