@@ -52,7 +52,7 @@ AVAILABLE_COUPONS = {
         'valid_for_adult': True,
         'is_active': True,
     },
-     'KAREN10': {
+    'KAREN10': {
         'discount_amount': 10.00,
         'description': 'Desconto de R$ 10,00',
         'valid_for_kids': True,
@@ -79,13 +79,6 @@ AVAILABLE_COUPONS = {
         'valid_for_kids': False,
         'valid_for_adult': True,
         'is_active': True,
-    },
-    'ADDIRCEU20': {
-        'discount_amount': 20.00,
-        'description': 'Desconto de R$ 20,00',
-        'valid_for_kids': False,
-        'valid_for_adult': True,
-        'is_active': False,
     },
     'ADKIDS10': {
         'discount_amount': 10.00,
