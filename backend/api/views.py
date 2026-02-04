@@ -1153,8 +1153,8 @@ def check_pix_status(request):
 
 @extend_schema(
     tags=['admin'],
-    summary='Listar inscrições pagas',
-    description='Lista todas as inscrições com status PAID ordenadas alfabeticamente',
+    summary='Listar inscrições com número de registro',
+    description='Lista todas as inscrições com número de registro preenchido ordenadas alfabeticamente',
     responses={
         200: {
             'description': 'Lista de inscrições pagas',
@@ -1187,11 +1187,13 @@ def check_pix_status(request):
 @permission_classes([AllowAny])
 def list_paid_registrations(request):
     """
-    Lista todas as inscrições pagas ordenadas alfabeticamente
+    Lista todas as inscrições com número de registro preenchido ordenadas alfabeticamente
     """
     try:
-        registrations = RaceRegistration.objects.filter(
-            payment_status='PAID'
+        registrations = RaceRegistration.objects.exclude(
+            registration_number__isnull=True
+        ).exclude(
+            registration_number=''
         ).order_by('full_name')
         
         data = []

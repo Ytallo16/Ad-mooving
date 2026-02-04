@@ -79,13 +79,13 @@ export default function GerenciarEmails() {
   // Reenviar email
   const handleResendEmail = async (registrationId: number) => {
     setSendingEmail(registrationId);
-    
+
     try {
       const response = await apiRequest('/api/admin/resend-email/', {
         method: 'POST',
         body: JSON.stringify({ registration_id: registrationId }),
       });
-      
+
       const data = await response.json();
 
       if (data.success) {
@@ -93,7 +93,7 @@ export default function GerenciarEmails() {
           title: "✅ Email enviado com sucesso!",
           description: "O email de confirmação foi reenviado.",
         });
-        
+
         // Atualizar o status na lista
         setRegistrations(prev =>
           prev.map(reg =>
@@ -132,7 +132,7 @@ export default function GerenciarEmails() {
                   Gerenciar Emails de Confirmação
                 </CardTitle>
                 <CardDescription className="text-base mt-2">
-                  Lista de inscrições pagas - Reenvie emails de confirmação
+                  Lista de inscrições com número de registro - Reenvie emails de confirmação
                 </CardDescription>
               </div>
               <Button
@@ -173,7 +173,7 @@ export default function GerenciarEmails() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-green-50 dark:bg-green-950/20">
                 <CardContent className="pt-6">
                   <div className="text-center">
@@ -184,7 +184,7 @@ export default function GerenciarEmails() {
                   </div>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-orange-50 dark:bg-orange-950/20">
                 <CardContent className="pt-6">
                   <div className="text-center">
@@ -243,7 +243,7 @@ export default function GerenciarEmails() {
                                   </div>
                                 </div>
                               </div>
-                              
+
                               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
                                 <div>
                                   <span className="font-medium">Email:</span> {reg.email}
