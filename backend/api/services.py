@@ -364,10 +364,10 @@ def create_stripe_checkout_session(registration, base_url: str | None = None, co
     try:
         # Determinar o valor baseado na modalidade
         if registration.modality == 'INFANTIL':
-            amount = 5000  # R$ 50,00 em centavos
+            amount = 7000  # R$ 70,00 em centavos
             description = f"Inscrição Infantil - Corrida Ad-moving - {registration.full_name}"
         else:
-            amount = 8000  # R$ 80,00 em centavos  
+            amount = 10000  # R$ 100,00 em centavos  
             description = f"Inscrição Adulto - Corrida Ad-moving - {registration.full_name}"
         
         # Aplicar desconto do cupom se fornecido
