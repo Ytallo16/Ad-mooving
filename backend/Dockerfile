@@ -35,4 +35,4 @@ USER appuser
 EXPOSE 8000
 
 # Comando de inicialização
-CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 120"]
+CMD ["sh", "-c", "python manage.py migrate --noinput && gunicorn backend.wsgi:application --bind 0.0.0.0:8000 --workers 4 --timeout 30 --graceful-timeout 15 --max-requests 1000 --max-requests-jitter 50"]

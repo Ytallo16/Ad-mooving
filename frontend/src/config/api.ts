@@ -18,7 +18,7 @@ export const createAuthHeaders = (additionalHeaders: Record<string, string> = {}
 
 // Função para fazer requisições autenticadas
 export const apiRequest = async (
-  endpoint: string, 
+  endpoint: string,
   options: RequestInit = {}
 ): Promise<Response> => {
   const defaultOptions: RequestInit = { headers: createAuthHeaders() };
@@ -32,11 +32,11 @@ export const apiRequest = async (
   const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
   const primaryUrl = isDev ? API_CONFIG.FALLBACK_BASE_URL : API_CONFIG.PRIMARY_BASE_URL;
   const fallbackUrl = isDev ? API_CONFIG.PRIMARY_BASE_URL : API_CONFIG.FALLBACK_BASE_URL;
-  
+
   console.log(`Tentando ${primaryUrl}${endpoint}`);
-  
+
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
+  const timeout = setTimeout(() => controller.abort(), 30000);
   try {
     const res = await fetch(`${primaryUrl}${endpoint}`, { ...mergedOptions, signal: controller.signal });
     clearTimeout(timeout);

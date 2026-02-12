@@ -819,10 +819,13 @@ def create_abacatepay_pix(registration, coupon_code: str | None = None):
         
         data = result.get('data', {})
         
-        # Salvar dados do PIX na inscrição
-        registration.abacatepay_pix_id = data.get('id')
-        registration.payment_amount = amount / 100  # Converter centavos para reais
-        registration.save(update_fields=['abacatepay_pix_id', 'payment_amount'])
+        # Salvar dados do PIX na inscrição (não bloquear retorno se falhar)
+        try:
+            registration.abacatepay_pix_id = data.get('id')
+            registration.payment_amount = amount / 100  # Converter centavos para reais
+            registration.save(update_fields=['abacatepay_pix_id', 'payment_amount'])
+        except Exception as save_err:
+            print(f"WARN ABACATE: Falha ao salvar pix_id no banco: {save_err}")
         
         return {
             'success': True,
@@ -902,12 +905,17 @@ def check_abacatepay_payment_status(pix_id: str):
         url = f"{ABACATEPAY_BASE_URL}/pixQrCode/check"
         params = {"id": pix_id}
         
+        print(f"DEBUG ABACATE CHECK: Verificando status - PIX ID: {pix_id}")
+        
         response = requests.get(
             url,
             params=params,
             headers=ABACATEPAY_HEADERS,
             timeout=10
         )
+        
+        print(f"DEBUG ABACATE CHECK: Status HTTP: {response.status_code}")
+        print(f"DEBUG ABACATE CHECK: Resposta: {response.text[:500]}")
         
         if response.status_code >= 400:
             return {
@@ -916,16 +924,21 @@ def check_abacatepay_payment_status(pix_id: str):
             }
         
         result = response.json()
-        data = result.get('data', {})
+        data = result.get('data') or {}
+        
+        pix_status = data.get('status')
+        print(f"DEBUG ABACATE CHECK: Status do PIX: {pix_status}")
         
         return {
             'success': True,
-            'status': data.get('status'),
+            'status': pix_status,
             'expires_at': data.get('expiresAt')
         }
         
     except Exception as e:
         print(f"Erro ao verificar status: {e}")
+        import traceback
+        traceback.print_exc()
         return {
             'success': False,
             'error': f'Erro interno: {str(e)}'
