@@ -52,6 +52,24 @@ services:
     networks:
       - admooving_network
 
+  pix_checker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: admooving_pix_checker
+    env_file:
+      - ./backend/.env
+    environment:
+      - DEBUG=${DEBUG:-False}
+      - REDIS_URL=redis://redis:6379/1
+    user: appuser
+    command: ["sh", "/app/check_pix_loop.sh"]
+    depends_on:
+      - api
+    restart: unless-stopped
+    networks:
+      - admooving_network
+
 volumes:
   api_static:
     driver: local
