@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw } from "lucide-react";
+import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw, Download, Shirt } from "lucide-react";
 import { apiRequest } from "@/config/api";
 
 interface Registration {
@@ -13,22 +14,52 @@ interface Registration {
   cpf: string;
   email: string;
   phone: string;
+  course: string;
   course_display: string;
+  modality: string;
+  modality_display: string;
+  shirt_size: string;
+  shirt_size_display: string;
   registration_number: string;
   payment_date: string | null;
   payment_email_sent: boolean;
   created_at: string;
 }
 
+const COURSE_OPTIONS = [
+  { value: "ALL", label: "Todas as Modalidades" },
+  { value: "KIDS", label: "Kids" },
+  { value: "WALK_3K", label: "Caminhada 3KM" },
+  { value: "RUN_5K", label: "Corrida 5KM" },
+  { value: "RUN_10K", label: "Corrida 10KM" },
+];
+
+const SHIRT_SIZE_OPTIONS = [
+  { value: "ALL", label: "Todos os Tamanhos" },
+  { value: "PP", label: "PP" },
+  { value: "P", label: "P" },
+  { value: "M", label: "M" },
+  { value: "G", label: "G" },
+  { value: "GG", label: "GG" },
+  { value: "XG", label: "XG" },
+  { value: "XXG", label: "XXG" },
+  { value: "4", label: "4 anos" },
+  { value: "6", label: "6 anos" },
+  { value: "8", label: "8 anos" },
+  { value: "10", label: "10 anos" },
+  { value: "12", label: "12 anos" },
+];
+
 export default function GerenciarEmails() {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [filteredRegistrations, setFilteredRegistrations] = useState<Registration[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
+  const [courseFilter, setCourseFilter] = useState("ALL");
+  const [shirtSizeFilter, setShirtSizeFilter] = useState("ALL");
   const [sendingEmail, setSendingEmail] = useState<number | null>(null);
   const { toast } = useToast();
 
-  // Carregar inscrições pagas
   const loadRegistrations = async () => {
     setLoading(true);
     try {
@@ -60,23 +91,31 @@ export default function GerenciarEmails() {
     loadRegistrations();
   }, []);
 
-  // Filtrar inscrições por busca
   useEffect(() => {
-    if (searchTerm.trim() === "") {
-      setFilteredRegistrations(registrations);
-    } else {
-      const filtered = registrations.filter(
+    let filtered = registrations;
+
+    if (searchTerm.trim() !== "") {
+      const term = searchTerm.toLowerCase();
+      filtered = filtered.filter(
         (reg) =>
-          reg.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          reg.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          reg.full_name.toLowerCase().includes(term) ||
+          reg.email.toLowerCase().includes(term) ||
           reg.cpf.includes(searchTerm) ||
           reg.registration_number.includes(searchTerm)
       );
-      setFilteredRegistrations(filtered);
     }
-  }, [searchTerm, registrations]);
 
-  // Reenviar email
+    if (courseFilter !== "ALL") {
+      filtered = filtered.filter((reg) => reg.course === courseFilter);
+    }
+
+    if (shirtSizeFilter !== "ALL") {
+      filtered = filtered.filter((reg) => reg.shirt_size === shirtSizeFilter);
+    }
+
+    setFilteredRegistrations(filtered);
+  }, [searchTerm, courseFilter, shirtSizeFilter, registrations]);
+
   const handleResendEmail = async (registrationId: number) => {
     setSendingEmail(registrationId);
 
@@ -90,11 +129,10 @@ export default function GerenciarEmails() {
 
       if (data.success) {
         toast({
-          title: "✅ Email enviado com sucesso!",
+          title: "Email enviado com sucesso!",
           description: "O email de confirmação foi reenviado.",
         });
 
-        // Atualizar o status na lista
         setRegistrations(prev =>
           prev.map(reg =>
             reg.id === registrationId
@@ -120,6 +158,53 @@ export default function GerenciarEmails() {
     }
   };
 
+  const exportToCSV = () => {
+    if (filteredRegistrations.length === 0) return;
+
+    const headers = [
+      "Nome",
+      "CPF",
+      "Email",
+      "Telefone",
+      "Modalidade",
+      "Tamanho Camisa",
+      "Nº Inscrição",
+      "Data Pagamento",
+      "Email Enviado",
+    ];
+
+    const rows = filteredRegistrations.map((reg) => [
+      reg.full_name,
+      reg.cpf,
+      reg.email,
+      reg.phone,
+      reg.course_display,
+      reg.shirt_size_display,
+      reg.registration_number,
+      reg.payment_date
+        ? new Date(reg.payment_date).toLocaleDateString("pt-BR")
+        : "N/A",
+      reg.payment_email_sent ? "Sim" : "Não",
+    ]);
+
+    const csvContent = [headers, ...rows]
+      .map((row) =>
+        row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(";")
+      )
+      .join("\n");
+
+    const BOM = "\uFEFF";
+    const blob = new Blob([BOM + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "inscricoes_admoving.csv";
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5 py-8 px-4">
       <div className="container mx-auto max-w-7xl">
@@ -135,21 +220,32 @@ export default function GerenciarEmails() {
                   Lista de inscrições com número de registro - Reenvie emails de confirmação
                 </CardDescription>
               </div>
-              <Button
-                onClick={loadRegistrations}
-                variant="outline"
-                size="sm"
-                disabled={loading}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
-                Atualizar
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={exportToCSV}
+                  variant="outline"
+                  size="sm"
+                  disabled={loading || filteredRegistrations.length === 0}
+                >
+                  <Download className="h-4 w-4 mr-2" />
+                  Exportar Planilha
+                </Button>
+                <Button
+                  onClick={loadRegistrations}
+                  variant="outline"
+                  size="sm"
+                  disabled={loading}
+                >
+                  <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
+                  Atualizar
+                </Button>
+              </div>
             </div>
           </CardHeader>
 
           <CardContent className="pt-6">
-            {/* Busca */}
-            <div className="mb-6">
+            {/* Busca e Filtros */}
+            <div className="mb-6 space-y-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
                 <Input
@@ -158,6 +254,34 @@ export default function GerenciarEmails() {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-10 h-12 text-base"
                 />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <Select value={courseFilter} onValueChange={setCourseFilter}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Filtrar por modalidade" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {COURSE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+
+                <Select value={shirtSizeFilter} onValueChange={setShirtSizeFilter}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Filtrar por tamanho de camisa" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {SHIRT_SIZE_OPTIONS.map((opt) => (
+                      <SelectItem key={opt.value} value={opt.value}>
+                        {opt.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 
@@ -209,7 +333,9 @@ export default function GerenciarEmails() {
                 {filteredRegistrations.length === 0 ? (
                   <div className="text-center py-12">
                     <p className="text-muted-foreground text-lg">
-                      {searchTerm ? "Nenhuma inscrição encontrada com esse termo" : "Nenhuma inscrição paga encontrada"}
+                      {searchTerm || courseFilter !== "ALL" || shirtSizeFilter !== "ALL"
+                        ? "Nenhuma inscrição encontrada com os filtros aplicados"
+                        : "Nenhuma inscrição paga encontrada"}
                     </p>
                   </div>
                 ) : (
@@ -226,6 +352,10 @@ export default function GerenciarEmails() {
                                   <div className="flex flex-wrap gap-2 mt-1">
                                     <Badge variant="outline" className="text-xs">
                                       {reg.course_display}
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                      <Shirt className="h-3 w-3 mr-1" />
+                                      {reg.shirt_size_display}
                                     </Badge>
                                     <Badge variant={reg.payment_email_sent ? "default" : "secondary"} className="text-xs">
                                       {reg.payment_email_sent ? (
@@ -244,7 +374,7 @@ export default function GerenciarEmails() {
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-muted-foreground">
+                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-muted-foreground">
                                 <div>
                                   <span className="font-medium">Email:</span> {reg.email}
                                 </div>
@@ -257,6 +387,9 @@ export default function GerenciarEmails() {
                                 <div>
                                   <span className="font-medium">Nº Inscrição:</span>{" "}
                                   <span className="font-bold text-primary">{reg.registration_number}</span>
+                                </div>
+                                <div>
+                                  <span className="font-medium">Camisa:</span> {reg.shirt_size_display}
                                 </div>
                               </div>
                             </div>

@@ -35,6 +35,7 @@ const Inscricoes = () => {
   const [isCouponValid, setIsCouponValid] = useState(false);
   const [isValidatingCoupon, setIsValidatingCoupon] = useState(false);
   const [couponTimeout, setCouponTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [showPixErrorModal, setShowPixErrorModal] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     // Dados do atleta/criança
@@ -495,28 +496,20 @@ const Inscricoes = () => {
         console.log('DEBUG FRONTEND PIX: Resposta create-pix', resp.status, data);
 
         if (resp.ok && data?.success) {
-          // Fechar modal de seleção e abrir modal do PIX
           setShowPaymentModal(false);
           setPixData(data);
           setShowPixModal(true);
           setPixStatus('pending');
 
-          // Iniciar polling para verificar status
           startPixStatusPolling(data.pix_id);
         } else {
-          toast({
-            title: "Erro ao criar PIX",
-            description: data?.error || "Não foi possível criar o QR Code PIX.",
-            variant: "destructive"
-          });
+          setShowPaymentModal(false);
+          setShowPixErrorModal(true);
         }
       } catch (error) {
         console.error('Erro ao criar PIX:', error);
-        toast({
-          title: "Erro no pagamento",
-          description: "Falha ao criar PIX.",
-          variant: "destructive"
-        });
+        setShowPaymentModal(false);
+        setShowPixErrorModal(true);
       }
     }
   };
@@ -1330,6 +1323,47 @@ const Inscricoes = () => {
           </div>
           <DialogFooter>
             <Button onClick={handleCloseFreeModal} className="w-full">Ok</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Erro PIX */}
+      <Dialog open={showPixErrorModal} onOpenChange={setShowPixErrorModal}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="text-center text-xl text-red-600 flex items-center justify-center gap-2">
+              <AlertCircle className="h-6 w-6" />
+              Pagamento PIX indisponível
+            </DialogTitle>
+            <DialogDescription className="text-center text-base mt-2">
+              Não foi possível completar o pagamento via PIX no momento.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 text-sm">
+              Ocorreu um erro ao processar seu pagamento PIX. Sua inscrição foi salva e você pode finalizar o pagamento entrando em contato com nosso suporte.
+            </div>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
+              <p className="font-semibold text-green-800 mb-2">Entre em contato com o suporte:</p>
+              <a
+                href="https://wa.me/5586920012341?text=Ol%C3%A1%2C%20quero%20fazer%20minha%20inscri%C3%A7%C3%A3o%20via%20pix%20para%20a%20corrida%20ADMOVING"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition-colors"
+              >
+                <Smartphone className="h-5 w-5" />
+                Falar no WhatsApp
+              </a>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setShowPixErrorModal(false)}
+              className="w-full"
+            >
+              Fechar
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
