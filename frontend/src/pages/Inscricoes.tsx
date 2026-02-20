@@ -1341,7 +1341,7 @@ const Inscricoes = () => {
           </DialogHeader>
           <div className="space-y-4">
             <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4 text-sm">
-              Ocorreu um erro ao processar seu pagamento PIX. Sua inscrição foi salva e você pode finalizar o pagamento entrando em contato com nosso suporte.
+              Ocorreu um erro ao processar seu pagamento PIX. Entre em contato com nosso suporte para realizar sua inscrição e efetuar o pagamento.
             </div>
             <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-center">
               <p className="font-semibold text-green-800 mb-2">Entre em contato com o suporte:</p>
