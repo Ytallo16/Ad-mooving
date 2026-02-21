@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw, Download, Shirt } from "lucide-react";
+import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw, Download, Shirt, Save, Pencil } from "lucide-react";
 import { apiRequest } from "@/config/api";
 
 interface Registration {
@@ -24,6 +24,11 @@ interface Registration {
   payment_date: string | null;
   payment_email_sent: boolean;
   created_at: string;
+}
+
+interface EditState {
+  course: string;
+  cpf: string;
 }
 
 const COURSE_OPTIONS = [
@@ -58,7 +63,68 @@ export default function GerenciarEmails() {
   const [courseFilter, setCourseFilter] = useState("ALL");
   const [shirtSizeFilter, setShirtSizeFilter] = useState("ALL");
   const [sendingEmail, setSendingEmail] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editData, setEditData] = useState<EditState>({ course: "", cpf: "" });
+  const [savingId, setSavingId] = useState<number | null>(null);
   const { toast } = useToast();
+
+  const formatCPF = (value: string) => {
+    const digits = value.replace(/\D/g, "").slice(0, 11);
+    if (digits.length <= 3) return digits;
+    if (digits.length <= 6) return `${digits.slice(0, 3)}.${digits.slice(3)}`;
+    if (digits.length <= 9) return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6)}`;
+    return `${digits.slice(0, 3)}.${digits.slice(3, 6)}.${digits.slice(6, 9)}-${digits.slice(9)}`;
+  };
+
+  const startEditing = (reg: Registration) => {
+    setEditingId(reg.id);
+    setEditData({ course: reg.course, cpf: reg.cpf === "N/A" ? "" : reg.cpf });
+  };
+
+  const cancelEditing = () => {
+    setEditingId(null);
+    setEditData({ course: "", cpf: "" });
+  };
+
+  const handleSave = async (registrationId: number) => {
+    setSavingId(registrationId);
+    try {
+      const response = await apiRequest("/api/admin/update-registration/", {
+        method: "POST",
+        body: JSON.stringify({
+          registration_id: registrationId,
+          course: editData.course,
+          cpf: editData.cpf.replace(/\D/g, ""),
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: "Salvo com sucesso!", description: "Os dados da inscrição foram atualizados." });
+        setRegistrations((prev) =>
+          prev.map((reg) =>
+            reg.id === registrationId
+              ? {
+                  ...reg,
+                  course: data.registration.course,
+                  course_display: data.registration.course_display,
+                  modality: data.registration.modality,
+                  modality_display: data.registration.modality_display,
+                  cpf: data.registration.cpf,
+                }
+              : reg
+          )
+        );
+        setEditingId(null);
+        setEditData({ course: "", cpf: "" });
+      } else {
+        toast({ title: "Erro ao salvar", description: data.error || "Ocorreu um erro inesperado", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Erro ao salvar", description: "Não foi possível conectar ao servidor", variant: "destructive" });
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const loadRegistrations = async () => {
     setLoading(true);
@@ -340,85 +406,153 @@ export default function GerenciarEmails() {
                   </div>
                 ) : (
                   <div className="space-y-3">
-                    {filteredRegistrations.map((reg) => (
-                      <Card key={reg.id} className="hover:shadow-md transition-shadow">
-                        <CardContent className="p-4">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            {/* Informações */}
-                            <div className="flex-1 space-y-2">
-                              <div className="flex items-start gap-3">
-                                <div className="flex-1">
-                                  <h3 className="font-bold text-lg">{reg.full_name}</h3>
-                                  <div className="flex flex-wrap gap-2 mt-1">
-                                    <Badge variant="outline" className="text-xs">
-                                      {reg.course_display}
-                                    </Badge>
-                                    <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
-                                      <Shirt className="h-3 w-3 mr-1" />
-                                      {reg.shirt_size_display}
-                                    </Badge>
-                                    <Badge variant={reg.payment_email_sent ? "default" : "secondary"} className="text-xs">
-                                      {reg.payment_email_sent ? (
-                                        <>
-                                          <CheckCircle2 className="h-3 w-3 mr-1" />
-                                          Email enviado
-                                        </>
+                    {filteredRegistrations.map((reg) => {
+                      const isEditing = editingId === reg.id;
+                      return (
+                        <Card key={reg.id} className={`hover:shadow-md transition-shadow ${isEditing ? 'ring-2 ring-primary/50' : ''}`}>
+                          <CardContent className="p-4">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                              <div className="flex-1 space-y-2">
+                                <div className="flex items-start gap-3">
+                                  <div className="flex-1">
+                                    <h3 className="font-bold text-lg">{reg.full_name}</h3>
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                      {isEditing ? (
+                                        <Select value={editData.course} onValueChange={(val) => setEditData((prev) => ({ ...prev, course: val }))}>
+                                          <SelectTrigger className="h-7 w-[180px] text-xs">
+                                            <SelectValue placeholder="Modalidade" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {COURSE_OPTIONS.filter((o) => o.value !== "ALL").map((opt) => (
+                                              <SelectItem key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
                                       ) : (
-                                        <>
-                                          <XCircle className="h-3 w-3 mr-1" />
-                                          Email não enviado
-                                        </>
+                                        <Badge variant="outline" className="text-xs">
+                                          {reg.course_display}
+                                        </Badge>
                                       )}
-                                    </Badge>
+                                      <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                        <Shirt className="h-3 w-3 mr-1" />
+                                        {reg.shirt_size_display}
+                                      </Badge>
+                                      <Badge variant={reg.payment_email_sent ? "default" : "secondary"} className="text-xs">
+                                        {reg.payment_email_sent ? (
+                                          <>
+                                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                                            Email enviado
+                                          </>
+                                        ) : (
+                                          <>
+                                            <XCircle className="h-3 w-3 mr-1" />
+                                            Email não enviado
+                                          </>
+                                        )}
+                                      </Badge>
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-muted-foreground">
+                                  <div>
+                                    <span className="font-medium">Email:</span> {reg.email}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">CPF:</span>{" "}
+                                    {isEditing ? (
+                                      <Input
+                                        value={formatCPF(editData.cpf)}
+                                        onChange={(e) => setEditData((prev) => ({ ...prev, cpf: e.target.value }))}
+                                        className="inline-block h-7 w-[160px] text-xs"
+                                        placeholder="000.000.000-00"
+                                      />
+                                    ) : (
+                                      reg.cpf
+                                    )}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Telefone:</span> {reg.phone}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Nº Inscrição:</span>{" "}
+                                    <span className="font-bold text-primary">{reg.registration_number}</span>
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Camisa:</span> {reg.shirt_size_display}
                                   </div>
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-3 gap-2 text-sm text-muted-foreground">
-                                <div>
-                                  <span className="font-medium">Email:</span> {reg.email}
-                                </div>
-                                <div>
-                                  <span className="font-medium">CPF:</span> {reg.cpf}
-                                </div>
-                                <div>
-                                  <span className="font-medium">Telefone:</span> {reg.phone}
-                                </div>
-                                <div>
-                                  <span className="font-medium">Nº Inscrição:</span>{" "}
-                                  <span className="font-bold text-primary">{reg.registration_number}</span>
-                                </div>
-                                <div>
-                                  <span className="font-medium">Camisa:</span> {reg.shirt_size_display}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Botão de reenviar */}
-                            <div className="flex-shrink-0">
-                              <Button
-                                onClick={() => handleResendEmail(reg.id)}
-                                disabled={sendingEmail === reg.id}
-                                size="lg"
-                                className="w-full md:w-auto"
-                              >
-                                {sendingEmail === reg.id ? (
+                              <div className="flex-shrink-0 flex flex-col gap-2">
+                                {isEditing ? (
                                   <>
-                                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                                    Enviando...
+                                    <Button
+                                      onClick={() => handleSave(reg.id)}
+                                      disabled={savingId === reg.id}
+                                      size="lg"
+                                      className="w-full md:w-auto bg-green-600 hover:bg-green-700"
+                                    >
+                                      {savingId === reg.id ? (
+                                        <>
+                                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                          Salvando...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Save className="h-4 w-4 mr-2" />
+                                          Salvar
+                                        </>
+                                      )}
+                                    </Button>
+                                    <Button
+                                      onClick={cancelEditing}
+                                      variant="outline"
+                                      size="lg"
+                                      className="w-full md:w-auto"
+                                    >
+                                      Cancelar
+                                    </Button>
                                   </>
                                 ) : (
                                   <>
-                                    <Mail className="h-4 w-4 mr-2" />
-                                    Reenviar Email
+                                    <Button
+                                      onClick={() => startEditing(reg)}
+                                      variant="outline"
+                                      size="lg"
+                                      className="w-full md:w-auto"
+                                    >
+                                      <Pencil className="h-4 w-4 mr-2" />
+                                      Editar
+                                    </Button>
+                                    <Button
+                                      onClick={() => handleResendEmail(reg.id)}
+                                      disabled={sendingEmail === reg.id}
+                                      size="lg"
+                                      className="w-full md:w-auto"
+                                    >
+                                      {sendingEmail === reg.id ? (
+                                        <>
+                                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                                          Enviando...
+                                        </>
+                                      ) : (
+                                        <>
+                                          <Mail className="h-4 w-4 mr-2" />
+                                          Reenviar Email
+                                        </>
+                                      )}
+                                    </Button>
                                   </>
                                 )}
-                              </Button>
+                              </div>
                             </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    ))}
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
                   </div>
                 )}
 

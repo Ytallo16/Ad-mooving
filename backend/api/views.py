@@ -1222,6 +1222,108 @@ def list_paid_registrations(request):
 
 @extend_schema(
     tags=['admin'],
+    summary='Atualizar dados de inscrição',
+    description='Atualiza dados de uma inscrição (percurso e CPF)',
+    request={
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'registration_id': {'type': 'integer', 'description': 'ID da inscrição'},
+                'course': {'type': 'string', 'enum': ['KIDS', 'RUN_5K', 'RUN_10K', 'WALK_3K'], 'description': 'Percurso'},
+                'cpf': {'type': 'string', 'description': 'CPF (apenas dígitos)'},
+            },
+            'required': ['registration_id']
+        }
+    },
+    responses={
+        200: {'description': 'Inscrição atualizada com sucesso'},
+        400: {'description': 'Dados inválidos'},
+        404: {'description': 'Inscrição não encontrada'},
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def update_registration(request):
+    """
+    Atualiza dados de uma inscrição (percurso e CPF)
+    """
+    try:
+        registration_id = request.data.get('registration_id')
+        if not registration_id:
+            return Response({
+                'success': False,
+                'error': 'registration_id é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            registration = RaceRegistration.objects.get(id=registration_id)
+        except RaceRegistration.DoesNotExist:
+            return Response({
+                'success': False,
+                'error': 'Inscrição não encontrada'
+            }, status=status.HTTP_404_NOT_FOUND)
+
+        update_fields = ['updated_at']
+
+        new_course = request.data.get('course')
+        if new_course:
+            valid_courses = [c[0] for c in RaceRegistration.COURSE_CHOICES]
+            if new_course not in valid_courses:
+                return Response({
+                    'success': False,
+                    'error': f'Percurso inválido. Opções: {", ".join(valid_courses)}'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            registration.course = new_course
+            registration.modality = 'INFANTIL' if new_course == 'KIDS' else 'ADULTO'
+            update_fields.extend(['course', 'modality'])
+
+        new_cpf = request.data.get('cpf')
+        if new_cpf is not None:
+            cpf_clean = ''.join(filter(str.isdigit, str(new_cpf)))
+            if cpf_clean and len(cpf_clean) != 11:
+                return Response({
+                    'success': False,
+                    'error': 'CPF deve ter 11 dígitos'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            registration.cpf = cpf_clean if cpf_clean else None
+            update_fields.append('cpf')
+
+        registration.save(update_fields=update_fields)
+
+        course_code = registration.course
+        if course_code == 'WALK_3K':
+            course_display = 'Caminhada 3KM'
+        elif course_code == 'RUN_5K':
+            course_display = 'Corrida 5KM'
+        elif course_code == 'RUN_10K':
+            course_display = 'Corrida 10KM'
+        elif course_code == 'KIDS':
+            course_display = 'Kids'
+        else:
+            course_display = registration.get_modality_display()
+
+        return Response({
+            'success': True,
+            'message': 'Inscrição atualizada com sucesso',
+            'registration': {
+                'id': registration.id,
+                'course': registration.course,
+                'course_display': course_display,
+                'modality': registration.modality,
+                'modality_display': registration.get_modality_display(),
+                'cpf': registration.cpf or 'N/A',
+            }
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['admin'],
     summary='Reenviar email de confirmação',
     description='Reenvia o email de confirmação de pagamento para uma inscrição específica',
     request={
