@@ -20,6 +20,8 @@ interface Registration {
   modality_display: string;
   shirt_size: string;
   shirt_size_display: string;
+  gender: string;
+  gender_display: string;
   registration_number: string;
   payment_date: string | null;
   payment_email_sent: boolean;
@@ -29,6 +31,7 @@ interface Registration {
 interface EditState {
   course: string;
   cpf: string;
+  shirt_size: string;
 }
 
 const COURSE_OPTIONS = [
@@ -64,7 +67,7 @@ export default function GerenciarEmails() {
   const [shirtSizeFilter, setShirtSizeFilter] = useState("ALL");
   const [sendingEmail, setSendingEmail] = useState<number | null>(null);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editData, setEditData] = useState<EditState>({ course: "", cpf: "" });
+  const [editData, setEditData] = useState<EditState>({ course: "", cpf: "", shirt_size: "" });
   const [savingId, setSavingId] = useState<number | null>(null);
   const { toast } = useToast();
 
@@ -78,12 +81,12 @@ export default function GerenciarEmails() {
 
   const startEditing = (reg: Registration) => {
     setEditingId(reg.id);
-    setEditData({ course: reg.course, cpf: reg.cpf === "N/A" ? "" : reg.cpf });
+    setEditData({ course: reg.course, cpf: reg.cpf === "N/A" ? "" : reg.cpf, shirt_size: reg.shirt_size });
   };
 
   const cancelEditing = () => {
     setEditingId(null);
-    setEditData({ course: "", cpf: "" });
+    setEditData({ course: "", cpf: "", shirt_size: "" });
   };
 
   const handleSave = async (registrationId: number) => {
@@ -95,6 +98,7 @@ export default function GerenciarEmails() {
           registration_id: registrationId,
           course: editData.course,
           cpf: editData.cpf.replace(/\D/g, ""),
+          shirt_size: editData.shirt_size,
         }),
       });
       const data = await response.json();
@@ -110,12 +114,14 @@ export default function GerenciarEmails() {
                   modality: data.registration.modality,
                   modality_display: data.registration.modality_display,
                   cpf: data.registration.cpf,
+                  shirt_size: data.registration.shirt_size,
+                  shirt_size_display: data.registration.shirt_size_display,
                 }
               : reg
           )
         );
         setEditingId(null);
-        setEditData({ course: "", cpf: "" });
+        setEditData({ course: "", cpf: "", shirt_size: "" });
       } else {
         toast({ title: "Erro ao salvar", description: data.error || "Ocorreu um erro inesperado", variant: "destructive" });
       }
@@ -232,6 +238,7 @@ export default function GerenciarEmails() {
       "CPF",
       "Email",
       "Telefone",
+      "Gênero",
       "Modalidade",
       "Tamanho Camisa",
       "Nº Inscrição",
@@ -244,6 +251,7 @@ export default function GerenciarEmails() {
       reg.cpf,
       reg.email,
       reg.phone,
+      reg.gender_display || reg.gender,
       reg.course_display,
       reg.shirt_size_display,
       reg.registration_number,
@@ -435,10 +443,26 @@ export default function GerenciarEmails() {
                                           {reg.course_display}
                                         </Badge>
                                       )}
-                                      <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
-                                        <Shirt className="h-3 w-3 mr-1" />
-                                        {reg.shirt_size_display}
-                                      </Badge>
+                                      {isEditing ? (
+                                        <Select value={editData.shirt_size} onValueChange={(val) => setEditData((prev) => ({ ...prev, shirt_size: val }))}>
+                                          <SelectTrigger className="h-7 w-[140px] text-xs">
+                                            <Shirt className="h-3 w-3 mr-1" />
+                                            <SelectValue placeholder="Tamanho" />
+                                          </SelectTrigger>
+                                          <SelectContent>
+                                            {SHIRT_SIZE_OPTIONS.filter((o) => o.value !== "ALL").map((opt) => (
+                                              <SelectItem key={opt.value} value={opt.value}>
+                                                {opt.label}
+                                              </SelectItem>
+                                            ))}
+                                          </SelectContent>
+                                        </Select>
+                                      ) : (
+                                        <Badge variant="outline" className="text-xs bg-purple-50 text-purple-700 border-purple-200">
+                                          <Shirt className="h-3 w-3 mr-1" />
+                                          {reg.shirt_size_display}
+                                        </Badge>
+                                      )}
                                       <Badge variant={reg.payment_email_sent ? "default" : "secondary"} className="text-xs">
                                         {reg.payment_email_sent ? (
                                           <>

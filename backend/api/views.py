@@ -1195,6 +1195,8 @@ def list_paid_registrations(request):
                 'cpf': reg.cpf or 'N/A',
                 'email': reg.email,
                 'phone': reg.phone,
+                'gender': reg.gender,
+                'gender_display': reg.get_gender_display(),
                 'course': reg.course,
                 'course_display': course_display,
                 'modality': reg.modality,
@@ -1288,6 +1290,17 @@ def update_registration(request):
             registration.cpf = cpf_clean if cpf_clean else None
             update_fields.append('cpf')
 
+        new_shirt_size = request.data.get('shirt_size')
+        if new_shirt_size:
+            valid_sizes = [s[0] for s in RaceRegistration.SHIRT_SIZE_CHOICES] + [s[0] for s in RaceRegistration.INFANT_SHIRT_SIZE_CHOICES]
+            if new_shirt_size not in valid_sizes:
+                return Response({
+                    'success': False,
+                    'error': f'Tamanho de camisa inválido. Opções: {", ".join(valid_sizes)}'
+                }, status=status.HTTP_400_BAD_REQUEST)
+            registration.shirt_size = new_shirt_size
+            update_fields.append('shirt_size')
+
         registration.save(update_fields=update_fields)
 
         course_code = registration.course
@@ -1312,6 +1325,8 @@ def update_registration(request):
                 'modality': registration.modality,
                 'modality_display': registration.get_modality_display(),
                 'cpf': registration.cpf or 'N/A',
+                'shirt_size': registration.shirt_size,
+                'shirt_size_display': registration.get_shirt_size_display(),
             }
         }, status=status.HTTP_200_OK)
 
