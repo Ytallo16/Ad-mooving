@@ -102,6 +102,8 @@ const Index = () => {
 
   // Removido: geração de arquivo ICS. Usaremos apenas o link do Google Agenda.
 
+  const REGISTRATIONS_OPEN = false;
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />
@@ -145,11 +147,20 @@ const Index = () => {
             </div>
             <div className="text-white/80 text-sm md:text-base mt-2 md:mt-4 font-medium font-29lt">01 de Março de 2026</div>
             <div className="mt-4 md:mt-6">
-              <Link to="/inscricoes">
-                <Button className="bg-race-primary hover:bg-race-primary-dark text-white font-bold py-3 px-8 md:py-4 md:px-12 text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-white">
-                  Garantir minha inscrição
+              {REGISTRATIONS_OPEN ? (
+                <Link to="/inscricoes">
+                  <Button className="bg-race-primary hover:bg-race-primary-dark text-white font-bold py-3 px-8 md:py-4 md:px-12 text-base md:text-lg shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border-2 border-white">
+                    Garantir minha inscrição
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  disabled
+                  className="bg-gray-400 cursor-not-allowed text-white font-bold py-3 px-8 md:py-4 md:px-12 text-base md:text-lg border-2 border-white"
+                >
+                  Inscrições encerradas
                 </Button>
-              </Link>
+              )}
             </div>
           </div>
         </div>
