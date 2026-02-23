@@ -1195,6 +1195,7 @@ def list_paid_registrations(request):
                 'cpf': reg.cpf or 'N/A',
                 'email': reg.email,
                 'phone': reg.phone,
+                'birth_date': reg.birth_date.isoformat() if hasattr(reg, 'birth_date') and reg.birth_date else None,
                 'gender': reg.gender,
                 'gender_display': reg.get_gender_display(),
                 'course': reg.course,

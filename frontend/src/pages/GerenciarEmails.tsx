@@ -14,6 +14,7 @@ interface Registration {
   cpf: string;
   email: string;
   phone: string;
+  birth_date: string | null;
   course: string;
   course_display: string;
   modality: string;
@@ -238,6 +239,7 @@ export default function GerenciarEmails() {
       "CPF",
       "Email",
       "Telefone",
+      "Data Nascimento",
       "Gênero",
       "Modalidade",
       "Tamanho Camisa",
@@ -251,6 +253,9 @@ export default function GerenciarEmails() {
       reg.cpf,
       reg.email,
       reg.phone,
+      reg.birth_date
+        ? new Date(reg.birth_date).toLocaleDateString("pt-BR")
+        : "N/A",
       reg.gender_display || reg.gender,
       reg.course_display,
       reg.shirt_size_display,
@@ -499,6 +504,12 @@ export default function GerenciarEmails() {
                                   </div>
                                   <div>
                                     <span className="font-medium">Telefone:</span> {reg.phone}
+                                  </div>
+                                  <div>
+                                    <span className="font-medium">Data de Nascimento:</span>{" "}
+                                    {reg.birth_date
+                                      ? new Date(reg.birth_date).toLocaleDateString("pt-BR")
+                                      : "N/A"}
                                   </div>
                                   <div>
                                     <span className="font-medium">Nº Inscrição:</span>{" "}
