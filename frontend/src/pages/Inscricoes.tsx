@@ -717,10 +717,11 @@ const Inscricoes = () => {
         </div>
       )}
 
+      {/* Bloco de formulário original mantido apenas para referência futura; 
+          como REGISTRATIONS_OPEN está false, ele não é renderizado. */}
       {REGISTRATIONS_OPEN && (
-
-      <div className="pt-24 pb-12 px-4 relative z-10">
-        <div className="container mx-auto max-w-4xl">
+        <div className="pt-24 pb-12 px-4 relative z-10">
+          <div className="container mx-auto max-w-4xl">
           <div className="text-center mb-12">
             <div className="inline-block p-1 bg-gradient-to-r from-race-primary to-race-secondary rounded-full mb-6">
               <div className="bg-white rounded-full px-6 py-2">
@@ -1080,6 +1081,7 @@ const Inscricoes = () => {
             </div>
           </div>
         </div>
+      </div>
       )}
 
       <Footer />
