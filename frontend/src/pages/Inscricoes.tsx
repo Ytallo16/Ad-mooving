@@ -16,6 +16,8 @@ import { CreditCard, Smartphone, Copy, CheckCircle2, Clock, AlertCircle, Downloa
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { apiRequest } from "@/config/api";
 
+const REGISTRATIONS_OPEN = false;
+
 const Inscricoes = () => {
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -700,8 +702,22 @@ const Inscricoes = () => {
 
       <Navbar />
 
+      {!REGISTRATIONS_OPEN && (
+        <div className="pt-24 pb-24 px-4 relative z-10">
+          <div className="container mx-auto max-w-3xl">
+            <Card className="border-red-200 bg-red-50/80 backdrop-blur-sm shadow-lg">
+              <CardHeader className="text-center">
+                <CardTitle className="text-2xl font-bold text-red-700">Inscrições encerradas</CardTitle>
+                <CardDescription className="text-base text-red-600">
+                  As inscrições para a ADMOVING foram encerradas. Agradecemos a todos que participaram!
+                </CardDescription>
+              </CardHeader>
+            </Card>
+          </div>
+        </div>
+      )}
 
-
+      {REGISTRATIONS_OPEN && (
 
       <div className="pt-24 pb-12 px-4 relative z-10">
         <div className="container mx-auto max-w-4xl">
@@ -1057,19 +1073,14 @@ const Inscricoes = () => {
                       </div>
                     </div>
 
-                    <Button
-                      type="submit"
-                      disabled={isLoading}
-                      className="w-full bg-gradient-to-r from-race-primary to-race-secondary hover:from-race-primary-dark hover:to-race-secondary-dark text-white py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
-                    >
-                      {isLoading ? "Processando..." : "Finalizar Inscrição"}
-                    </Button>
+                    {/* Botão de finalizar inscrição removido após encerramento das inscrições */}
                   </form>
                 </CardContent>
               </Card>
             </div>
           </div>
         </div>
+      )}
       </div>
 
       <Footer />
