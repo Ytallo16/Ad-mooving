@@ -1081,7 +1081,6 @@ const Inscricoes = () => {
           </div>
         </div>
       )}
-      </div>
 
       <Footer />
       <InstagramFloat />
