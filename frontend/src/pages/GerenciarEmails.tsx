@@ -254,7 +254,7 @@ export default function GerenciarEmails() {
     }
     setSendingBroadcast(true);
     try {
-      const response = await apiRequest("/api/admin/broadcast-email/", {
+      const response = await apiRequest("/api/admin/enviar-notificacao/", {
         method: "POST",
         body: JSON.stringify({ subject: broadcastSubject, message: broadcastMessage, registration_ids: broadcastTargetIds }),
       });
