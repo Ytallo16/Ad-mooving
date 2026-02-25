@@ -254,10 +254,26 @@ export default function GerenciarEmails() {
     }
     setSendingBroadcast(true);
     try {
-      const response = await apiRequest("/api/admin/enviar-notificacao/", {
+      // Só envia IDs quando é pra um participante específico; pra todos, deixa o backend resolver
+      const payload: Record<string, unknown> = { subject: broadcastSubject, message: broadcastMessage };
+      if (broadcastTargetName) {
+        payload.registration_ids = broadcastTargetIds;
+      }
+
+      const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const baseUrl = isDev ? 'http://localhost:8000' : 'https://api.admoving.addirceu.com.br';
+
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 300000); // 5 minutos
+
+      const response = await fetch(`${baseUrl}/api/admin/enviar-notificacao/`, {
         method: "POST",
-        body: JSON.stringify({ subject: broadcastSubject, message: broadcastMessage, registration_ids: broadcastTargetIds }),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+        signal: controller.signal,
       });
+      clearTimeout(timeout);
+
       const data = await response.json();
       if (data.success) {
         toast({ title: "Emails disparados!", description: `Enviados: ${data.sent_count} | Falhas: ${data.failed_count}` });
