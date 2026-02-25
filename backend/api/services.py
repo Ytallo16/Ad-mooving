@@ -947,49 +947,115 @@ def check_abacatepay_payment_status(pix_id: str):
 
 def send_custom_broadcast_email(subject_text, message_body, registrations):
     """
-    Envia um email personalizado para uma lista de inscrições.
-    Retorna dict com sent_count e failed_count.
+    Inicia o envio de emails em background (thread) e salva progresso no cache Redis.
+    Retorna o task_id para acompanhamento.
     """
-    from email.header import Header
-    from email.utils import formataddr
+    import threading
+    import uuid
+    from django.core.cache import cache
 
-    sent_count = 0
-    failed_count = 0
+    task_id = str(uuid.uuid4())
 
-    subject = str(Header(subject_text, 'utf-8'))
-    friendly_from = formataddr((str(Header('Equipe Ad-moving', 'utf-8')), settings.DEFAULT_FROM_EMAIL))
+    # Materializa a queryset antes de passar pra thread
+    reg_list = list(registrations.values('id', 'email', 'full_name'))
+    total = len(reg_list)
 
-    # Monta um HTML simples a partir do corpo de texto
-    html_body = f"""
-    <html>
-    <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
-            <h1 style="color: #fff; margin: 0; font-size: 24px;">Corrida Ad-moving</h1>
-        </div>
-        <div style="padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
-            {message_body.replace(chr(10), '<br>')}
-        </div>
-        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #6b7280;">
-            Equipe Ad-moving &bull; admoving@addirceu.com.br
-        </p>
-    </body>
-    </html>
-    """
+    # Salva estado inicial no cache (expira em 30 min)
+    cache.set(f'broadcast_{task_id}', {
+        'status': 'running',
+        'total': total,
+        'sent_count': 0,
+        'failed_count': 0,
+        'current_email': '',
+        'current_name': '',
+    }, timeout=1800)
 
-    for registration in registrations:
+    def _send_emails():
+        from email.header import Header
+        from email.utils import formataddr
+        from django.core.mail import get_connection
+
+        sent_count = 0
+        failed_count = 0
+
+        subject = str(Header(subject_text, 'utf-8'))
+        friendly_from = formataddr((str(Header('Equipe Ad-moving', 'utf-8')), settings.DEFAULT_FROM_EMAIL))
+
+        html_body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+                <h1 style="color: #fff; margin: 0; font-size: 24px;">Corrida Ad-moving</h1>
+            </div>
+            <div style="padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+                {message_body.replace(chr(10), '<br>')}
+            </div>
+            <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #6b7280;">
+                Equipe Ad-moving &bull; admoving@addirceu.com.br
+            </p>
+        </body>
+        </html>
+        """
+
+        connection = get_connection(fail_silently=True)
         try:
-            email = EmailMultiAlternatives(
-                subject=subject,
-                body=message_body,
-                from_email=friendly_from,
-                to=[registration.email],
-            )
-            email.encoding = 'utf-8'
-            email.attach_alternative(html_body, 'text/html; charset=utf-8')
-            email.send(fail_silently=False)
-            sent_count += 1
+            connection.open()
         except Exception as e:
-            print(f"Erro ao enviar email para {registration.email}: {e}")
-            failed_count += 1
+            print(f"Erro ao abrir conexão SMTP: {e}")
+            cache.set(f'broadcast_{task_id}', {
+                'status': 'done',
+                'total': total,
+                'sent_count': 0,
+                'failed_count': total,
+                'current_email': '',
+                'current_name': '',
+                'error': f'Erro SMTP: {str(e)}',
+            }, timeout=1800)
+            return
 
-    return {'sent_count': sent_count, 'failed_count': failed_count}
+        for reg in reg_list:
+            # Atualiza progresso antes de enviar
+            cache.set(f'broadcast_{task_id}', {
+                'status': 'running',
+                'total': total,
+                'sent_count': sent_count,
+                'failed_count': failed_count,
+                'current_email': reg['email'],
+                'current_name': reg['full_name'],
+            }, timeout=1800)
+
+            try:
+                email = EmailMultiAlternatives(
+                    subject=subject,
+                    body=message_body,
+                    from_email=friendly_from,
+                    to=[reg['email']],
+                    connection=connection,
+                )
+                email.encoding = 'utf-8'
+                email.attach_alternative(html_body, 'text/html; charset=utf-8')
+                email.send(fail_silently=False)
+                sent_count += 1
+            except Exception as e:
+                print(f"Erro ao enviar email para {reg['email']}: {e}")
+                failed_count += 1
+
+        try:
+            connection.close()
+        except Exception:
+            pass
+
+        # Marca como concluído
+        cache.set(f'broadcast_{task_id}', {
+            'status': 'done',
+            'total': total,
+            'sent_count': sent_count,
+            'failed_count': failed_count,
+            'current_email': '',
+            'current_name': '',
+        }, timeout=1800)
+
+    thread = threading.Thread(target=_send_emails, daemon=True)
+    thread.start()
+
+    return task_id

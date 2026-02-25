@@ -31,6 +31,7 @@ urlpatterns = [
     path('admin/resend-email/', views.resend_confirmation_email, name='resend_confirmation_email'),
     path('admin/update-registration/', views.update_registration, name='update_registration'),
     path('admin/enviar-notificacao/', views.send_broadcast_email, name='send_broadcast_email'),
+    path('admin/status-notificacao/<str:task_id>/', views.check_broadcast_status, name='check_broadcast_status'),
     
     path('', include(router.urls)),  # Inclui as URLs do router
 ] 

@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw, Download, Shirt, Save, Pencil, Send } from "lucide-react";
+import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw, Download, Shirt, Save, Pencil, Send, CheckCheck } from "lucide-react";
 import { apiRequest } from "@/config/api";
 
 interface Registration {
@@ -78,6 +78,13 @@ export default function GerenciarEmails() {
   const [sendingBroadcast, setSendingBroadcast] = useState(false);
   const [broadcastTargetIds, setBroadcastTargetIds] = useState<number[]>([]);
   const [broadcastTargetName, setBroadcastTargetName] = useState("");
+  const [broadcastProgress, setBroadcastProgress] = useState<{
+    status: string;
+    total: number;
+    sent_count: number;
+    failed_count: number;
+    current_name: string;
+  } | null>(null);
 
   const openBroadcastFor = (ids: number[], name?: string) => {
     setBroadcastTargetIds(ids);
@@ -253,8 +260,9 @@ export default function GerenciarEmails() {
       return;
     }
     setSendingBroadcast(true);
+    setBroadcastProgress(null);
+
     try {
-      // Só envia IDs quando é pra um participante específico; pra todos, deixa o backend resolver
       const payload: Record<string, unknown> = { subject: broadcastSubject, message: broadcastMessage };
       if (broadcastTargetName) {
         payload.registration_ids = broadcastTargetIds;
@@ -263,29 +271,52 @@ export default function GerenciarEmails() {
       const isDev = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
       const baseUrl = isDev ? 'http://localhost:8000' : 'https://api.admoving.addirceu.com.br';
 
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 300000); // 5 minutos
-
       const response = await fetch(`${baseUrl}/api/admin/enviar-notificacao/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
-        signal: controller.signal,
       });
-      clearTimeout(timeout);
 
       const data = await response.json();
-      if (data.success) {
-        toast({ title: "Emails disparados!", description: `Enviados: ${data.sent_count} | Falhas: ${data.failed_count}` });
-        setBroadcastOpen(false);
-        setBroadcastSubject("");
-        setBroadcastMessage("");
-      } else {
+      if (!data.success) {
         toast({ title: "Erro ao disparar emails", description: data.error || "Erro inesperado", variant: "destructive" });
+        setSendingBroadcast(false);
+        return;
       }
+
+      const taskId = data.task_id;
+
+      // Polling do progresso
+      const poll = setInterval(async () => {
+        try {
+          const statusRes = await fetch(`${baseUrl}/api/admin/status-notificacao/${taskId}/`);
+          const statusData = await statusRes.json();
+
+          if (statusData.success) {
+            setBroadcastProgress({
+              status: statusData.status,
+              total: statusData.total,
+              sent_count: statusData.sent_count,
+              failed_count: statusData.failed_count,
+              current_name: statusData.current_name || '',
+            });
+
+            if (statusData.status === 'done') {
+              clearInterval(poll);
+              setSendingBroadcast(false);
+              toast({
+                title: "Envio concluído!",
+                description: `Enviados: ${statusData.sent_count} | Falhas: ${statusData.failed_count}`,
+              });
+            }
+          }
+        } catch {
+          // Ignora erros de polling, tenta de novo no próximo intervalo
+        }
+      }, 1500);
+
     } catch {
       toast({ title: "Erro ao disparar emails", description: "Não foi possível conectar ao servidor", variant: "destructive" });
-    } finally {
       setSendingBroadcast(false);
     }
   };
@@ -681,7 +712,7 @@ export default function GerenciarEmails() {
       </div>
 
       {/* Modal de Disparo de Email em Massa */}
-      <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
+      <Dialog open={broadcastOpen} onOpenChange={(open) => { if (!sendingBroadcast) setBroadcastOpen(open); }}>
         <DialogContent className="sm:max-w-[550px]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
@@ -697,50 +728,93 @@ export default function GerenciarEmails() {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4 py-2">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Assunto</label>
-              <Input
-                placeholder="Ex: Informações importantes sobre a corrida"
-                value={broadcastSubject}
-                onChange={(e) => setBroadcastSubject(e.target.value)}
-              />
+          {/* Progresso em tempo real */}
+          {sendingBroadcast && broadcastProgress ? (
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium">
+                    {broadcastProgress.status === 'done' ? (
+                      <span className="flex items-center gap-1 text-green-600">
+                        <CheckCheck className="h-4 w-4" /> Envio concluído!
+                      </span>
+                    ) : (
+                      <span className="flex items-center gap-1">
+                        <Loader2 className="h-4 w-4 animate-spin" /> Enviando...
+                      </span>
+                    )}
+                  </span>
+                  <span className="text-muted-foreground">
+                    {broadcastProgress.sent_count + broadcastProgress.failed_count} de {broadcastProgress.total}
+                  </span>
+                </div>
+                {/* Barra de progresso */}
+                <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${broadcastProgress.status === 'done' ? 'bg-green-500' : 'bg-blue-500'
+                      }`}
+                    style={{ width: `${broadcastProgress.total > 0 ? ((broadcastProgress.sent_count + broadcastProgress.failed_count) / broadcastProgress.total) * 100 : 0}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span className="text-green-600">✓ Enviados: {broadcastProgress.sent_count}</span>
+                  {broadcastProgress.failed_count > 0 && (
+                    <span className="text-red-500">✕ Falhas: {broadcastProgress.failed_count}</span>
+                  )}
+                </div>
+              </div>
+              {broadcastProgress.current_name && broadcastProgress.status !== 'done' && (
+                <div className="text-sm text-muted-foreground bg-muted/50 rounded-lg p-3">
+                  Enviando para: <strong>{broadcastProgress.current_name}</strong>
+                </div>
+              )}
+              {broadcastProgress.status === 'done' && (
+                <div className="flex justify-end">
+                  <Button onClick={() => { setBroadcastOpen(false); setBroadcastProgress(null); setBroadcastSubject(""); setBroadcastMessage(""); }}>
+                    Fechar
+                  </Button>
+                </div>
+              )}
             </div>
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Mensagem</label>
-              <Textarea
-                placeholder="Escreva aqui o conteúdo do email..."
-                value={broadcastMessage}
-                onChange={(e) => setBroadcastMessage(e.target.value)}
-                rows={8}
-              />
-            </div>
-          </div>
+          ) : (
+            <>
+              <div className="space-y-4 py-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Assunto</label>
+                  <Input
+                    placeholder="Ex: Informações importantes sobre a corrida"
+                    value={broadcastSubject}
+                    onChange={(e) => setBroadcastSubject(e.target.value)}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Mensagem</label>
+                  <Textarea
+                    placeholder="Escreva aqui o conteúdo do email..."
+                    value={broadcastMessage}
+                    onChange={(e) => setBroadcastMessage(e.target.value)}
+                    rows={8}
+                  />
+                </div>
+              </div>
 
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setBroadcastOpen(false)} disabled={sendingBroadcast}>
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleBroadcastEmail}
-              disabled={sendingBroadcast || !broadcastSubject.trim() || !broadcastMessage.trim()}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              {sendingBroadcast ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Enviando...
-                </>
-              ) : (
-                <>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setBroadcastOpen(false)} disabled={sendingBroadcast}>
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleBroadcastEmail}
+                  disabled={sendingBroadcast || !broadcastSubject.trim() || !broadcastMessage.trim()}
+                  className="bg-green-600 hover:bg-green-700"
+                >
                   <Send className="h-4 w-4 mr-2" />
                   {broadcastTargetName ? `Enviar para ${broadcastTargetName}` : `Enviar para ${broadcastTargetIds.length} participante(s)`}
-                </>
-              )}
-            </Button>
-          </DialogFooter>
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </DialogContent>
-      </Dialog >
-    </div >
+      </Dialog>
+    </div>
   );
 }

@@ -1489,9 +1489,9 @@ def send_broadcast_email(request):
 
         return Response({
             'success': True,
-            'sent_count': result['sent_count'],
-            'failed_count': result['failed_count'],
-            'message': f"Emails enviados: {result['sent_count']}, falhas: {result['failed_count']}"
+            'task_id': result,
+            'total': registrations.count(),
+            'message': 'Envio iniciado em background'
         }, status=status.HTTP_200_OK)
 
     except Exception as e:
@@ -1499,3 +1499,24 @@ def send_broadcast_email(request):
             'success': False,
             'error': f'Erro interno: {str(e)}'
         }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def check_broadcast_status(request, task_id):
+    """
+    Retorna o status atual do envio em massa
+    """
+    from django.core.cache import cache
+
+    progress = cache.get(f'broadcast_{task_id}')
+    if not progress:
+        return Response({
+            'success': False,
+            'error': 'Tarefa não encontrada'
+        }, status=status.HTTP_404_NOT_FOUND)
+
+    return Response({
+        'success': True,
+        **progress,
+    }, status=status.HTTP_200_OK)
