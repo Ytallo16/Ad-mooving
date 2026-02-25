@@ -19,7 +19,8 @@ from .services import (
     create_abacatepay_pix,
     simulate_abacatepay_payment,
     check_abacatepay_payment_status,
-    mark_registration_paid_atomic
+    mark_registration_paid_atomic,
+    send_custom_broadcast_email
 )
 
 # Create your views here.
@@ -1413,6 +1414,86 @@ def resend_confirmation_email(request):
                 'error': 'Erro ao enviar email'
             }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
+    except Exception as e:
+        return Response({
+            'success': False,
+            'error': f'Erro interno: {str(e)}'
+        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@extend_schema(
+    tags=['admin'],
+    summary='Disparar email em massa',
+    description='Envia um email personalizado para todos os participantes inscritos (com número de inscrição)',
+    request={
+        'application/json': {
+            'type': 'object',
+            'properties': {
+                'subject': {'type': 'string', 'description': 'Assunto do email'},
+                'message': {'type': 'string', 'description': 'Corpo do email'},
+                'registration_ids': {
+                    'type': 'array',
+                    'items': {'type': 'integer'},
+                    'description': 'IDs das inscrições (opcional, se vazio envia para todos)'
+                },
+            },
+            'required': ['subject', 'message']
+        }
+    },
+    responses={
+        200: {'description': 'Emails enviados'},
+        400: {'description': 'Dados inválidos'},
+    }
+)
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def send_broadcast_email(request):
+    """
+    Dispara email em massa para participantes inscritos
+    """
+    try:
+        subject = request.data.get('subject', '').strip()
+        message = request.data.get('message', '').strip()
+        registration_ids = request.data.get('registration_ids', [])
+
+        if not subject:
+            return Response({
+                'success': False,
+                'error': 'O assunto é obrigatório'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        if not message:
+            return Response({
+                'success': False,
+                'error': 'A mensagem é obrigatória'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        # Buscar inscrições com registration_number preenchido
+        registrations = RaceRegistration.objects.exclude(
+            registration_number__isnull=True
+        ).exclude(
+            registration_number=''
+        )
+
+        # Se IDs específicos foram passados, filtrar por eles
+        if registration_ids:
+            registrations = registrations.filter(id__in=registration_ids)
+
+        if not registrations.exists():
+            return Response({
+                'success': False,
+                'error': 'Nenhuma inscrição encontrada para enviar email'
+            }, status=status.HTTP_400_BAD_REQUEST)
+
+        result = send_custom_broadcast_email(subject, message, registrations)
+
+        return Response({
+            'success': True,
+            'sent_count': result['sent_count'],
+            'failed_count': result['failed_count'],
+            'message': f"Emails enviados: {result['sent_count']}, falhas: {result['failed_count']}"
+        }, status=status.HTTP_200_OK)
+
     except Exception as e:
         return Response({
             'success': False,

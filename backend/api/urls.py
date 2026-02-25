@@ -30,6 +30,7 @@ urlpatterns = [
     path('admin/paid-registrations/', views.list_paid_registrations, name='list_paid_registrations'),
     path('admin/resend-email/', views.resend_confirmation_email, name='resend_confirmation_email'),
     path('admin/update-registration/', views.update_registration, name='update_registration'),
+    path('admin/broadcast-email/', views.send_broadcast_email, name='send_broadcast_email'),
     
     path('', include(router.urls)),  # Inclui as URLs do router
 ] 

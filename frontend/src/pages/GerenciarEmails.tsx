@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw, Download, Shirt, Save, Pencil } from "lucide-react";
+import { Loader2, Mail, Search, CheckCircle2, XCircle, RefreshCw, Download, Shirt, Save, Pencil, Send } from "lucide-react";
 import { apiRequest } from "@/config/api";
 
 interface Registration {
@@ -70,6 +72,20 @@ export default function GerenciarEmails() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editData, setEditData] = useState<EditState>({ course: "", cpf: "", shirt_size: "" });
   const [savingId, setSavingId] = useState<number | null>(null);
+  const [broadcastOpen, setBroadcastOpen] = useState(false);
+  const [broadcastSubject, setBroadcastSubject] = useState("");
+  const [broadcastMessage, setBroadcastMessage] = useState("");
+  const [sendingBroadcast, setSendingBroadcast] = useState(false);
+  const [broadcastTargetIds, setBroadcastTargetIds] = useState<number[]>([]);
+  const [broadcastTargetName, setBroadcastTargetName] = useState("");
+
+  const openBroadcastFor = (ids: number[], name?: string) => {
+    setBroadcastTargetIds(ids);
+    setBroadcastTargetName(name || "");
+    setBroadcastSubject("");
+    setBroadcastMessage("");
+    setBroadcastOpen(true);
+  };
   const { toast } = useToast();
 
   const formatCPF = (value: string) => {
@@ -109,15 +125,15 @@ export default function GerenciarEmails() {
           prev.map((reg) =>
             reg.id === registrationId
               ? {
-                  ...reg,
-                  course: data.registration.course,
-                  course_display: data.registration.course_display,
-                  modality: data.registration.modality,
-                  modality_display: data.registration.modality_display,
-                  cpf: data.registration.cpf,
-                  shirt_size: data.registration.shirt_size,
-                  shirt_size_display: data.registration.shirt_size_display,
-                }
+                ...reg,
+                course: data.registration.course,
+                course_display: data.registration.course_display,
+                modality: data.registration.modality,
+                modality_display: data.registration.modality_display,
+                cpf: data.registration.cpf,
+                shirt_size: data.registration.shirt_size,
+                shirt_size_display: data.registration.shirt_size_display,
+              }
               : reg
           )
         );
@@ -231,6 +247,33 @@ export default function GerenciarEmails() {
     }
   };
 
+  const handleBroadcastEmail = async () => {
+    if (!broadcastSubject.trim() || !broadcastMessage.trim()) {
+      toast({ title: "Preencha todos os campos", description: "Assunto e mensagem são obrigatórios.", variant: "destructive" });
+      return;
+    }
+    setSendingBroadcast(true);
+    try {
+      const response = await apiRequest("/api/admin/broadcast-email/", {
+        method: "POST",
+        body: JSON.stringify({ subject: broadcastSubject, message: broadcastMessage, registration_ids: broadcastTargetIds }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        toast({ title: "Emails disparados!", description: `Enviados: ${data.sent_count} | Falhas: ${data.failed_count}` });
+        setBroadcastOpen(false);
+        setBroadcastSubject("");
+        setBroadcastMessage("");
+      } else {
+        toast({ title: "Erro ao disparar emails", description: data.error || "Erro inesperado", variant: "destructive" });
+      }
+    } catch {
+      toast({ title: "Erro ao disparar emails", description: "Não foi possível conectar ao servidor", variant: "destructive" });
+    } finally {
+      setSendingBroadcast(false);
+    }
+  };
+
   const exportToCSV = () => {
     if (filteredRegistrations.length === 0) return;
 
@@ -299,7 +342,16 @@ export default function GerenciarEmails() {
                   Lista de inscrições com número de registro - Reenvie emails de confirmação
                 </CardDescription>
               </div>
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-wrap">
+                <Button
+                  onClick={() => openBroadcastFor(filteredRegistrations.map((r) => r.id))}
+                  size="sm"
+                  disabled={loading || filteredRegistrations.length === 0}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Send className="h-4 w-4 mr-2" />
+                  Disparar Email em Massa
+                </Button>
                 <Button
                   onClick={exportToCSV}
                   variant="outline"
@@ -580,6 +632,15 @@ export default function GerenciarEmails() {
                                         </>
                                       )}
                                     </Button>
+                                    <Button
+                                      onClick={() => openBroadcastFor([reg.id], reg.full_name)}
+                                      variant="outline"
+                                      size="lg"
+                                      className="w-full md:w-auto border-green-300 text-green-700 hover:bg-green-50"
+                                    >
+                                      <Send className="h-4 w-4 mr-2" />
+                                      Disparar Email
+                                    </Button>
                                   </>
                                 )}
                               </div>
@@ -602,6 +663,68 @@ export default function GerenciarEmails() {
           </CardContent>
         </Card>
       </div>
-    </div>
+
+      {/* Modal de Disparo de Email em Massa */}
+      <Dialog open={broadcastOpen} onOpenChange={setBroadcastOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Send className="h-5 w-5 text-green-600" />
+              {broadcastTargetName ? "Disparar Email Individual" : "Disparar Email em Massa"}
+            </DialogTitle>
+            <DialogDescription>
+              {broadcastTargetName ? (
+                <>O email será enviado para <strong>{broadcastTargetName}</strong>.</>
+              ) : (
+                <>O email será enviado para <strong>{broadcastTargetIds.length}</strong> participante(s) listado(s).</>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Assunto</label>
+              <Input
+                placeholder="Ex: Informações importantes sobre a corrida"
+                value={broadcastSubject}
+                onChange={(e) => setBroadcastSubject(e.target.value)}
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Mensagem</label>
+              <Textarea
+                placeholder="Escreva aqui o conteúdo do email..."
+                value={broadcastMessage}
+                onChange={(e) => setBroadcastMessage(e.target.value)}
+                rows={8}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setBroadcastOpen(false)} disabled={sendingBroadcast}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleBroadcastEmail}
+              disabled={sendingBroadcast || !broadcastSubject.trim() || !broadcastMessage.trim()}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              {sendingBroadcast ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                <>
+                  <Send className="h-4 w-4 mr-2" />
+                  {broadcastTargetName ? `Enviar para ${broadcastTargetName}` : `Enviar para ${broadcastTargetIds.length} participante(s)`}
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog >
+    </div >
   );
 }

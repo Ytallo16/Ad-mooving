@@ -943,3 +943,53 @@ def check_abacatepay_payment_status(pix_id: str):
             'success': False,
             'error': f'Erro interno: {str(e)}'
         }
+
+
+def send_custom_broadcast_email(subject_text, message_body, registrations):
+    """
+    Envia um email personalizado para uma lista de inscrições.
+    Retorna dict com sent_count e failed_count.
+    """
+    from email.header import Header
+    from email.utils import formataddr
+
+    sent_count = 0
+    failed_count = 0
+
+    subject = str(Header(subject_text, 'utf-8'))
+    friendly_from = formataddr((str(Header('Equipe Ad-moving', 'utf-8')), settings.DEFAULT_FROM_EMAIL))
+
+    # Monta um HTML simples a partir do corpo de texto
+    html_body = f"""
+    <html>
+    <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+            <h1 style="color: #fff; margin: 0; font-size: 24px;">Corrida Ad-moving</h1>
+        </div>
+        <div style="padding: 20px; background: #f9fafb; border: 1px solid #e5e7eb; border-top: none; border-radius: 0 0 8px 8px;">
+            {message_body.replace(chr(10), '<br>')}
+        </div>
+        <p style="text-align: center; margin-top: 20px; font-size: 12px; color: #6b7280;">
+            Equipe Ad-moving &bull; admoving@addirceu.com.br
+        </p>
+    </body>
+    </html>
+    """
+
+    for registration in registrations:
+        try:
+            email = EmailMultiAlternatives(
+                subject=subject,
+                body=message_body,
+                from_email=friendly_from,
+                to=[registration.email],
+            )
+            email.encoding = 'utf-8'
+            email.attach_alternative(html_body, 'text/html; charset=utf-8')
+            email.send(fail_silently=False)
+            sent_count += 1
+        except Exception as e:
+            print(f"Erro ao enviar email para {registration.email}: {e}")
+            failed_count += 1
+
+    return {'sent_count': sent_count, 'failed_count': failed_count}
